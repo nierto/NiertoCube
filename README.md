@@ -45,7 +45,7 @@
 <h2 id="installation">📦 Installation</h2>
 <ol>
   <li>Download the latest release of the theme from the <a href="https://github.com/yourusername/NiertoCube/releases">GitHub releases page</a>.</li>
-  <li>Check the MD5 hash of the downloaded ZIP file against the one provided on the GitHub releases page to ensure integrity (currently: 132216fa9db25b1f165c46d72d0a8aae).</li>
+  <li>Check the MD5 hash of the downloaded ZIP file against the one provided on the GitHub releases page to ensure integrity.</li>
   <li>Upload the ZIP file to your WordPress installation via the WordPress admin panel: <code>Appearance</code> &gt; <code>Themes</code> &gt; <code>Add New</code> &gt; <code>Upload Theme</code>.</li>
   <li>Activate the theme through the WordPress admin panel.</li>
   <li>Customize the theme using the WordPress Customizer.</li>
