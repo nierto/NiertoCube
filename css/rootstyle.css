@@ -1,0 +1,92 @@
+:root {
+    --gradcolor1: #ee7752;
+    --gradcolor2: #e73c7e;
+    --gradcolor3: #23a6d5;
+    --gradcolor4: #23d5ab;
+    --color-bg: #F97162;
+    --color-txt: #F97162;
+    --color-header: #FEFEF9;
+    --color-border: #F5F9E9;
+    --color-highlight: #F5F9E9;
+    --color-bg-button:#F5F9E9;
+    --color-txt-button:#F5F9E9;
+    --default-cubeheight: 80vmin;
+    --default-cubewidth: 80vmin;
+    --default-margin: 0.618033vmin auto;
+    --default-padding: 1.618033vmin;
+    --semi-transparant:rgba(255, 255, 255, 0.28);
+    --nav-button-bg-color: #ffffff;
+    --nav-button-text-color: #000000;
+    --nav-button-padding: 10px 20px;
+    --nav-button-margin: 10px;
+    --nav-button-font-size: 16px;
+    --nav-button-border-style: solid;
+    --nav-button-border-color: #000000;
+    --nav-button-border-width: 1px;
+    --nav-button-border-radius:20%;
+    --nav-button-hover-bg-color: #dddddd;
+    --nav-button-hover-text-color: #000000;
+}
+
+a.site-name,
+a.imprint,
+.comma,
+a.privacy-policy-link {
+    display: none;
+}
+
+ul {
+    padding-inline-start: 0px;
+}
+
+.accelerated {
+    will-change: transform;
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    -moz-transition: all 1s;
+    -webkit-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
+}
+
+.activated {
+    transform: scale3d(20deg, -20deg, 20deg);
+}
+
+.preserve3d {
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.content_to_load {
+    border: none;
+    width: 80vmin;
+    height: 80vmin;
+    max-width: 100%;
+}
+
+#contentIframe {
+    -webkit-overflow-scrolling: touch !important;
+    overflow-y: scroll !important;
+}
+
+.fade-in {
+    animation: fadeIn ease 1.5s;
+    -webkit-animation: fadeIn ease 1.5s;
+    -moz-animation: fadeIn ease 1.5s;
+    -o-animation: fadeIn ease 1.5s;
+    -ms-animation: fadeIn ease 1.5s;
+}
+
+.fade-out {
+    animation: fadeOut ease 0.5s;
+    -webkit-animation: fadeOut ease 0.5s;
+    -moz-animation: fadeOut ease 0.5s;
+    -o-animation: fadeOut ease 0.5s;
+    -ms-animation: fadeOut ease 0.5s;
+}

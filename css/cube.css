@@ -1,0 +1,116 @@
+#scene 
+{
+    transform: translate(0vmin, 5vmin);
+    perspective: 200vmin;
+    -webkit-perspective: 200vmin;
+    -webkit-perspective-origin: 50% 50%;
+    perspective-origin: 50% 50%;
+    z-index: 1;
+}
+
+.logo {
+    position: absolute;
+    height: 75vmin;
+    width: 75vmin;
+    border-style: none;
+}
+
+#logo_top {
+    position: absolute;
+    top:0;
+    margin-left: 5vmin;
+    height: 15vmin;
+    width: 15vmin;
+    border-style: none;
+}
+
+#logo_pos {
+    position: absolute;
+    -webkit-animation: rotation 15s infinite linear;
+    animation: rotation 15s infinite linear;
+    -webkit-transform: translate3d(35vmin, 30vmin, 0);
+    transform: translate3d(35vmin, 30vmin, 0);
+    will-change: transform;
+}
+
+#cube 
+{
+    /*  positioning and size   use with .gpuTransform and borderRadiusDefault*/
+    position: relative;
+    margin: 0 auto;
+    height: var(--default-cubeheight);
+    width: var(--default-cubewidth);
+    /*  border and shadow */
+    border-radius: 2.3vmin;
+    /*  effects */
+    will-change: transform;
+    -webkit-transition: -webkit-transform 0.4s linear;
+    transition: -webkit-transform 0.4s linear;
+    -o-transition: transform 0.4s linear;
+    transition: transform 0.4s linear;
+    transition: transform 0.4s linear, -webkit-transform 0.4s linear;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+.face 
+{
+    position:absolute;
+    top: 0;
+    height: var(--default-cubeheight);
+    width: var(--default-cubewidth);
+    padding: 0;
+    /*  colors and background */
+    background: var(--semi-transparant);
+    /*  border and shadow */
+    border-radius: var(--default-margin);
+}
+
+#cube .one 
+{
+    -webkit-transform: rotateX(90deg) translateZ(40vmin);
+    transform: rotateX(90deg) translateZ(40vmin);
+    background: linear-gradient(51deg, var(--gradcolor1), var(--gradcolor2), var(--gradcolor3), var(--gradcolor4));
+    background-size: 800% 800%;
+    -webkit-animation: BGgrad 15s ease infinite;
+    -moz-animation: BGgrad 15s ease infinite;
+    animation: BGgrad 15s ease infinite;
+}
+#cube .two 
+{
+    -webkit-transform: translateZ(40vmin);
+    transform: translateZ(40vmin);
+}
+#cube .three 
+{
+    transform: rotateY(90deg) translateZ(40vmin);
+    background: linear-gradient(51deg, var(--gradcolor1), var(--gradcolor2), var(--gradcolor3), var(--gradcolor4));
+    background-size: 800% 800%;
+    animation: BGgrad 15s ease infinite;
+}
+#cube .three_next 
+{
+    -webkit-transform: rotateY(90deg) translateZ(38vmin);
+    transform: rotateY(90deg) translateZ(38vmin);
+}
+#cube .four
+{
+    transform: rotateY(180deg) translateZ(40vmin);
+    background-image: url('/assets/img/background_cube.webp');
+    background-size: cover;
+    background-position: top center;
+    background-attachment: fixed;
+}
+#cube .five
+{
+    transform: rotateY(-90deg) translateZ(40vmin);
+    background: linear-gradient(51deg, var(--gradcolor1), var(--gradcolor2), var(--gradcolor3), var(--gradcolor4));
+    background-size: 800% 800%;
+    animation: BGgrad 15s ease infinite;
+}
+#cube .six
+{
+    transform: rotateX(-90deg) translateZ(40vmin) rotate(180deg);
+    background: linear-gradient(51deg, var(--gradcolor1), var(--gradcolor2), var(--gradcolor3), var(--gradcolor4));
+    background-size: 800% 800%;
+    animation: BGgrad 15s ease infinite;
+}

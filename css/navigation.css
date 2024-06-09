@@ -1,0 +1,47 @@
+.navButton {
+    will-change: transform;
+    z-index: 80;
+    margin-top: 1.618033vmin;
+    background-color: var(--nav-button-bg-color);
+    color: var(--nav-button-text-color);
+    padding: var(--nav-button-padding);
+    margin: var(--nav-button-margin);
+    font-size: var(--nav-button-font-size);
+    border-style: var(--nav-button-border-style);
+    border-color: var(--nav-button-border-color);
+    border-width: var(--nav-button-border-width);
+    border-radius: var(--nav-button-border-radius);
+}
+
+.navButton:hover,
+.navButton:focus {
+    background-color: var(--nav-button-hover-bg-color);
+    color: var(--nav-button-hover-text-color);
+    animation: pulse-blue 2s infinite;
+}
+
+.navButton:first-child {
+    margin-top: 35vmin;
+}
+
+.navName {
+    font-family: 'Ubuntu', sans-serif;
+    background-color: var(--color-bg-button);
+    text-transform: uppercase;
+    flex: 3 1 auto;
+    order: 2;
+    color: var(--color-txt-button);
+}
+
+.controlBar {
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-content: stretch;
+    align-items: stretch;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
