@@ -1,4 +1,9 @@
 @media all {
+    #CubeWrapper{
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
     body {
         max-width: none;
     }
@@ -7,26 +12,30 @@
         -webkit-overflow-scrolling: touch;
         overflow: scroll;
     }
+    #wrapper-left{
+        position:absolute;
+        z-index: 89;
+    }
+    #wrapper-right{
+        position:absolute;
+        z-index: 88;
+    }
 }
 
 @media (max-width: 482px) {
     #wrapper-left {
-        position: absolute;
         left: 0;
         top: 0;
         height: 20%;
         width: 100%;
-        z-index: 89;
         margin-bottom: 35vmin;
     }
 
     #wrapper-right {
-        position: absolute;
         right: 0;
         top: 145vmin;
         height: 20%;
         width: 100%;
-        z-index: 88;
     }
     #cube {
         margin-left: 10vmin;
@@ -42,45 +51,31 @@
 
 @media (min-width: 670px) {
     #wrapper-left {
-        position: absolute;
         left: 0;
         top: 0;
         height: 20%;
         width: 100%;
-        z-index: 89;
         margin-bottom: 35vmin;
     }
     #wrapper-right {
-        position: absolute;
         right: 0;
         top: 145vmin;
         height: 20%;
         width: 100%;
-        z-index: 88;
     }
 }
 
 @media (min-width: 961px) {
     #wrapper-left {
-        position: absolute;
         left: 0;
         top: 0;
-        width: var(--width);
+        width: var(--widthNavWrapper); /* will still need to actually add this value in the rootstyles */
         height: 100%;
-        z-index: 89;
     }
     #wrapper-right {
-        position: absolute;
         right: 0;
         top: 0;
         width: var(--width);
         height: 100%;
-        z-index: 88;
-    }
-    #cube {
-        margin-left: 10vmin;
-        margin-top: 53vmin;
-        max-height: 60%;
-        z-index: 189;
     }
 }
