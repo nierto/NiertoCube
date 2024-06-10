@@ -1,34 +1,4 @@
 <?php get_header(); ?>
-    <div id="wrapper_left">
-        <div class="navButton accelerated">
-            <div class="controlBar">
-                <p class="navName" onclick="cubeMoveButton('face0','what');">
-                    <script>document.write(variables.navTexts.face0);</script>
-                </p>
-            </div>
-        </div>
-        <div class="navButton accelerated">
-            <div class="controlBar">
-                <p class="navName" onclick="cubeMoveButton('face1','why');">
-                    <script>document.write(variables.navTexts.face1);</script>
-                </p>
-            </div>
-        </div>
-        <div class="navButton accelerated">
-            <div class="controlBar">
-                <p class="navName" onclick="cubeMoveButton('face2','how');">
-                    <script>document.write(variables.navTexts.face2);</script>
-                </p>
-            </div>
-        </div>
-        <div class="navButton accelerated">
-            <div class="controlBar">
-                <p class="navName" onclick="cubeMoveButton('face3','who');">
-                    <script>document.write(variables.navTexts.face3);</script>
-                </p>
-            </div>
-        </div>
-    </div>
     <div id="scene">
         <div id="cube">
             <div class="face one" id='face0'></div>
@@ -51,37 +21,7 @@
             </div>
         </div>
     </div>
-    <div id="wrapper_right">
-        <div class="navButton accelerated">
-            <div class="controlBar">
-                <p class="navName" onclick="zoomContent('privacy-policy')">
-                    <script>document.write(variables.navTexts.face4);</script>
-                </p>
-            </div>
-        </div>
-        <div class="navButton accelerated">
-            <div class="controlBar">
-                <p class="navName" onclick="zoomContentBlog('redirect')">
-                    <script>document.write(variables.navTexts.face5);</script>
-                </p>
-            </div>
-        </div>
-        <div class="navButton accelerated">
-            <div class="controlBar" id='contactMe'> 
-                <p class="navName">
-                    <script>document.write(variables.navTexts.face6);</script>
-                </p>
-            </div>
-        </div>
-        <div class="navButton accelerated">
-            <div class="controlBar"> 
-                <p class="navName" onclick="createRATES();">
-                    <script>document.write(variables.navTexts.face7);</script>
-                </p>
-            </div>
-        </div>
-    </div>
-<script type="text/javascript">
+    <script type="text/javascript">
     function tunnel(fn) {fn();} // this function is used to tunnel functions within the iframes. 
     document.addEventListener('DOMContentLoaded', (event) => {
      // Ensure variables are defined before this script runs
@@ -91,5 +31,5 @@
         console.error('Required variables or functions are not defined.');
     }
     });
-</script>
+    </script>
 <?php get_footer(); ?>

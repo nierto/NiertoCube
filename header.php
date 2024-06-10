@@ -8,6 +8,39 @@
 <body <?php body_class(); ?>>
 <div id="page">
 <header>
+<div id="wrapper_left">
+        <div class="navButton accelerated">
+            <div class="controlBar">
+                <p class="navName" onclick="cubeMoveButton('face0','what');">
+                    <script>document.write(variables.navTexts.face0);</script>
+                </p>
+            </div>
+        </div>
+        <div class="navButton accelerated">
+            <div class="controlBar">
+                <p class="navName" onclick="cubeMoveButton('face1','why');">
+                    <script>document.write(variables.navTexts.face1);</script>
+                </p>
+            </div>
+        </div>
+        <div class="navButton accelerated">
+            <div class="controlBar">
+                <p class="navName" onclick="cubeMoveButton('face2','how');">
+                    <script>document.write(variables.navTexts.face2);</script>
+                </p>
+            </div>
+        </div>
+        <div class="navButton accelerated">
+            <div class="controlBar">
+                <p class="navName" onclick="cubeMoveButton('face3','who');">
+                    <script>document.write(variables.navTexts.face3);</script>
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+
 <?php
 $logo_url = get_theme_mod('logo_source', '');
 if ($logo_url):
