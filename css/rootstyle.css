@@ -26,6 +26,7 @@
     --nav-button-border-radius:20%;
     --nav-button-hover-bg-color: #dddddd;
     --nav-button-hover-text-color: #000000;
+    --widthNavWrapper:200px;
 }
 
 a.site-name,
