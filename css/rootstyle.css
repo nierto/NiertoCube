@@ -1,20 +1,21 @@
 :root {
-    --gradcolor1: #ee7752;
+    /*cube colors */
+    --gradcolor1: #ee7752; 
     --gradcolor2: #e73c7e;
     --gradcolor3: #23a6d5;
     --gradcolor4: #23d5ab;
-    --color-bg: #F97162;
-    --color-txt: #F97162;
-    --color-header: #FEFEF9;
-    --color-border: #F5F9E9;
-    --color-highlight: #F5F9E9;
-    --color-bg-button:#F5F9E9;
-    --color-txt-button:#F5F9E9;
-    --default-cubeheight: 80vmin;
-    --default-cubewidth: 80vmin;
-    --default-margin: 0.618033vmin auto;
-    --default-padding: 1.618033vmin;
+    --color-bg: #F97162; /* sitewide bg color */
+    --color-txt: #F97162; /* text color */
+    --color-header: #FEFEF9; /* color for header --- currently unnecessary */
+    --color-border: #F5F9E9; /* color for borders */
+    --color-highlight: #F5F9E9; /* color for links and highlights*/
+    --color-hover: #F5F9E9;
+    --color-bg-button:#F5F9E9; /* color for buttons */
+    --color-txt-button:#F5F9E9; /* color for button text */
+    --default-cubeheight: 80vmin; /* default cube height */
+    --default-cubewidth: 80vmin; /* default cube width */
     --semi-transparant:rgba(255, 255, 255, 0.28);
+    /*diff nav options */
     --nav-button-bg-color: #ffffff;
     --nav-button-text-color: #000000;
     --nav-button-padding: 10px 20px;
@@ -26,7 +27,8 @@
     --nav-button-border-radius:20%;
     --nav-button-hover-bg-color: #dddddd;
     --nav-button-hover-text-color: #000000;
-    --widthNavWrapper:200px;
+    --nav-button-width: 20vmin;
+    --nav-wrapper-default-width:15%;
 }
 
 a.site-name,

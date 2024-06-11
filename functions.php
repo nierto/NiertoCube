@@ -12,11 +12,6 @@ function nierto_cube_customize_register($wp_customize) {
         'title' => __('Cube Settings', 'nierto_cube'),
         'priority' => 160,
     ));
-    // PAGE NAMES FOR SIDES
-    $wp_customize->add_section('cube_page_names', array(
-        'title' => __('Cube Page Names', 'nierto_cube'),
-        'priority' => 161,
-    ));
     // LOGO
     $wp_customize->add_section('logo', array(
         'title' => __('Logo Settings', 'nierto_cube'),
@@ -60,8 +55,14 @@ function nierto_cube_customize_register($wp_customize) {
         'color_header' => '#FEFEF9',
         'color_border' => '#F5F9E9',
         'color_highlight' => '#F5F9E9',
+        'color_hover' => '#F5F9E9',
         'color_background_button' => '#F5F9E9',
         'color_text_button' => '#F5F9E9',
+        'nav_button_bg_color' => '#ffffff',
+        'nav_button_text_color ' => '#000000',
+        'nav_button_hover_bg_color' => '#dddddd',
+        'nav_button_hover_text_color' => '#000000',
+        'nav_button_border_color' => '#000000',
     ];
     foreach ($color_settings as $setting_id => $default) {
         $wp_customize->add_setting($setting_id, [
@@ -100,10 +101,6 @@ function nierto_cube_customize_register($wp_customize) {
         'default_cubewidth' => [
             'default' => '80vmin',
             'label' => 'The Width of the Cube'
-        ],
-        'default_margin' => [
-            'default' => '0.618033vmin auto',
-            'label' => 'The default Margin (for the cube and other items!)'
         ]
     ];
     foreach ($cube_settings as $id => $values) {
@@ -142,32 +139,24 @@ function nierto_cube_customize_register($wp_customize) {
     ]);
     //SECTION: PAGE NAMES FOR SIDES
     // PAGE NAMES FOR FUNCTION CALLINGZ
-    for ($i = 1; $i <= 3; $i++) {
-        $wp_customize->add_setting("cube_face_page_name_{$i}", array(
-            'default' => "Page Name {$i}",
-            'sanitize_callback' => 'sanitize_text_field',
-            'transport' => 'refresh',
-        ));
-        $wp_customize->add_control("cube_face_page_name_{$i}", array(
-            'label' => __("Face {$i} Page Name", 'nierto_cube'),
-            'section' => 'cube_page_names',
-            'type' => 'text',
-            'settings' => "cube_face_page_name_{$i}",
-        ));
-    }
     //SECTION: LOGO
     // Logo settings
     for ($i = 1; $i <= 2; $i++) {
-        $wp_customize->add_setting("logo_{$i}", array(
+        if ($i == 1){
+            $name = "width";
+        } else {
+            $name = "height";
+        }
+        $wp_customize->add_setting("logo_{$name}", array(
             'default' => "124px",
             'sanitize_callback' => 'sanitize_text_field',
             'transport' => 'refresh',
         ));
-        $wp_customize->add_control("logo_{$i}", array(
-            'label' => __("Logo Setting {$i}", 'nierto_cube'),
+        $wp_customize->add_control("logo_{$name}", array(
+            'label' => __("Logo Setting {$name}", 'nierto_cube'),
             'section' => 'logo',
             'type' => 'text',
-            'settings' => "logo_{$i}",
+            'settings' => "logo_{$name}",
         ));
     }
     $wp_customize->add_setting('logo_source', array(
@@ -189,6 +178,14 @@ function nierto_cube_customize_register($wp_customize) {
         'font_family_button' => [
             'default' => "'Rubik', sans-serif",
             'label' => 'the default font family for the buttons'
+        ],
+            'font_family_button' => [
+            'default' => "'Rubik', sans-serif",
+            'label' => 'the default font family for Menu Buttons'
+        ],
+            'font_family_button' => [
+            'default' => "'Rubik', sans-serif",
+            'label' => 'the default font family for the Highlight'
         ],
      ];
     foreach ($font_settings as $id => $values) {
@@ -227,137 +224,31 @@ function nierto_cube_customize_register($wp_customize) {
             'settings' => $setting_id,
         ));
     }
-    // Nav button background color
-    $wp_customize->add_setting('nav_button_bg_color', array(
-        'default' => '#ffffff',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'nierto_cube_sanitize_css'
-    ));
-    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'nav_button_bg_color', array(
-        'label' => __('Nav Button Background Color', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'settings' => 'nav_button_bg_color',
-    )));
-
-    // Nav button text color
-    $wp_customize->add_setting('nav_button_text_color', array(
-        'default' => '#000000',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'nierto_cube_sanitize_css'
-    ));
-    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'nav_button_text_color', array(
-        'label' => __('Nav Button Text Color', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'settings' => 'nav_button_text_color',
-    )));
-
-    // Nav button padding
-    $wp_customize->add_setting('nav_button_padding', array(
-        'default' => '10px 20px',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'sanitize_text_field'
-    ));
-    $wp_customize->add_control('nav_button_padding', array(
-        'label' => __('Nav Button Padding', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'type' => 'text',
-    ));
-
-    // Nav button margin
-    $wp_customize->add_setting('nav_button_margin', array(
-        'default' => '10px',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'sanitize_text_field'
-    ));
-    $wp_customize->add_control('nav_button_margin', array(
-        'label' => __('Nav Button Margin', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'type' => 'text',
-    ));
-
-    // Nav button font size
-    $wp_customize->add_setting('nav_button_font_size', array(
-        'default' => '16px',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'sanitize_text_field'
-    ));
-    $wp_customize->add_control('nav_button_font_size', array(
-        'label' => __('Nav Button Font Size', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'type' => 'text',
-    ));
-
-     // Nav button border style
-    $wp_customize->add_setting('nav_button_border_style', array(
-        'default' => 'solid',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'sanitize_text_field'
-    ));
-    $wp_customize->add_control('nav_button_border_style', array(
-    'label' => __('Nav Button Border Style', 'nierto_cube'),
-    'section' => 'nav_button_styling',
-    'type' => 'text',
-    ));
-
-    // Nav button border color
-    $wp_customize->add_setting('nav_button_border_color', array(
-        'default' => '#000000',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'nierto_cube_sanitize_css'
-    ));
-    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'nav_button_border_color', array(
-        'label' => __('Nav Button Border Color', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'settings' => 'nav_button_border_color',
-    )));
-
-    // Nav button border width
-    $wp_customize->add_setting('nav_button_border_width', array(
-        'default' => '1px',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'sanitize_text_field'
-    ));
-    $wp_customize->add_control('nav_button_border_width', array(
-        'label' => __('Nav Button Border Width', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'type' => 'text',
-    ));
-
-        // Nav button border radius
-    $wp_customize->add_setting('nav_button_border_radius', array(
-        'default' => '20%',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'sanitize_text_field'
-    ));
-    $wp_customize->add_control('nav_button_border_radius', array(
-        'label' => __('Nav Button Border Radius', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'type' => 'text',
-    ));
-
-    // Nav button hover background color
-    $wp_customize->add_setting('nav_button_hover_bg_color', array(
-        'default' => '#dddddd',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'nierto_cube_sanitize_css'
-    ));
-    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'nav_button_hover_bg_color', array(
-        'label' => __('Nav Button Hover Background Color', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'settings' => 'nav_button_hover_bg_color',
-    )));
-
-    // Nav button hover text color
-    $wp_customize->add_setting('nav_button_hover_text_color', array(
-        'default' => '#000000',
-        'transport' => 'refresh',
-        'sanitize_callback' => 'nierto_cube_sanitize_css'
-    ));
-    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'nav_button_hover_text_color', array(
-        'label' => __('Nav Button Hover Text Color', 'nierto_cube'),
-        'section' => 'nav_button_styling',
-        'settings' => 'nav_button_hover_text_color',
-    )));
+    // SECTION: NAV STYLING
+    // sizes and dimensions
+        $nav_texts = [
+        'nav_button_padding' => '10px 20px',
+        'nav_button_margin' => '10px',
+        'nav_button_font_size' => '16px',
+        'nav_button_border_style' => 'solid',
+        'nav_button_border_width' => '1px',
+        'nav_button_border_radius' => '20%',
+        'nav_button_width' => '20vmin'
+        'nav_wrapper_width' => '15%'
+    ];
+    foreach ($nav_texts as $setting_id => $default_text) {
+        $wp_customize->add_setting($setting_id, array(
+            'default' => $default_text,
+            'sanitize_callback' => 'sanitize_text_field',
+            'transport' => 'refresh',
+        ));
+        $wp_customize->add_control($setting_id, array(
+            'label' => __(ucfirst(str_replace('_', ' ', $setting_id)), 'nierto_cube'),
+            'section' => 'nav_texts',
+            'type' => 'text',
+            'settings' => $setting_id,
+        ));
+    }
 }
 
 add_action('customize_register', 'nierto_cube_customize_register');
@@ -379,12 +270,11 @@ function nierto_cube_customizer_css() {
             --color-header: <?php echo prepend_hash(get_theme_mod('color_header', '#FEFEF9')); ?>;
             --color-border: <?php echo prepend_hash(get_theme_mod('color_border', '#F5F9E9')); ?>;
             --color-highlight: <?php echo prepend_hash(get_theme_mod('color_highlight', '#F5F9E9')); ?>;
+            --color-hover: <?php echo prepend_hash(get_theme_mod('color_hover', '#F5F9E9')); ?>;
             --color-bg-button: <?php echo prepend_hash(get_theme_mod('color_background_button', '#F5F9E9')); ?>;
             --color-txt-button: <?php echo prepend_hash(get_theme_mod('color_text_button', '#F5F9E9')); ?>;
             --default-cubeheight: <?php echo get_theme_mod('default_cubeheight', '80vmin'); ?>;
             --default-cubewidth: <?php echo get_theme_mod('default_cubewidth', '80vmin'); ?>;
-            --default-margin: <?php echo get_theme_mod('default_margin', '0.618033vmin auto'); ?>; 
-            --default-padding: <?php echo get_theme_mod('default_padding', '1.618033vmin'); ?>; 
             --semi-transparant: <?php echo get_theme_mod('semi_transparant', 'rgba(255, 255, 255, 0.28)'); ?>;
             --nav-button-bg-color: <?php echo prepend_hash(get_theme_mod('nav_button_bg_color', '#ffffff')); ?>;
             --nav-button-text-color: <?php echo prepend_hash(get_theme_mod('nav_button_text_color', '#000000')); ?>;
@@ -397,6 +287,8 @@ function nierto_cube_customizer_css() {
             --nav-button-border-radius: <?php echo get_theme_mod('nav_button_border_radius', '20%'); ?>;
             --nav-button-hover-bg-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_bg_color', '#dddddd')); ?>;
             --nav-button-hover-text-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_text_color', '#000000')); ?>;
+            --nav-button-width: <?php echo get_theme_mod('nav_button_width', '20vmin'); ?>;
+            --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '15%'); ?>;
         }
         #scene {
             transform: translate(<?php echo get_theme_mod('translate_x_scene', '-3vmin'); ?>, <?php echo get_theme_mod('translate_y_scene', '6vmin'); ?>);
