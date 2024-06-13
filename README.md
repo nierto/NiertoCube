@@ -56,7 +56,7 @@
   <li><strong>June 2024:</strong> Initial release of NiertoCube</li>
   <li><strong>July 2024:</strong> User feedback collection and bug fixes</li>
   <li><strong>August 2024:</strong> Implementation of advanced customization options</li>
-  <li><strong>September 2024:</strong> Integration with Redis for improved performance</li>
+  <li><strong>September 2024:</strong> Integration with ValKey for improved performance</li>
   <li><strong>October 2024:</strong> Beta testing of Pro version</li>
   <li><strong>November 2024:</strong> Official release of NiertoCube Pro</li>
 </ul>
