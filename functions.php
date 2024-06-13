@@ -22,15 +22,15 @@ function nierto_cube_customize_register($wp_customize) {
         'title' => __('Font Settings', 'nierto_cube'),
         'priority' => 183,
     ));
-     // NAV TEXT SETTINGS
-    $wp_customize->add_section('nav_texts', array(
-        'title' => __('Navigation Texts', 'nierto_cube'),
-        'priority' => 198,
-    ));
     // NAV BUTTON STYLING
     $wp_customize->add_section('nav_button_styling', array(
         'title' => __('Navigation Button Styling', 'nierto_cube'),
         'priority' => 200,
+    ));
+    // Define Customizer settings for page names
+    $wp_customize->add_section('cube_page_names', array(
+        'title' => __('Cube Page Names', 'nierto_cube'),
+        'priority' => 161,
     ));
 
     //SECTION: COLORS
@@ -200,30 +200,6 @@ function nierto_cube_customize_register($wp_customize) {
             'type' => 'text'
         ]);
     }
-    // SECTION: NAV TEXTS
-    $nav_texts = [
-        'nav_text_face0' => 'WHAT?',
-        'nav_text_face1' => 'WHY?',
-        'nav_text_face2' => 'HOW?',
-        'nav_text_face3' => 'WHO?',
-        'nav_text_face4' => 'TERMS',
-        'nav_text_face5' => 'STORIES',
-        'nav_text_face6' => 'CONTACT',
-        'nav_text_face7' => 'RATES',
-    ];
-    foreach ($nav_texts as $setting_id => $default_text) {
-        $wp_customize->add_setting($setting_id, array(
-            'default' => $default_text,
-            'sanitize_callback' => 'sanitize_text_field',
-            'transport' => 'refresh',
-        ));
-        $wp_customize->add_control($setting_id, array(
-            'label' => __(ucfirst(str_replace('_', ' ', $setting_id)), 'nierto_cube'),
-            'section' => 'nav_texts',
-            'type' => 'text',
-            'settings' => $setting_id,
-        ));
-    }
     // SECTION: NAV STYLING
     // sizes and dimensions
         $nav_texts = [
@@ -248,6 +224,20 @@ function nierto_cube_customize_register($wp_customize) {
             'type' => 'text',
             'settings' => $setting_id,
         ));
+    }
+    // CUBE PAGE NAMES
+    for ($i = 0; $i <= 5; $i++) {
+    $wp_customize->add_setting("cube_face_page_name_{$i}", array(
+        'default' => "Face {$i}",
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport' => 'refresh',
+    ));
+    $wp_customize->add_control("cube_face_page_name_{$i}", array(
+        'label' => __("Face {$i} Page Name", 'nierto_cube'),
+        'section' => 'cube_page_names',
+        'type' => 'text',
+        'settings' => "cube_face_page_name_{$i}",
+    ));
     }
 }
 

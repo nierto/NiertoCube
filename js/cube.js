@@ -2,12 +2,32 @@ const MOBILE_STATE = window.matchMedia("(min-width: 961px)").matches ? 0 : 1;
 let sideCount = 0;
 let updCount = 0;
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof variables !== 'undefined') {
+        updateNavButtons();
+    } else {
+        console.error('Required variables are not defined.');
+    }
+
+    // Initialize other functionalities after DOM is loaded
     window.cubescale = 1;
     window.cubeduration = 250;
     window.cubestate = 2;
-    $(window).on("keydown", arrowKeyHandler);
+    document.addEventListener('keydown', arrowKeyHandler);
 });
+
+function updateNavButtons() {
+    const navButtons = document.querySelectorAll('.navButton .navName');
+    navButtons.forEach((button, index) => {
+        const faceId = `face${index}`;
+        if (variables.navTexts[faceId]) {
+            button.textContent = variables.navTexts[faceId];
+        } else {
+            console.error(`Variable ${faceId} not found.`);
+        }
+    });
+}
+
 
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
