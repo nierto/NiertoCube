@@ -332,8 +332,8 @@ function nierto_cube_scripts() {
     wp_enqueue_style('screensizes-style', get_template_directory_uri() . '/css/screensizes.css', array(), '1.0.0');
     wp_enqueue_style('nav-style', get_template_directory_uri() . '/css/navigation.css', array(), '1.0.0');
     wp_enqueue_style('nierto-cube-style', get_stylesheet_uri());
-    wp_enqueue_script('config-script', get_template_directory_uri() . '/js/config/config.js.php', array(), null, true);
     wp_enqueue_script('cube-script', get_template_directory_uri() . '/js/cube.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('config-script', get_template_directory_uri() . '/js/config/config.js.php', array(), null, true);
 }
 
 add_action('wp_enqueue_scripts', 'nierto_cube_scripts');
