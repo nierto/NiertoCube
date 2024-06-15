@@ -11,17 +11,17 @@
 <div id="wrapper_left">
         <div class="navButton accelerated">
             <div class="controlBar">
-                <p class="navName";"></p>
+                <span class="navName";"></p>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar">
-                <p class="navName"></p>
+                <span class="navName"></p>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar">
-                <p class="navName"></p>
+                <span class="navName"></p>
             </div>
         </div>
 <?php
