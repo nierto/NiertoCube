@@ -21,13 +21,6 @@
                 </p>
             </div>
         </div>
-        <div class="navButton accelerated">
-            <div class="controlBar"> 
-                <p class="navName" onclick="createRATES();">
-                    <script>document.write(variables.navTexts.face7);</script>
-                </p>
-            </div>
-        </div>
     </div>
 </footer>
 </div> 

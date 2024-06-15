@@ -209,8 +209,8 @@ function nierto_cube_customize_register($wp_customize) {
         'nav_button_border_style' => 'solid',
         'nav_button_border_width' => '1px',
         'nav_button_border_radius' => '20%',
-        'nav_button_width' => '20vmin'
-        'nav_wrapper_width' => '15%'
+        'nav_button_width' => '20vmin',
+        'nav_wrapper_width' => '15%',
     ];
     foreach ($nav_texts as $setting_id => $default_text) {
         $wp_customize->add_setting($setting_id, array(

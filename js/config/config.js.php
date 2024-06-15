@@ -11,3 +11,11 @@ for ($i = 0; $i <= 5; $i++) {
 const variables = {
     navTexts: <?php echo json_encode($nav_texts); ?>
 };
+
+function addOnClickAttributes() {
+    document.querySelectorAll('.navButton .navName').forEach((element, index) => {
+        element.setAttribute('onclick', `cubeMoveButton('face${index}', '${variables.navTexts[`face${index}`]}')`);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', addOnClickAttributes);

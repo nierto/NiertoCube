@@ -28,7 +28,6 @@ function updateNavButtons() {
     });
 }
 
-
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
     const oldMatrix = new WebKitCSSMatrix(cube[0].style.webkitTransform);
