@@ -12,6 +12,10 @@ function nierto_cube_customize_register($wp_customize) {
         'title' => __('Cube Settings', 'nierto_cube'),
         'priority' => 160,
     ));
+    $wp_customize->add_section('cube_page_names', array(
+        'title' => __('Cube Page Names', 'nierto_cube'),
+        'priority' => 163,
+    ));
     // LOGO
     $wp_customize->add_section('logo', array(
         'title' => __('Logo Settings', 'nierto_cube'),
@@ -22,14 +26,11 @@ function nierto_cube_customize_register($wp_customize) {
         'title' => __('Font Settings', 'nierto_cube'),
         'priority' => 183,
     ));// Define Customizer settings for page names
-    $wp_customize->add_section('cube_page_names', array(
-        'title' => __('Cube Page Names', 'nierto_cube'),
-        'priority' => 161,
-    ));
+
     // NAV BUTTON STYLING
     $wp_customize->add_section('nav_button_styling', array(
         'title' => __('Navigation Button Styling', 'nierto_cube'),
-        'priority' => 200,
+        'priority' => 203,
     ));
 
 
@@ -62,7 +63,7 @@ function nierto_cube_customize_register($wp_customize) {
         'nav_button_text_color ' => '#000000',
         'nav_button_hover_bg_color' => '#dddddd',
         'nav_button_hover_text_color' => '#000000',
-        'nav_button_border_color' => '#000000',
+        'nav_button_border_color' => '#000000'
     ];
     foreach ($color_settings as $setting_id => $default) {
         $wp_customize->add_setting($setting_id, [
@@ -186,7 +187,7 @@ function nierto_cube_customize_register($wp_customize) {
         'font_family_highlights' => [
             'default' => "'Rubik', sans-serif",
             'label' => 'the default font family for the Highlight'
-        ],
+        ]
      ];
     foreach ($font_settings as $id => $values) {
         $wp_customize->add_setting($id, [
@@ -210,7 +211,7 @@ function nierto_cube_customize_register($wp_customize) {
         'nav_button_border_width' => '1px',
         'nav_button_border_radius' => '20%',
         'nav_button_width' => '20vmin',
-        'nav_wrapper_width' => '15%',
+        'nav_wrapper_width' => '15%'
     ];
     foreach ($nav_texts as $setting_id => $default_text) {
         $wp_customize->add_setting($setting_id, array(

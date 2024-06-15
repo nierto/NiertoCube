@@ -1,6 +1,32 @@
+#wrapper_left, #wrapper_right   {
+    position: absolute !important;
+}
+
+#wrapper_left   {
+    z-index: 88;
+}
+
+#wrapper_right {
+    z-index: 89;
+}
+
+.controlBar {
+    display:flex;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-content: stretch;
+    align-items: stretch;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
 .navButton {
     will-change: transform;
-    z-index: 80;
+    z-index: 112;
     margin-top: 1.618033vmin;
     background-color: var(--nav-button-bg-color);
     color: var(--nav-button-text-color);
@@ -21,7 +47,7 @@
 }
 
 .navButton:first-child {
-    margin-top: 5vmin;
+    margin-top: 3vmin;
 }
 
 .navName {

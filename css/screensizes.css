@@ -59,11 +59,10 @@
 
 @media (min-width: 961px) {
     #wrapper-left {
-        position: absolute;
+        position:absolute;
         left: 0;
         top: 0;
-        width: var(--nav-wrapper-default-width); /* will still need to actually add this value in the rootstyles */
-        height: 100%;
+        width: var(--nav-wrapper-default-width); 
     }
     #wrapper-right {
         position: absolute;
