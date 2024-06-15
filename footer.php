@@ -3,21 +3,21 @@
         <div class="navButton accelerated">
             <div class="controlBar">
                 <p class="navName" onclick="zoomContent('privacy-policy')">
-                    <script>document.write(variables.navTexts.face4);</script>
+                    <script>document.write(variables.navTexts.face3);</script>
                 </p>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar">
                 <p class="navName" onclick="zoomContentBlog('redirect')">
-                    <script>document.write(variables.navTexts.face5);</script>
+                    <script>document.write(variables.navTexts.face4);</script>
                 </p>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar" id='contactMe'> 
                 <p class="navName">
-                    <script>document.write(variables.navTexts.face6);</script>
+                    <script>document.write(variables.navTexts.face5);</script>
                 </p>
             </div>
         </div>

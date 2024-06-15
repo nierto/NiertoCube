@@ -14,6 +14,7 @@ const variables = {
 
 function addOnClickAttributes() {
     document.querySelectorAll('.navButton .navName').forEach((element, index) => {
+        element.textContent = variables.navTexts[`face${index}`];
         element.setAttribute('onclick', `cubeMoveButton('face${index}', '${variables.navTexts[`face${index}`]}')`);
     });
 }
