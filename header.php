@@ -11,23 +11,17 @@
 <div id="wrapper_left">
         <div class="navButton accelerated">
             <div class="controlBar">
-                <p class="navName";">
-                    <script>document.write(variables.navTexts.face0);</script>
-                </p>
+                <p class="navName";"></p>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar">
-                <p class="navName">
-                    <script>document.write(variables.navTexts.face1);</script>
-                </p>
+                <p class="navName"></p>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar">
-                <p class="navName">
-                    <script>document.write(variables.navTexts.face2);</script>
-                </p>
+                <p class="navName"></p>
             </div>
         </div>
 <?php

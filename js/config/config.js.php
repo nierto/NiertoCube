@@ -13,9 +13,12 @@ const variables = {
 };
 
 function addOnClickAttributes() {
-    document.querySelectorAll('.navButton .navName').forEach((element, index) => {
-        element.textContent = variables.navTexts[`face${index}`];
-        element.setAttribute('onclick', `cubeMoveButton('face${index}', '${variables.navTexts[`face${index}`]}')`);
+    const navNames = document.querySelectorAll('.navButton .navName');
+    navNames.forEach((element, index) => {
+        if (variables.navTexts[`face${index}`]) {
+            element.textContent = variables.navTexts[`face${index}`];
+            element.setAttribute('onclick', `cubeMoveButton('face${index}', '${variables.navTexts[`face${index}`]}')`);
+        }
     });
 }
 
