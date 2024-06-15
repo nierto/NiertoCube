@@ -28,23 +28,27 @@
     font-family: 'Ubuntu', sans-serif;
     background-color: var(--color-bg-button);
     text-transform: uppercase;
-    flex: 3 1 auto;
-    order: 2;
     color: var(--color-txt-button);
     z-index: 81;
-    overflow: visible !important;
-    white-space: normal;
-}
-
-.controlBar {
-    cursor: pointer;
-    text-align: center;
     display: flex;
+    /* Enable flexbox */
     flex-direction: column;
-    align-content: stretch;
-    align-items: stretch;
-    top: 0;
-    left: 0;
+    /* Arrange children in a column */
+    justify-content: center;
+    /* Center content vertically */
+    align-items: center;
+    /* Center content horizontally */
+    white-space: normal;
+    /* Allow text to wrap */
+    overflow: visible;
+    /* Allow text to overflow */
+    padding: 10px;
+    text-align: center;
+    /* Center text */
     height: 100%;
+    /* Ensure it takes up the full height of the navButton */
     width: 100%;
+    /* Ensure it takes up the full width of the navButton */
+    cursor: pointer;
+    /* Ensure it retains the cursor pointer */
 }

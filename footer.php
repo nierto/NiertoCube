@@ -2,18 +2,16 @@
         <div id="wrapper_right">
         <div class="navButton accelerated">
             <div class="controlBar">
-                <span class="navName"></p>
+                <span class="navName"></span>
             </div>
         </div>
         <div class="navButton accelerated">
             <div class="controlBar">
-                <span class="navName"></p>
+                <span class="navName"></span>
             </div>
         </div>
         <div class="navButton accelerated">
-            <div class="controlBar" id='contactMe'> 
-                <span class="navName"></p>
-            </div>
+                <span class="navName"></span>
         </div>
     </div>
 </footer>
