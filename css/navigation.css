@@ -11,6 +11,7 @@
     border-color: var(--nav-button-border-color);
     border-width: var(--nav-button-border-width);
     border-radius: var(--nav-button-border-radius);
+    overflow: hidden;
 }
 
 .navButton:hover,
@@ -31,6 +32,10 @@
     flex: 3 1 auto;
     order: 2;
     color: var(--color-txt-button);
+    z-index: 81;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .controlBar {
