@@ -13,7 +13,7 @@
                 if ($logo_url):
                 ?>
                     <div id="logo_center">
-                        <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin">
+                       <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin" style="width: <?php echo esc_attr($logo_width); ?>; height: <?php echo esc_attr($logo_height); ?>;">
                     </div>
                 <?php
                 endif;

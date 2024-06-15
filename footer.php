@@ -1,5 +1,5 @@
 <footer>
-        <div id="wrapper_right">
+    <div id="wrapper_right">
         <div class="navButton accelerated">
             <div class="controlBar">
                 <span class="navName"></span>
@@ -8,10 +8,12 @@
         <div class="navButton accelerated">
             <div class="controlBar">
                 <span class="navName"></span>
-            </div>
+            </div>    
         </div>
         <div class="navButton accelerated">
+            <div class="controlBar">
                 <span class="navName"></span>
+            </div> 
         </div>
     </div>
 </footer>

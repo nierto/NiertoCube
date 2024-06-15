@@ -114,3 +114,13 @@
     background-size: 800% 800%;
     animation: BGgrad 15s ease infinite;
 }
+#logo_center {
+    position:relative;
+    right:50%;
+    top:50%;
+}
+
+#logo_spin  {
+    will-change:transform;
+    animation: rotation 15s ease infinite;
+}

@@ -46,7 +46,7 @@
 
 }
 
-@media (min-width: 670px) {
+@media (max-width: 960px) {
     #wrapper-left {
         left: 0;
         top: 0;
@@ -66,13 +66,13 @@
     #wrapper-left {
         left: 0;
         top: 0;
-        width: var(--widthNavWrapper); /* will still need to actually add this value in the rootstyles */
+        width: var(--nav-wrapper-default-width); /* will still need to actually add this value in the rootstyles */
         height: 100%;
     }
     #wrapper-right {
         right: 0;
         top: 0;
-        width: var(--widthNavWrapper);
+        width: var(--nav-wrapper-default-width);
         height: 100%;
     }
 }
