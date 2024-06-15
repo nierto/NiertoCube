@@ -1,9 +1,4 @@
 @media all {
-    #CubeWrapper{
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
     iframe {
         z-index: 1000;
         -webkit-overflow-scrolling: touch;
@@ -55,7 +50,7 @@
         margin-bottom: 35vmin;
     }
     #wrapper-right {
-        right: 0;
+        left: 0;
         top: 145vmin;
         height: 20%;
         width: 100%;

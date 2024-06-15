@@ -80,3 +80,23 @@
         box-shadow: 0 0 0 0 rgba(52, 172, 224, 0);
     }
 }
+
+@keyframes subtleSway {
+
+    0%,
+    100% {
+        transform: translateX(0) translateY(0) scale(1);
+    }
+
+    25% {
+        transform: translateX(2px) translateY(2px) scale(1.02);
+    }
+
+    50% {
+        transform: translateX(-2px) translateY(-2px) scale(1.04);
+    }
+
+    75% {
+        transform: translateX(2px) translateY(-2px) scale(1.02);
+    }
+}

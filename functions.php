@@ -21,17 +21,17 @@ function nierto_cube_customize_register($wp_customize) {
     $wp_customize->add_section('font', array(
         'title' => __('Font Settings', 'nierto_cube'),
         'priority' => 183,
+    ));// Define Customizer settings for page names
+    $wp_customize->add_section('cube_page_names', array(
+        'title' => __('Cube Page Names', 'nierto_cube'),
+        'priority' => 161,
     ));
     // NAV BUTTON STYLING
     $wp_customize->add_section('nav_button_styling', array(
         'title' => __('Navigation Button Styling', 'nierto_cube'),
         'priority' => 200,
     ));
-    // Define Customizer settings for page names
-    $wp_customize->add_section('cube_page_names', array(
-        'title' => __('Cube Page Names', 'nierto_cube'),
-        'priority' => 161,
-    ));
+
 
     //SECTION: COLORS
     // Gradient colors settings
@@ -179,11 +179,11 @@ function nierto_cube_customize_register($wp_customize) {
             'default' => "'Rubik', sans-serif",
             'label' => 'the default font family for the buttons'
         ],
-            'font_family_button' => [
+        'font_family_menus' => [
             'default' => "'Rubik', sans-serif",
             'label' => 'the default font family for Menu Buttons'
         ],
-            'font_family_button' => [
+        'font_family_highlights' => [
             'default' => "'Rubik', sans-serif",
             'label' => 'the default font family for the Highlight'
         ],
@@ -220,7 +220,7 @@ function nierto_cube_customize_register($wp_customize) {
         ));
         $wp_customize->add_control($setting_id, array(
             'label' => __(ucfirst(str_replace('_', ' ', $setting_id)), 'nierto_cube'),
-            'section' => 'nav_texts',
+            'section' => 'nav_button_styling',
             'type' => 'text',
             'settings' => $setting_id,
         ));
@@ -330,6 +330,7 @@ function nierto_cube_scripts() {
     wp_enqueue_style('root-style', get_template_directory_uri() . '/css/rootstyle.css', array(), '1.0.0');
     wp_enqueue_style('keyframes-style', get_template_directory_uri() . '/css/keyframes.css', array(), '1.0.0');
     wp_enqueue_style('screensizes-style', get_template_directory_uri() . '/css/screensizes.css', array(), '1.0.0');
+    wp_enqueue_style('logo-style', get_template_directory_uri() . '/css/logo.css', array(), '1.0.0');
     wp_enqueue_style('nav-style', get_template_directory_uri() . '/css/navigation.css', array(), '1.0.0');
     wp_enqueue_style('nierto-cube-style', get_stylesheet_uri());
     wp_enqueue_script('cube-script', get_template_directory_uri() . '/js/cube.js', array('jquery'), '1.0.0', true);

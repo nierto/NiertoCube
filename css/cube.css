@@ -8,30 +8,7 @@
     z-index: 1;
 }
 
-.logo {
-    position: absolute;
-    height: 75vmin;
-    width: 75vmin;
-    border-style: none;
-}
 
-#logo_top {
-    position: absolute;
-    top:0;
-    margin-left: 5vmin;
-    height: 15vmin;
-    width: 15vmin;
-    border-style: none;
-}
-
-#logo_pos {
-    position: absolute;
-    -webkit-animation: rotation 15s infinite linear;
-    animation: rotation 15s infinite linear;
-    -webkit-transform: translate3d(35vmin, 30vmin, 0);
-    transform: translate3d(35vmin, 30vmin, 0);
-    will-change: transform;
-}
 
 #cube 
 {
@@ -113,14 +90,4 @@
     background: linear-gradient(51deg, var(--gradcolor1), var(--gradcolor2), var(--gradcolor3), var(--gradcolor4));
     background-size: 800% 800%;
     animation: BGgrad 15s ease infinite;
-}
-#logo_center {
-    position:relative;
-    right:50%;
-    top:50%;
-}
-
-#logo_spin  {
-    will-change:transform;
-    animation: rotation 15s ease infinite;
 }

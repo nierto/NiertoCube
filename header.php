@@ -30,7 +30,7 @@ $logo_url = get_theme_mod('logo_source', '');
 if ($logo_url):
 ?>
     <div id="logo_top">
-        <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_goHome" onclick='goHome()'>
+        <img src="<?php echo esc_url($logo_url); ?>" alt="Logo that moves the page back to the home screen" id="logo_goHome" onclick="goHome()" style="width: <?php echo esc_attr($logo_width); ?>; height: <?php echo esc_attr($logo_height); ?>;">
     </div>
 <?php
 endif;
