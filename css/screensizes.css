@@ -63,6 +63,7 @@
         left: 0;
         top: 0;
         width: var(--nav-wrapper-default-width); 
+        height:100%;
     }
     #wrapper-right {
         position: absolute;

@@ -1,7 +1,3 @@
-#wrapper_left, #wrapper_right   {
-    position: absolute !important;
-}
-
 #wrapper_left   {
     z-index: 88;
 }
