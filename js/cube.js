@@ -131,18 +131,6 @@ function callCubeMoveButton(variableName) {
     }
 }
 
-// Dynamically create control bar elements
-function createControlBar() {
-    const controlBar = document.getElementById('controlBar');
-    for (const key in variables) {
-        if (variables.hasOwnProperty(key)) {
-            const button = document.createElement('button');
-            button.innerText = key;
-            button.onclick = () => callCubeMoveButton(key);
-            controlBar.appendChild(button);
-        }
-    }
-}
 
 function createContentDiv(pageID, destPage) {
     const particularDiv = document.getElementById(pageID);
@@ -168,9 +156,9 @@ function switchToContent(pageID) {
 }
 
 function showLogo() {
-    if (MOBILE_STATE === 1) return;
+    if (MOBILE_STATE === 0) return;
     const targetNode = document.getElementById("logoWrapper");
-    targetNode.innerHTML = '<img id="imgLogoTop" class="accelerated" src="" onclick="handleLogoClick()" width="124px" height="124px">';
+    targetNode.innerHTML = '<img id="logo_top" class="accelerated" src="" onclick="handleLogoClick()" width="124px" height="124px">';
     targetNode.classList.toggle("invisible", sideCount === 0 && updCount === 0);
     targetNode.classList.toggle("leftcorner", sideCount !== 0 || updCount !== 0);
 }

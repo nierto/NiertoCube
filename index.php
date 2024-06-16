@@ -25,11 +25,6 @@
     function tunnel(fn) {fn();} // this function is used to tunnel functions within the iframes. 
     document.addEventListener('DOMContentLoaded', (event) => {
      // Ensure variables are defined before this script runs
-    if (typeof variables !== 'undefined' && typeof cubeMoveButton === 'function' && typeof callCubeMoveButton === 'function') {
-        createControlBar();
-    } else {
-        console.error('Required variables or functions are not defined.');
-    }
     });
     </script>
 <?php get_footer(); ?>

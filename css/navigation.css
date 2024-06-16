@@ -55,7 +55,6 @@
     background-color: var(--color-bg-button);
     text-transform: uppercase;
     color: var(--color-txt-button);
-    z-index: 81;
     display: flex;
     /* Enable flexbox */
     flex-direction: column;
