@@ -7,6 +7,7 @@
 }
 
 .controlBar {
+    background-color: var(--nav-button-bg-color);
     display:flex;
     cursor: pointer;
     text-align: center;
@@ -35,8 +36,8 @@
     border-radius: var(--nav-button-border-radius);
 }
 
-.navButton:hover,
-.navButton:focus {
+.navButton:hover, .controlBar:hover,
+.navButton:focus, .controlBar:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
     animation: pulse-blue 2s infinite;

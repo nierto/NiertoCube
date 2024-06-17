@@ -279,7 +279,7 @@ function nierto_cube_customizer_css() {
             --nav-button-hover-bg-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_bg_color', '#dddddd')); ?>;
             --nav-button-hover-text-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_text_color', '#000000')); ?>;
             --nav-button-width: <?php echo get_theme_mod('nav_button_width', '20vmin'); ?>;
-            --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '15%'); ?>;
+            --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '28.24074vmin'); ?>;
         }
         #scene {
             transform: translate(<?php echo get_theme_mod('translate_x_scene', '-3vmin'); ?>, <?php echo get_theme_mod('translate_y_scene', '6vmin'); ?>);

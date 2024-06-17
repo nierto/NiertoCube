@@ -6,11 +6,10 @@
     }
     #wrapper-left{
         position:absolute;
-        z-index: 89;
     }
     #wrapper-right{
         position:absolute;
-        z-index: 88;
+        
     }
 }
 

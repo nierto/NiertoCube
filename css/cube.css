@@ -7,9 +7,6 @@
     perspective-origin: 50% 50%;
     z-index: 1;
 }
-
-
-
 #cube 
 {
     /*  positioning and size   use with .gpuTransform and borderRadiusDefault*/
