@@ -36,8 +36,8 @@
     border-radius: var(--nav-button-border-radius);
 }
 
-.navButton:hover, .controlBar:hover,
-.navButton:focus, .controlBar:focus {
+.navButton:hover, .controlBar:hover, .navName:hover,
+.navButton:focus, .controlBar:focus, .navName:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
     animation: pulse-blue 2s infinite;
@@ -49,9 +49,9 @@
 
 .navName {
     font-family: 'Ubuntu', sans-serif;
-    background-color: var(--color-bg-button);
+    background-color: var(--nav-button-bg-color);
     text-transform: uppercase;
-    color: var(--color-txt-button);
+    color: var(--nav-button-text-color);
     display: flex;
     /* Enable flexbox */
     flex-direction: column;
