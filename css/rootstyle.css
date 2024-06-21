@@ -30,18 +30,15 @@
     --nav-button-width: 5%;
     --nav-wrapper-default-width:17%;
 }
-
 a.site-name,
 a.imprint,
 .comma,
 a.privacy-policy-link {
     display: none;
 }
-
 ul {
     padding-inline-start: 0px;
 }
-
 .accelerated {
     will-change: transform;
     -webkit-transform: translateZ(0);
@@ -54,30 +51,25 @@ ul {
     -o-transition: all 1s;
     transition: all 1s;
 }
-
 .activated {
     transform: scale3d(20deg, -20deg, 20deg);
 }
-
 .preserve3d {
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 }
-
 .iframe-container {
     border: none;
     width: 80vmin;
     height: 80vmin;
     max-width: 100%;
 }
-
 #contentIframe {
     -webkit-overflow-scrolling: touch !important;
     overflow-y: scroll !important;
 }
-
 .fade-in {
     animation: fadeIn ease 1.5s;
     -webkit-animation: fadeIn ease 1.5s;
@@ -85,7 +77,6 @@ ul {
     -o-animation: fadeIn ease 1.5s;
     -ms-animation: fadeIn ease 1.5s;
 }
-
 .fade-out {
     animation: fadeOut ease 0.5s;
     -webkit-animation: fadeOut ease 0.5s;

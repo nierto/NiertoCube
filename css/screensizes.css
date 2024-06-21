@@ -5,7 +5,6 @@
         overflow: scroll;
     }
 }
-
 @media (max-width: 482px) {
     #wrapper-left {
         left: 0;
@@ -32,7 +31,6 @@
     }
 
 }
-
 @media (max-width: 960px) {
     #wrapper-left {
         position: absolute;
@@ -52,6 +50,9 @@
 }
 
 @media (min-width: 961px) {
+    body {
+            background-color: red !important;
+    }
     #wrapper-left {
         z-index:889;
         position:absolute;

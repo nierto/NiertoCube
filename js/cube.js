@@ -167,4 +167,3 @@ function handleLogoClick() {
         // Additional actions can be added here if needed after the cube has returned home
     });
 }
-

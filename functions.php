@@ -355,4 +355,3 @@ function nierto_cube_sanitize_css($input) {
 }
 
 remove_filter('the_content', 'wpautop');
-
