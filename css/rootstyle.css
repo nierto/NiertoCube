@@ -27,7 +27,7 @@
     --nav-button-border-radius:20%;
     --nav-button-hover-bg-color: #dddddd;
     --nav-button-hover-text-color: #000000;
-    --nav-button-width: 20vmin;
+    --nav-button-width: 5%;
     --nav-wrapper-default-width:17%;
 }
 
@@ -66,7 +66,7 @@ ul {
     backface-visibility: hidden;
 }
 
-.content_to_load {
+.iframe-container {
     border: none;
     width: 80vmin;
     height: 80vmin;

@@ -36,7 +36,7 @@
 <h3>Pro Version Coming in November 2024!</h3>
 <p>Stay tuned for the Pro version of NiertoCube, featuring:</p>
 <ul>
-  <li>Native Redis integration for faster content loading</li>
+  <li>Native ValKey integration for faster content loading</li>
   <li>Advanced customization options</li>
   <li>Seamless WooCommerce integration</li>
   <li>Developed by a specialized team of AI agents</li>

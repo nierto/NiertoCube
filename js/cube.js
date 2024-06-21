@@ -131,14 +131,13 @@ function callCubeMoveButton(variableName) {
     }
 }
 
-
 function createContentDiv(pageID, destPage) {
     const particularDiv = document.getElementById(pageID);
     const destination = `${window.location.origin}/${destPage}`;
     const div = document.createElement("div");
     div.id = "contentIframe";
     div.classList.add("scrollableIOS", "fade-in");
-    div.innerHTML = `<iframe class="content_to_load" src=${destination} frameBorder="0"></iframe>`;
+    div.innerHTML = `<iframe class="iframe-container" src=${destination} frameBorder="0"></iframe>`;
     particularDiv.appendChild(div);
     switchToContent(pageID);
 }

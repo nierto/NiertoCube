@@ -278,8 +278,15 @@ function nierto_cube_customizer_css() {
             --nav-button-border-radius: <?php echo get_theme_mod('nav_button_border_radius', '20%'); ?>;
             --nav-button-hover-bg-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_bg_color', '#dddddd')); ?>;
             --nav-button-hover-text-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_text_color', '#000000')); ?>;
-            --nav-button-width: <?php echo get_theme_mod('nav_button_width', '20vmin'); ?>;
+            --nav-button-width: <?php echo get_theme_mod('nav_button_width', '5%'); ?>;
             --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '17%'); ?>;
+        }
+        .body {
+            font-family: <?php echo get_theme_mod('font_family', "'Rubik', sans-serif"); ?>;
+            font-optical-sizing: auto;
+            font-style: normal;
+            background-color: var(--color-bg);
+            color: var(--color-txt);
         }
         #scene {
             transform: translate(<?php echo get_theme_mod('translate_x_scene', '-3vmin'); ?>, <?php echo get_theme_mod('translate_y_scene', '6vmin'); ?>);
@@ -294,13 +301,6 @@ function nierto_cube_customizer_css() {
             background-size: <?php echo get_theme_mod('cube_four_bg_size', 'cover'); ?>;
             background-position: top center;
             background-attachment: fixed;  
-        }
-        .body {
-            font-family: <?php echo get_theme_mod('font_family', "'Rubik', sans-serif"); ?>;
-            font-optical-sizing: auto;
-            font-style: normal;
-            background-color: var(--color-bg);
-            color: var(--color-txt);
         }
         .navButton {
             background-color: var(--nav-button-bg-color);
@@ -317,6 +317,12 @@ function nierto_cube_customizer_css() {
         background-color: var(--nav-button-hover-bg-color);
         color: var(--nav-button-hover-text-color);
         }
+        #wrapper-left {
+        width: var(--nav-wrapper-default-width); 
+        }
+        #wrapper-right {
+        width: var(--nav-wrapper-default-width);
+    }
     </style>
     <?php
 }
