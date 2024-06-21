@@ -27,11 +27,13 @@
     </div>
 <?php
 $logo_url = get_theme_mod('logo_source', '');
+$logo_width = get_theme_mod('logo_width', '5vmin');
+$logo_height = get_theme_mod('logo_height', '5vmin');
 if ($logo_url):
 ?>
-    <div id="logo_top">
-        <img src="<?php echo esc_url($logo_url); ?>" alt="Logo that moves the page back to the home screen" id="logo_goHome" onclick="goHome()" style="width: <?php echo esc_attr($logo_width); ?>; height: <?php echo esc_attr($logo_height); ?>;">
-    </div>
+
+    <img src="<?php echo esc_url($logo_url); ?>" alt="Logo that moves the page back to the home screen" id="logo_goHome" onclick="handleLogoClick()" style="width: <?php echo esc_attr($logo_width); ?>; height: <?php echo esc_attr($logo_height); ?>;">
+
 <?php
 endif;
 ?>

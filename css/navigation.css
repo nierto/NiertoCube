@@ -1,17 +1,8 @@
-#wrapper_left   {
-    z-index: 88;
-}
-
-#wrapper_right {
-    z-index: 89;
-}
-
 .controlBar {
     background-color: var(--nav-button-bg-color);
     display:flex;
     cursor: pointer;
     text-align: center;
-    display: flex;
     flex-direction: column;
     align-content: stretch;
     align-items: stretch;
@@ -23,7 +14,6 @@
 
 .navButton {
     will-change: transform;
-    z-index: 112;
     margin-top: 1.618033vmin;
     background-color: var(--nav-button-bg-color);
     color: var(--nav-button-text-color);
@@ -40,11 +30,6 @@
 .navButton:focus, .controlBar:focus, .navName:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
-    animation: pulse-blue 2s infinite;
-}
-
-.navButton:first-child {
-    margin-top: 3vmin;
 }
 
 .navName {

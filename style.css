@@ -16,4 +16,6 @@ body {
     font-style: normal;
     background-color: var(--color-bg);
     color: var(--color-txt);
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
 }
