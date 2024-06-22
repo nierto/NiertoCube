@@ -88,3 +88,8 @@
     background-size: 800% 800%;
     animation: BGgrad 15s ease infinite;
 }
+iframe {
+    z-index: 1000;
+    -webkit-overflow-scrolling: touch;
+    overflow: scroll;
+}

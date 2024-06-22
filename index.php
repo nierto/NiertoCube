@@ -1,21 +1,15 @@
 <?php get_header(); ?>
-        <div id="wrapper_left">
+    <div id="wrapper_left">
         <div class="navButton accelerated">
-            <div class="controlBar">
-                    <span class="navName";"></span>
-            </div> 
+            <button class="navName";"></button>
         </div>
         <div class="navButton accelerated">
-            <div class="controlBar">
-                    <span class="navName"></span>
-            </div> 
+            <button class="navName"></button>
         </div>
         <div class="navButton accelerated">
-            <div class="controlBar">
-                <span class="navName"></span>
-            </div> 
+            <button class="navName"></button>
         </div>
-    </div>    
+    </div>
     <div id="scene">
         <div id="cube">
             <div class="face one" id='face0'></div>
@@ -28,9 +22,7 @@
                 <?php
                 if ($logo_url):
                 ?>
-            
-                <img decoding="async" src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin" style="width: <?php echo esc_attr($logo_width); ?>; height: <?php echo esc_attr($logo_height); ?>;">
-                
+                <img decoding="async" src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin accelerated" style="max-width: <?php echo esc_attr($logo_width); ?>;">
                 <?php
                 endif;
                 ?>
@@ -39,19 +31,13 @@
     </div>
     <div id="wrapper_right">
         <div class="navButton accelerated">
-            <div class="controlBar">
-                <span class="navName"></span>
-            </div>
+            <button class="navName"></button>
         </div>
         <div class="navButton accelerated">
-            <div class="controlBar">
-                <span class="navName"></span>
-            </div>    
+            <button class="navName"></button> 
         </div>
         <div class="navButton accelerated">
-            <div class="controlBar">
-                <span class="navName"></span>
-            </div> 
+            <button class="navName"></button>
         </div>
     </div>
     <script type="text/javascript">

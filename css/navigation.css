@@ -1,16 +1,3 @@
-.controlBar {
-    background-color: var(--nav-button-bg-color);
-    display:flex;
-    cursor: pointer;
-    text-align: center;
-    flex-direction: column;
-    align-content: stretch;
-    align-items: stretch;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-}
 .navButton {
     will-change: transform;
     margin-top: 1.618033vmin;
@@ -23,11 +10,18 @@
     border-color: var(--nav-button-border-color);
     border-width: var(--nav-button-border-width);
     border-radius: var(--nav-button-border-radius);
+    transition: transform 0.3s;
 }
-.navButton:hover, .controlBar:hover, .navName:hover,
-.navButton:focus, .controlBar:focus, .navName:focus {
+.navButton:hover, .navName:hover,
+.navButton:focus, .navName:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
+}
+.navButton:hover, .navButton:focus{
+    border-color: var(--nav-button-hover-text-color);
+    border-width: 3px;
+    animation: groovy 0.5s ease-in-out infinite;
+    /* Apply the animation on hover */
 }
 .navName {
     font-family: 'Ubuntu', sans-serif;
@@ -35,24 +29,14 @@
     text-transform: uppercase;
     color: var(--nav-button-text-color);
     display: flex;
-    /* Enable flexbox */
     flex-direction: column;
-    /* Arrange children in a column */
     justify-content: center;
-    /* Center content vertically */
     align-items: center;
-    /* Center content horizontally */
     white-space: normal;
-    /* Allow text to wrap */
     overflow: visible;
-    /* Allow text to overflow */
     padding: 10px;
     text-align: center;
-    /* Center text */
     height: 100%;
-    /* Ensure it takes up the full height of the navButton */
     width: 100%;
-    /* Ensure it takes up the full width of the navButton */
     cursor: pointer;
-    /* Ensure it retains the cursor pointer */
 }
