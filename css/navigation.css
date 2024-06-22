@@ -10,7 +10,10 @@
     border-color: var(--nav-button-border-color);
     border-width: var(--nav-button-border-width);
     border-radius: var(--nav-button-border-radius);
-    transition: transform 0.3s;
+    transition: transform 0.5s;
+    flex-grow: 1;     
+    align-self: center;
+    order: 1;
 }
 .navButton:hover, .navName:hover,
 .navButton:focus, .navName:focus {
@@ -19,12 +22,12 @@
 }
 .navButton:hover, .navButton:focus{
     border-color: var(--nav-button-hover-text-color);
-    border-width: 3px;
-    animation: groovy 0.5s ease-in-out infinite;
+    border-width: 4px;
+    animation: groovy 3.5s ease-in-out infinite;
     /* Apply the animation on hover */
 }
 .navName {
-    font-family: 'Ubuntu', sans-serif;
+
     background-color: var(--nav-button-bg-color);
     text-transform: uppercase;
     color: var(--nav-button-text-color);
@@ -39,4 +42,5 @@
     height: 100%;
     width: 100%;
     cursor: pointer;
+    border:none;
 }

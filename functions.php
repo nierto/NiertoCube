@@ -210,7 +210,6 @@ function nierto_cube_customize_register($wp_customize) {
         'nav_button_border_style' => 'solid',
         'nav_button_border_width' => '1px',
         'nav_button_border_radius' => '20%',
-        'nav_button_width' => '20vmin',
         'nav_wrapper_width' => '15%'
     ];
     foreach ($nav_texts as $setting_id => $default_text) {
@@ -278,7 +277,6 @@ function nierto_cube_customizer_css() {
             --nav-button-border-radius: <?php echo get_theme_mod('nav_button_border_radius', '20%'); ?>;
             --nav-button-hover-bg-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_bg_color', '#dddddd')); ?>;
             --nav-button-hover-text-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_text_color', '#000000')); ?>;
-            --nav-button-width: <?php echo get_theme_mod('nav_button_width', '5%'); ?>;
             --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '17%'); ?>;
         }
         .body {

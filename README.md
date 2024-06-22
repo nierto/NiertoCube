@@ -1,7 +1,7 @@
 <h1 align="center">NiertoCube - CSS 3D Theme for 2024</h1>
 <p align="center">
   <img src="https://img.shields.io/badge/Version-0.23-blue.svg" alt="Version">
-  <img src="https://img.shields.io/badge/License-GPL--2.0-blue.svg" alt="License">
+  <img src="https://img.shields.io/badge/License-NiertoCube-blue.svg" alt="License">
   <img src="https://img.shields.io/badge/Maintained%20by-Nierto-orange.svg" alt="Maintained by Nierto">
 </p>
 <p align="center">
@@ -17,7 +17,9 @@
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#installation">Installation</a> •
-  <a href="#roadmap">Roadmap</a>
+  <a href="#roadmap">Roadmap</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
 </p>
 
 <h2 id="features">✨ Features</h2>
@@ -61,19 +63,34 @@
   <li><strong>November 2024:</strong> Official release of NiertoCube Pro</li>
 </ul>
 
-<p align="center">
-  <img src="https://img.icons8.com/?size=100&id=35LD2Pmha5hy&format=png&color=E72727" alt="Team Icon">
-</p>
+<h2>Contributing</h2>
+<p>We welcome contributions! Please feel free to submit pull requests or open issues to help improve NiertoCube.</p>
 
-<h3>Development Team</h3>
+<h2>Dependencies and Integrations</h2>
+<p>To ensure seamless integration and performance, NiertoCube relies on several dependencies:</p>
+<ul>
+  <li>jQuery: Loaded from CDN for DOM manipulation and AJAX calls</li>
+  <li>Google Fonts: Used for the 'Rubik' and 'Ubuntu' font families</li>
+</ul>
+<p>Additionally, NiertoCube works best with:</p>
+<ul>
+  <li><strong>Blank Slate Plugin:</strong> Allows for blank templates ensuring the pages fit beautifully on the cube. Make sure to install and activate the <a href="https://wordpress.org/plugins/blank-slate/">Blank Slate plugin</a>.</li>
+</ul>
+
+<h2>Future Integrations</h2>
+<p>We are actively working on integrating advanced features including:</p>
+<ul>
+  <li>Large Language Models (LLMs) for dynamic content generation and customization assistance</li>
+  <li>Native support for additional CSS and JavaScript frameworks</li>
+  <li>Enhanced AI-driven design suggestions</li>
+</ul>
+
+<h2>Development Team</h2>
 <p>NiertoCube is being developed by Nierto, the sole human developer, with the assistance of a bespoke crew of hyper-specialized AI agents. Given the unique team composition, sprints are set to a duration of one month.</p>
 
 <p align="center">
   <img src="https://img.icons8.com/color/48/000000/github.png" alt="GitHub Icon">
 </p>
 
-<h2>Contributing</h2>
-<p>We welcome contributions! Please feel free to submit pull requests or open issues to help improve NiertoCube.</p>
-
-<h2>License</h2>
-<p>NiertoCube is licensed under the GNU General Public License v2.0. See the <a href="LICENSE">LICENSE</a> file for more details.</p>
+<h2 id="license">License</h2>
+<p>NiertoCube is licensed under the NiertoCube License. See the <a href="LICENSE">LICENSE</a> file for more details.</p>
