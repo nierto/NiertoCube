@@ -30,16 +30,14 @@
     --nav-button-width: 5%;
     --nav-wrapper-default-width:17%;
 }
-iframe,
-div {
+iframe{
     overflow-y: scroll;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
     /* Internet Explorer 10+ */
 }
-iframe::-webkit-scrollbar,
-div::-webkit-scrollbar {
+iframe::-webkit-scrollbar{
     display: none;
     /* Safari and Chrome */
 }
