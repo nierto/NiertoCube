@@ -2,9 +2,11 @@
     will-change: transform;
     margin-top: 1.618033vmin;
     background-color: var(--nav-button-bg-color);
-    color: var(--nav-button-text-color);
     padding: var(--nav-button-padding);
-    margin: var(--nav-button-margin);
+    margin-top: var(--nav-button-margin);
+    margin-left: 0.1188vmin;
+    margin-right: 0.1188vmin;
+    margin-bottom: 0.1188vmin;
     font-size: var(--nav-button-font-size);
     border-style: var(--nav-button-border-style);
     border-color: var(--nav-button-border-color);
@@ -42,5 +44,6 @@
     height: 100%;
     width: 100%;
     cursor: pointer;
+    border-radius:var(--nav-button-border-radius);
     border:none;
 }

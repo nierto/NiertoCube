@@ -1,6 +1,6 @@
 <?php get_header(); ?>
     <div id="wrapper_left">
-        <div class="navButton accelerated">
+        <div id="topfirst" class="navButton accelerated">
             <button class="navName";"></button>
         </div>
         <div class="navButton accelerated">

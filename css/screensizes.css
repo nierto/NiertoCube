@@ -1,36 +1,40 @@
 #wrapper_left,
 #wrapper_right {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: absolute;
     top: 0;
     height: 20%;
     width: 100%;
-    margin-bottom: 35vmin;
     z-index: 889;
 }
 /* Styles for max-width 482px */
 @media (max-width: 482px) {
     #wrapper_left {
+        flex-direction: row;
         left: 0;
         top: 0;
         height: 20%;
         width: 100%;
-        margin-bottom: 35vmin;
+        margin-top: 2vmin;
+        margin-bottom: 5vmin
+    }
+    #topfirst {
+        margin-left: 32vmin;
     }
 
     #wrapper_right {
+        flex-direction: row;
         right: 0;
-        top: 125vmin;
+        top: 85vmin;
         height: 20%;
         width: 100%;
     }
 
     #cube {
-        margin-left: 10vmin;
-        margin-top: 85vmin;
+        margin-left: 6vmin;
+        margin-top: 35vmin;
     }
 
     .element,
@@ -51,7 +55,7 @@
         top: 0;
         height: 20%;
         width: 100%;
-        margin-top: 2vmin;
+        margin-top: 5vmin;
     }
 
     #wrapper_right {
@@ -64,6 +68,13 @@
 }
 /* Styles for min-width 961px */
 @media (min-width: 961px) {
+
+    .navButton {
+        min-width: var(--nav-button-min-width);
+        max-height: var(--nav-button-max-height);
+    }
+
+
     #wrapper_left {
         z-index: 889;
         position: absolute;

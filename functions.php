@@ -210,7 +210,9 @@ function nierto_cube_customize_register($wp_customize) {
         'nav_button_border_style' => 'solid',
         'nav_button_border_width' => '1px',
         'nav_button_border_radius' => '20%',
-        'nav_wrapper_width' => '15%'
+        'nav_wrapper_width' => '15%',
+        'nav_button_min_width' => '18vmin',
+        'nav_button_max_height' => '5vmin'
     ];
     foreach ($nav_texts as $setting_id => $default_text) {
         $wp_customize->add_setting($setting_id, array(
@@ -277,6 +279,8 @@ function nierto_cube_customizer_css() {
             --nav-button-border-radius: <?php echo get_theme_mod('nav_button_border_radius', '20%'); ?>;
             --nav-button-hover-bg-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_bg_color', '#dddddd')); ?>;
             --nav-button-hover-text-color: <?php echo prepend_hash(get_theme_mod('nav_button_hover_text_color', '#000000')); ?>;
+            --nav-button-min-width: <?php echo get_theme_mod('nav_button-min-width', '17%'); ?>;
+            --nav-button-max-height: <?php echo get_theme_mod('nav_wrapper_width', '17%'); ?>;
             --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '17%'); ?>;
         }
         .body {
@@ -299,6 +303,9 @@ function nierto_cube_customizer_css() {
             background-size: <?php echo get_theme_mod('cube_four_bg_size', 'cover'); ?>;
             background-position: top center;
             background-attachment: fixed;  
+        }
+        .navName {
+            color:var(--nav-button-text-color);
         }
         .navButton {
             background-color: var(--nav-button-bg-color);

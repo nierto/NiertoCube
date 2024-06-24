@@ -37,6 +37,7 @@
     background: var(--semi-transparant);
     /*  border and shadow */
     border-radius: var(--default-margin);
+    overflow-y: hidden;
 }
 
 #cube .one 
