@@ -9,25 +9,26 @@
     width: 100%;
     z-index: 889;
 }
-/* Styles for max-width 482px */
+/* Styles for max-width 382px */
 @media only screen and (max-width: 382px) {
     #scene {
         transform: translate(2vmin, 15vmin) !important;
     }
 
     #wrapper_left {
-        width: 60% !important;
-        margin-left: 20% !important;
+        width: 50%;
+        margin-left: 20%;
     }
 
     #cube {
-        margin-left: 15vmin !important;
-        margin-top: 35vmin !important;
-        margin-bottom: 0vmin !important;
+        margin-left: 0vmin;
+        margin-top: 25vmin;
+        margin-bottom: 0vmin;
     }
 
     #wrapper_right {
         margin-top: 0vmin;
+        top: 135vmin;
     }
 
     .navButton {
@@ -35,6 +36,9 @@
         max-width: 8vmin;
         margin-left: 0.25vmin;
         margin-right: 0.55vmin;
+    }
+    .leftcorner {
+        transform: translate(2vmin, -15vmin) !important;
     }
 
 }
@@ -56,8 +60,7 @@
         left: 0;
         top: 0;
         height: 20%;
-        width: 80%;
-        margin-bottom: 35vmin;
+        margin-bottom: 5vmin;
     }
     #topfirst {
         margin-left: 32vmin;
@@ -66,7 +69,7 @@
         margin-top:0;
         flex-direction: row;
         right: 0;
-        top: 85vmin;
+        top: 118vmin;
         height: 20%;
         width: 100%;
         transform: translate(0, -15vmin);
@@ -93,7 +96,7 @@
         top: 0;
         height: 20%;
         width: 100%;
-        margin-top: 5vmin;
+        margin-top: 0vmin;
     }
 
     #wrapper_right {
@@ -101,7 +104,7 @@
         top: 0;
         height: 20%;
         width: 100%;
-        top: 145vmin;
+        top: 125vmin;
     }
 }
 /* Styles for min-width 961px */
@@ -109,7 +112,7 @@
 
     .navButton {
         min-width: var(--nav-button-min-width);
-        max-height: var(--nav-button-max-height);
+        min-height: var(--nav-button-max-height);
     }
 
 
