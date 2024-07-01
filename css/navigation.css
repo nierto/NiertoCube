@@ -14,29 +14,30 @@
     border-radius: var(--nav-button-border-radius);
     transition: transform 0.5s;
 }
-.navButton:hover, .navName:hover,
-.navButton:focus, .navName:focus {
+.navName:hover,
+.navName:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
 }
-.navButton:hover, .navButton:focus{
+.navButton:hover, 
+.navButton:focus{
     border-color: var(--nav-button-hover-text-color);
     border-width: 4px;
-    animation: groovy 3.5s ease-in-out infinite;
-    /* Apply the animation on hover */
+    animation: groovy 4.5s ease-in-out infinite;
+    animation-delay: 23ms;
 }
 .navName {
-
     background-color: var(--nav-button-bg-color);
     text-transform: uppercase;
     color: var(--nav-button-text-color);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-
     height: 100%;
     width: 100%;
     cursor: pointer;
     border-radius:var(--nav-button-border-radius);
     border:none;
+    font-size:2.8vmin;
+    align-items: center; /*center the text vert */
+    justify-content: center; /*center the text hor */
 }

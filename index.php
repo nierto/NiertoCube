@@ -1,12 +1,12 @@
 <?php get_header(); ?>
     <div id="wrapper_left">
-        <div id="topfirst" class="navButton accelerated">
+        <div id="button_one" class="navButton accelerated">
             <button class="navName";"></button>
         </div>
-        <div class="navButton accelerated">
+        <div id="button_two" class="navButton accelerated">
             <button class="navName"></button>
         </div>
-        <div class="navButton accelerated">
+        <div id="button_three" class="navButton accelerated">
             <button class="navName"></button>
         </div>
     </div>
@@ -30,13 +30,13 @@
         </div>
     </div>
     <div id="wrapper_right">
-        <div class="navButton accelerated">
+        <div id="button_four "class="navButton accelerated">
             <button class="navName"></button>
         </div>
-        <div class="navButton accelerated">
+        <div id="button_five" class="navButton accelerated">
             <button class="navName"></button> 
         </div>
-        <div class="navButton accelerated">
+        <div id="button_six" class="navButton accelerated">
             <button class="navName"></button>
         </div>
     </div>

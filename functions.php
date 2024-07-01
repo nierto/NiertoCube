@@ -284,7 +284,7 @@ function nierto_cube_customizer_css() {
             --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '17%'); ?>;
         }
         .body {
-            font-family: <?php echo get_theme_mod('font_family', "'Rubik', sans-serif"); ?>;
+            font-family: <?php echo get_theme_mod('font_family', "'Ubuntu', sans-serif"); ?>;
             font-optical-sizing: auto;
             font-style: normal;
             background-color: var(--color-bg);
@@ -309,6 +309,7 @@ function nierto_cube_customizer_css() {
         }
         .navButton {
             background-color: var(--nav-button-bg-color);
+            font-family: <?php echo get_theme_mod('font_family_menus', "'Rubik', sans-serif"); ?>;
             color: var(--nav-button-text-color);
             padding: var(--nav-button-padding);
             margin: var(--nav-button-margin);
@@ -322,12 +323,6 @@ function nierto_cube_customizer_css() {
         background-color: var(--nav-button-hover-bg-color);
         color: var(--nav-button-hover-text-color);
         }
-        #wrapper-left {
-        width: var(--nav-wrapper-default-width); 
-        }
-        #wrapper-right {
-        width: var(--nav-wrapper-default-width);
-    }
     </style>
     <?php
 }
