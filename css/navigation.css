@@ -15,6 +15,7 @@
     transition: transform 0.5s;
 }
 .navName:hover,
+
 .navName:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
@@ -37,7 +38,7 @@
     cursor: pointer;
     border-radius:var(--nav-button-border-radius);
     border:none;
-    font-size:2.8vmin;
+    font-size:2.3vmin;
     align-items: center; /*center the text vert */
     justify-content: center; /*center the text hor */
 }
