@@ -51,6 +51,8 @@ function nierto_cube_customize_register($wp_customize) {
     }
      // Other color settings
     $color_settings = [
+        'scrollbar_color1' => '#F97162',
+        'scrollbar_color2' => '#FEFEF9',
         'color_background' => '#F97162',
         'color_text' => '#F97162',
         'color_header' => '#FEFEF9',
@@ -253,6 +255,7 @@ function nierto_cube_customizer_css() {
     ?>
     <style type="text/css">
         :root { 
+            scrollbar-color: <?php echo prepend_hash(get_theme_mod('scrollbar_color1', '#F97162')); ?> <?php echo prepend_hash(get_theme_mod('scrollbar_color2', '#FEFEF9')); ?>;
             --gradcolor1: <?php echo prepend_hash(get_theme_mod('grad_color1', '#ee7752')); ?>;
             --gradcolor2: <?php echo prepend_hash(get_theme_mod('grad_color2', '#e73c7e')); ?>;
             --gradcolor3: <?php echo prepend_hash(get_theme_mod('grad_color3', '#23a6d5')); ?>;
