@@ -13,15 +13,17 @@
 /* Styles for max-width 382px */
 @media only screen and (max-width: 382px) {
     #wrapper_left {
+        top:0;
+        left:20vmin;
         width: 50%;
-        margin-left: 20%;
+        margin-left: 18%;
     }
     #wrapper_right {
         margin-top: 0vmin;
-        top: 135vmin;
+        top: 123vmin;
     }
     #scene {
-        transform: translate(2vmin, 15vmin);
+        transform: translate(8vmin, 15vmin);
     }
     #cube {
         margin-left: 0vmin;
@@ -31,37 +33,36 @@
     .navButton {
         max-height: 7.5vmin;
         max-width: 8vmin;
-        margin-left: 0.25vmin;
+        margin-left: 0.39vmin;
         margin-right: 0.55vmin;
     }
     .leftcorner {
-        transform: translate(2vmin, -15vmin);
+        transform: translate(3vmin, -12vmin);
     }
 }
 /* Styles for max-width 482px */
-@media only screen and (min-width: 383px) and (max-width: 582px)
+@media only screen and (min-width: 383px) and (max-width: 960px)
 {
     .leftcorner {
-        transform: translate(2vmin, -20vmin);
+        transform: translate(4vmin, -20vmin);
     }
     #scene {
-        transform: translate(10vmin, 10vmin);
+        transform: translate(4vmin, 5vmin);
     }
     #wrapper_left {
         margin-top: 0vmin;
         flex-direction: row;
-        left: 0;
+        left: 15vmin;
         top: 0;
         width: 50%;
-        transform: translate(-2vmin, 0);
-        margin-left: 20%;
-        margin-bottom: 5vmin;
+        margin-left: 18%;
+        transform: translate(0, 10vmin);
     }
     #wrapper_right {
         margin-top:0vmin;
         flex-direction: row;
         left: 0;
-        top: 118vmin;
+        top: 123vmin;
         transform: translate(0, -15vmin);
     }
     #cube {
@@ -74,30 +75,6 @@
         margin-left: 0.25vmin;
         margin-right: 0.75vmin;
     }
-}
-/* Styles for max-width 960px */
-@media only screen and (min-width: 583px) and (max-width: 960px) {
-    #wrapper_left {
-            left: 0;
-            top: 0;
-            height: 20%;
-            width: 100%;
-            margin-top: 0vmin;
-        }
-    #wrapper_right {
-        left: 0;
-        top: 125vmin;
-    }
-    #cube {
-        margin-left: 5vmin;
-        margin-top: 32vmin;
-    }
-    .navButton {
-        max-height: 7.5vmin;
-        max-width: 10vmin;
-        margin-left: 0.25vmin;
-        margin-right: 0.75vmin;
-     }
 }
 /* Styles for min-width 961px */
 @media (min-width: 961px) {
@@ -123,6 +100,9 @@
     }
     .navButton:first-child {
         margin-top: 28vmin;
+    }
+    .leftcorner {
+        transform: translate(3vmin, 5vmin);
     }
 
 }

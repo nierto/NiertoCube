@@ -136,7 +136,7 @@ function createContentDiv(pageID, destPage) {
     const destination = `${window.location.origin}/${destPage}`;
     const div = document.createElement("div");
     div.id = "contentIframe";
-    div.classList.add("scrollableIOS", "fade-in");
+    div.classList.add("fade-in");
     div.innerHTML = `<iframe class="iframe-container" src=${destination} frameBorder="0"></iframe>`;
     particularDiv.appendChild(div);
     switchToContent(pageID);

@@ -1,6 +1,5 @@
 #scene 
 {
-    transform: translate(0vmin, 5vmin);
     perspective: 200vmin;
     -webkit-perspective: 200vmin;
     -webkit-perspective-origin: 50% 50%;
@@ -26,18 +25,15 @@
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
 }
-.face 
-{
-    position:absolute;
+.face {
+    position: absolute;
     top: 0;
     height: var(--default-cubeheight);
     width: var(--default-cubewidth);
     padding: 0;
-    /*  colors and background */
     background: var(--semi-transparant);
-    /*  border and shadow */
     border-radius: var(--default-margin);
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 #cube .one 
@@ -88,9 +84,4 @@
     background: linear-gradient(51deg, var(--gradcolor1), var(--gradcolor2), var(--gradcolor3), var(--gradcolor4));
     background-size: 800% 800%;
     animation: BGgrad 15s ease infinite;
-}
-iframe {
-    z-index: 1000;
-    -webkit-overflow-scrolling: touch;
-    overflow: scroll;
 }

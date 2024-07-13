@@ -15,7 +15,6 @@
     transition: transform 0.5s;
 }
 .navName:hover,
-
 .navName:focus {
     background-color: var(--nav-button-hover-bg-color);
     color: var(--nav-button-hover-text-color);
