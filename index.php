@@ -1,7 +1,7 @@
 <?php get_header(); ?>
     <div id="wrapper_left">
         <div id="button_one" class="navButton accelerated">
-            <button class="navName";"></button>
+            <button class="navName"></button>
         </div>
         <div id="button_two" class="navButton accelerated">
             <button class="navName"></button>
