@@ -9,8 +9,6 @@
     position: absolute;
     will-change: transform;
     z-index: 989;
-    max-width: 10vmin;
-    max-height: 10vmin;
 }
 /* The logo in the middle of the cube  */
 #logo_spin {
