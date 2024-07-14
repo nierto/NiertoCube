@@ -19,16 +19,6 @@
             <div class="face five" id='face4'></div>
             <div class="face six" id='face5'></div>
             <div class="logo seven">
-                <?php
-                $logo_details = get_theme_logo_details();
-                $logo_url = $logo_details['url'];
-                $logo_width = $logo_details['width'];
-                if ($logo_url):
-                ?>
-                <img decoding="async" src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin" class="accelerated" style="max-width: <?php echo esc_attr($logo_width); ?>;">
-                <?php
-                endif;
-                ?>
             </div>
         </div>
     </div>
