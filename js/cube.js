@@ -114,10 +114,11 @@ function cubeMoveButton(pageID, destPage) {
         } else {
             if (xDiv.id === pageID) return;
             xDiv.classList.remove("fade-in");
+            xDiv.classList.add("fade-out");
             setTimeout(() => {
                 xDiv.remove();
                 createContentDiv(pageID, destPage);
-            }, 750);
+            }, 500);
         }
     });
 }
@@ -143,26 +144,19 @@ function createContentDiv(pageID, destPage) {
 }
 
 function switchToContent(pageID) {
-        const actions = {
-            face0: () => { sim_up(); showLogo(); },
-            face1: () => { sim_right(); showLogo(); },
-            face2: () => { sim_left(); sim_left(); showLogo(); },
-            face3: () => { sim_left(); showLogo(); },
-            face4: () => { sim_down(); showLogo(); },
-            face5: () => { sim_right(); sim_right(); showLogo(); },
-        };
-        actions[pageID]?.();
-}
-
-function showLogo() {
-    if (MOBILE_STATE === 0) return;
-    const targetNode = document.getElementById("logoWrapper");
-    targetNode.innerHTML = '<img id="logo_top" class="accelerated" src="" onclick="handleLogoClick()" width="124px" height="124px">';
-    targetNode.classList.remove("invisible");
+    const actions = {
+        face0: () => sim_up(),
+        face1: () => sim_right(),
+        face2: () => { sim_left(); sim_left(); },
+        face3: () => sim_left(),
+        face4: () => sim_down(),
+        face5: () => { sim_right(); sim_right(); },
+    };
+    actions[pageID]?.();
 }
 
 function handleLogoClick() {
     goHome(() => {
-        // Additional actions can be added here if needed after the cube has returned home
+        // Additional actions can be added here if needed after the cube has returned home, anybody have an idea what to add?
     });
 }

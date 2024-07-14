@@ -200,10 +200,6 @@
     .navButton:first-child {
         margin-top: 28vmin;
     }
-
-    .leftcorner {
-        transform: translate(3vmin, 5vmin);
-    }
     #logo_goHome {
         animation: subtleSway 5s infinite ease-in-out;
         -webkit-animation: subtleSway 5s infinite ease-in-out;
@@ -213,5 +209,12 @@
         animation: rotation 15s infinite linear;
         -webkit-transform: translate3d(35vmin, 30vmin, 0);
         transform: translate3d(35vmin, 30vmin, 0);
+    }
+    #logoWrapper {
+        position: fixed;
+        top: 8vmin;
+        left: 4vmin;
+        will-change: transform;
+        z-index: 989;
     }
 }
