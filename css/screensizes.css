@@ -41,9 +41,12 @@
         #wrapper_left .navButton {
             margin-right: 0;
         }
-
-        .leftcorner {
-            transform: translate(2vmin, 8vmin);
+        #logoWrapper {
+            position: fixed;
+            top:8vmin;
+            left:4vmin;
+            will-change: transform;
+            z-index: 989;
         }
     }
 
@@ -117,9 +120,12 @@
         #wrapper_left .navButton {
             margin-right: 0;
         }
-
-        .leftcorner {
-            transform: translate(8vmin, 5vmin);
+        #logoWrapper {
+            position: fixed;
+            top: 8vmin;
+            left: 4vmin;
+            will-change: transform;
+            z-index: 989;
         }
     }
 
@@ -201,5 +207,11 @@
     #logo_goHome {
         animation: subtleSway 5s infinite ease-in-out;
         -webkit-animation: subtleSway 5s infinite ease-in-out;
+    }
+    #logo_spin {
+        -webkit-animation: rotation 15s infinite linear;
+        animation: rotation 15s infinite linear;
+        -webkit-transform: translate3d(35vmin, 30vmin, 0);
+        transform: translate3d(35vmin, 30vmin, 0);
     }
 }

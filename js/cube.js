@@ -158,8 +158,7 @@ function showLogo() {
     if (MOBILE_STATE === 0) return;
     const targetNode = document.getElementById("logoWrapper");
     targetNode.innerHTML = '<img id="logo_top" class="accelerated" src="" onclick="handleLogoClick()" width="124px" height="124px">';
-    targetNode.classList.toggle("invisible", sideCount === 0 && updCount === 0);
-    targetNode.classList.toggle("leftcorner", sideCount !== 0 || updCount !== 0);
+    targetNode.classList.remove("invisible");
 }
 
 function handleLogoClick() {

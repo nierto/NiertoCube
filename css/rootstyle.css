@@ -59,6 +59,10 @@ ul {
 .activated {
     transform: scale3d(20deg, -20deg, 20deg);
 }
+.invisible {
+    opacity: 0;
+    pointer-events: none;
+}
 .preserve3d {
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
