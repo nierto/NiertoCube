@@ -81,14 +81,6 @@ function nierto_cube_customize_register($wp_customize) {
     }
     // SECTION: CUBE SETTINGS
     $cube_settings = [
-        'translate_x_scene' => [
-            'default' => '-3vmin',
-            'label' => 'Translate X for Scene'
-        ],
-        'translate_y_scene' => [
-            'default' => '6vmin',
-            'label' => 'Translate Y for Scene'
-        ],
         'perspective_scene' => [
             'default' => '200vmin',
             'label' => 'Perspective for Scene'
@@ -207,7 +199,6 @@ function nierto_cube_customize_register($wp_customize) {
     // sizes and dimensions
         $nav_texts = [
         'nav_button_padding' => '10px 20px',
-        'nav_button_margin' => '10px',
         'nav_button_font_size' => '16px',
         'nav_button_border_style' => 'solid',
         'nav_button_border_width' => '1px',
@@ -294,7 +285,6 @@ function nierto_cube_customizer_css() {
             color: var(--color-txt);
         }
         #scene {
-            transform: translate(<?php echo get_theme_mod('translate_x_scene', '-3vmin'); ?>, <?php echo get_theme_mod('translate_y_scene', '6vmin'); ?>);
             perspective: <?php echo get_theme_mod('perspective_scene', '200vmin'); ?>;
             -webkit-perspective: <?php echo get_theme_mod('perspective_scene', '200vmin'); ?>;
             perspective-origin: <?php echo get_theme_mod('perspective_origin_scene', '50% 50%'); ?>;
@@ -315,7 +305,6 @@ function nierto_cube_customizer_css() {
             font-family: <?php echo get_theme_mod('font_family_menus', "'Rubik', sans-serif"); ?>;
             color: var(--nav-button-text-color);
             padding: var(--nav-button-padding);
-            margin: var(--nav-button-margin);
             font-size: var(--nav-button-font-size);
             border-style: var(--nav-button-border-style);
             border-color: var(--nav-button-border-color);

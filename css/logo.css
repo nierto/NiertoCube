@@ -24,7 +24,5 @@
 /* The logo in the top left of the cube  */
 #logo_goHome {
     position: absolute;
-    animation: subtleSway 5s infinite ease-in-out;
-    -webkit-animation: subtleSway 5s infinite ease-in-out;
     will-change: transform;
 }
