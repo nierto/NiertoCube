@@ -340,6 +340,12 @@ function nierto_cube_scripts() {
 
 add_action('wp_enqueue_scripts', 'nierto_cube_scripts');
 
+function get_theme_logo_details() {
+    return array(
+        'url' => get_theme_mod('logo_source', ''),
+        'width' => get_theme_mod('logo_width', '10vmin')
+    );
+}
 
 function nierto_cube_sanitize_css($input) {
     // Sanitize the input to ensure proper CSS formatting

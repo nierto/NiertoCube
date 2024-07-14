@@ -9,8 +9,9 @@
 <div id="page">
 <header>
 <?php
-$logo_url = get_theme_mod('logo_source', '');
-$logo_width = get_theme_mod('logo_width', '10vmin');
+$logo_details = get_theme_logo_details();
+$logo_url = $logo_details['url'];
+$logo_width = $logo_details['width'];
 if ($logo_url):
 ?>
     <div id="logoWrapper" class="leftcorner">

@@ -20,9 +20,12 @@
             <div class="face six" id='face5'></div>
             <div class="logo seven">
                 <?php
+                $logo_details = get_theme_logo_details();
+                $logo_url = $logo_details['url'];
+                $logo_width = $logo_details['width'];
                 if ($logo_url):
                 ?>
-                <img decoding="async" src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin accelerated" style="max-width: <?php echo esc_attr($logo_width); ?>;">
+                <img decoding="async" src="<?php echo esc_url($logo_url); ?>" alt="Logo" id="logo_spin" class="accelerated" style="max-width: <?php echo esc_attr($logo_width); ?>;">
                 <?php
                 endif;
                 ?>
@@ -30,7 +33,7 @@
         </div>
     </div>
     <div id="wrapper_right">
-        <div id="button_four "class="navButton accelerated">
+        <div id="button_four"class="navButton accelerated">
             <button class="navName"></button>
         </div>
         <div id="button_five" class="navButton accelerated">
