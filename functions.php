@@ -12,8 +12,8 @@ function nierto_cube_customize_register($wp_customize) {
         'title' => __('Cube Settings', 'nierto_cube'),
         'priority' => 160,
     ));
-    $wp_customize->add_section('cube_page_names', array(
-        'title' => __('Cube Page Names', 'nierto_cube'),
+    $wp_customize->add_section('cube_face_settings', array(
+        'title' => __('Cube Face Settings', 'nierto_cube'),
         'priority' => 163,
     ));
     // LOGO
@@ -134,6 +134,49 @@ function nierto_cube_customize_register($wp_customize) {
     ]);
     //SECTION: PAGE NAMES FOR SIDES
     // PAGE NAMES FOR FUNCTION CALLINGZ
+        // CUBE PAGE NAMES
+    for ($i = 1; $i <= 6; $i++) {
+        $wp_customize->add_setting("cube_face_{$i}_text", array(
+            'default' => "example",
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+
+        $wp_customize->add_control("cube_face_{$i}_text", array(
+            'label' => "Button {$i} Text",
+            'section' => 'cube_face_settings',
+            'type' => 'text',
+        ));
+
+        $wp_customize->add_setting("cube_face_{$i}_slug", array(
+            'default' => "face-{$i}",
+            'sanitize_callback' => 'sanitize_title',
+        ));
+
+        $wp_customize->add_control("cube_face_{$i}_slug", array(
+            'label' => "Button {$i} URL Slug",
+            'section' => 'cube_face_settings',
+            'type' => 'text',
+        ));
+
+        $wp_customize->add_setting("cube_face_{$i}_position", array(
+            'default' => "face" . ($i - 1),
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+
+        $wp_customize->add_control("cube_face_{$i}_position", array(
+            'label' => "Button {$i} Face Position",
+            'section' => 'cube_face_settings',
+            'type' => 'select',
+            'choices' => array(
+                'face0' => 'Face 0',
+                'face1' => 'Face 1',
+                'face2' => 'Face 2',
+                'face3' => 'Face 3',
+                'face4' => 'Face 4',
+                'face5' => 'Face 5',
+            ),
+        ));
+    }
     //SECTION: LOGO
     // Logo settings
     for ($i = 1; $i <= 2; $i++) {
@@ -219,20 +262,6 @@ function nierto_cube_customize_register($wp_customize) {
             'type' => 'text',
             'settings' => $setting_id,
         ));
-    }
-    // CUBE PAGE NAMES
-    for ($i = 0; $i <= 5; $i++) {
-    $wp_customize->add_setting("cube_face_page_name_{$i}", array(
-        'default' => "Face {$i}",
-        'sanitize_callback' => 'sanitize_text_field',
-        'transport' => 'refresh',
-    ));
-    $wp_customize->add_control("cube_face_page_name_{$i}", array(
-        'label' => __("Face {$i} Page Name", 'nierto_cube'),
-        'section' => 'cube_page_names',
-        'type' => 'text',
-        'settings' => "cube_face_page_name_{$i}",
-    ));
     }
 }
 
@@ -351,5 +380,33 @@ function nierto_cube_sanitize_css($input) {
     // Sanitize the input to ensure proper CSS formatting
     return preg_replace('/[^0-9a-zA-Z\.\-\% \,\(\)\:]/', '', $input);
 }
+function clear_config_js_cache() {
+    $cache_file = get_template_directory() . '/js/config/cached_config.js';
+    if (file_exists($cache_file)) {
+        unlink($cache_file);
+    }
+}
+add_action('customize_save_after', 'clear_config_js_cache');
+
+function add_clear_cache_button() {
+    if (isset($_GET['clear_config_cache']) && current_user_can('manage_options')) {
+        clear_config_js_cache();
+        add_action('admin_notices', function() {
+            echo '<div class="notice notice-success"><p>Config cache cleared successfully!</p></div>';
+        });
+    }
+}
+add_action('admin_init', 'add_clear_cache_button');
+
+function add_clear_cache_link($wp_admin_bar) {
+    if (current_user_can('manage_options')) {
+        $wp_admin_bar->add_menu(array(
+            'id'    => 'clear_config_cache',
+            'title' => 'Clear Config Cache',
+            'href'  => add_query_arg('clear_config_cache', '1'),
+        ));
+    }
+}
+add_action('admin_bar_menu', 'add_clear_cache_link', 100);
 
 remove_filter('the_content', 'wpautop');

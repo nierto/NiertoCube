@@ -1,25 +1,54 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php'); // Ensure the path to wp-load.php is correct
+require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
 header("Content-type: application/javascript");
 
-$nav_texts = [];
-for ($i = 0; $i <= 5; $i++) {
-    $nav_texts["face{$i}"] = get_theme_mod("cube_face_page_name_{$i}", "Face {$i}");
+// Check if a cached version exists and is recent
+$cache_file = get_template_directory() . '/js/config/cached_config.js';
+$cache_time = 604800; // Cache 1 week
+
+if (file_exists($cache_file) && (time() - filemtime($cache_file) < $cache_time)) {
+    // Serve the cached file
+    readfile($cache_file);
+    exit;
+}
+
+// If no cache exists or it's expired, generate the content
+ob_start(); // Start output buffering
+
+$cube_faces = [];
+for ($i = 1; $i <= 6; $i++) {
+    $cube_faces[] = [
+        'buttonText' => get_theme_mod("cube_face_{$i}_text", "Face {$i}"),
+        'urlSlug' => get_theme_mod("cube_face_{$i}_slug", "face-{$i}"),
+        'facePosition' => get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1)),
+    ];
 }
 ?>
 
 const variables = {
-    navTexts: <?php echo json_encode($nav_texts); ?>
+    cubeFaces: <?php echo json_encode($cube_faces); ?>
 };
 
-function addOnClickAttributes() {
-    const navNames = document.querySelectorAll('.navButton .navName');
-    navNames.forEach((element, index) => {
-        if (variables.navTexts[`face${index}`]) {
-            element.textContent = variables.navTexts[`face${index}`];
-            element.setAttribute('onclick', `cubeMoveButton('face${index}', '${variables.navTexts[`face${index}`]}')`);
+function setupCubeButtons() {
+    const navButtons = document.querySelectorAll('.navButton');
+    variables.cubeFaces.forEach((face, index) => {
+        const navName = navButtons[index]?.querySelector('.navName');
+        if (navName) {
+            navName.textContent = face.buttonText;
+            navName.setAttribute('data-face', face.facePosition);
+            navName.setAttribute('data-slug', face.urlSlug);
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', addOnClickAttributes);
+document.addEventListener('DOMContentLoaded', setupCubeButtons);
+
+<?php
+// Get the generated content
+$content = ob_get_clean();
+
+// Save the content to the cache file
+file_put_contents($cache_file, $content);
+
+// Output the content
+echo $content;

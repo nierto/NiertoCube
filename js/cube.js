@@ -4,29 +4,26 @@ let updCount = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof variables !== 'undefined') {
-        updateNavButtons();
+        setupCubeButtons();
     } else {
         console.error('Required variables are not defined.');
     }
 
-    // Initialize other functionalities after DOM is loaded
+    // Initialize other functionalities
     window.cubescale = 1;
     window.cubeduration = 250;
     window.cubestate = 2;
     document.addEventListener('keydown', arrowKeyHandler);
-});
 
-function updateNavButtons() {
-    const navButtons = document.querySelectorAll('.navButton .navName');
-    navButtons.forEach((button, index) => {
-        const faceId = `face${index}`;
-        if (variables.navTexts[faceId]) {
-            button.textContent = variables.navTexts[faceId];
-        } else {
-            console.error(`Variable ${faceId} not found.`);
-        }
+    // Set up button event listeners
+    document.querySelectorAll('.navButton .navName').forEach(button => {
+        button.addEventListener('click', function () {
+            const faceId = this.getAttribute('data-face');
+            const slug = this.getAttribute('data-slug');
+            cubeMoveButton(faceId, slug);
+        });
     });
-}
+});
 
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
@@ -52,20 +49,10 @@ function arrowKeyHandler(e) {
     }
 }
 
-function resetCount() {
-    if (sideCount >= 4 || sideCount <= -4) {
-        sideCount = 0;
-    }
-    if (updCount >= 4 || updCount <= -4) {
-        updCount = 0;
-    }
-}
-
 function sim_up() {
     if (updCount < 1 && sideCount === 0) {  // Allow rotation up if not at maximum up rotation and only if sideCount is 0
         updCount += 1;
         rotateCube(-90, 0, 0);
-        resetCount();
     }
 }
 
@@ -73,7 +60,6 @@ function sim_down() {
     if (updCount > -1 && sideCount === 0) {  // Allow rotation down if not at maximum down rotation and only if sideCount is 0
         updCount -= 1;
         rotateCube(90, 0, 0);
-        resetCount();
     }
 }
 
@@ -108,6 +94,7 @@ function goHome(callback) {
 
 function cubeMoveButton(pageID, destPage) {
     goHome(() => {
+        rotateToCubeFace(pageID);
         const xDiv = document.getElementById("contentIframe");
         if (!xDiv) {
             createContentDiv(pageID, destPage);
@@ -123,12 +110,26 @@ function cubeMoveButton(pageID, destPage) {
     });
 }
 
-function callCubeMoveButton(variableName) {
-    const value = variables[variableName];
-    if (value !== undefined) {
-        cubeMoveButton(variableName, value);
-    } else {
-        console.error(`Variable ${variableName} not found.`);
+function rotateToCubeFace(faceID) {
+    switch (faceID) {
+        case 'face0':
+            sim_up();
+            break;
+        case 'face1':
+            break;
+        case 'face2':
+            sim_right();
+            break;
+        case 'face3':
+            sim_left();
+            sim_left();
+            break;
+        case 'face4':
+            sim_left();
+            break;
+        case 'face5':
+            sim_down();
+            break;
     }
 }
 
@@ -140,19 +141,6 @@ function createContentDiv(pageID, destPage) {
     div.classList.add("fade-in");
     div.innerHTML = `<iframe class="iframe-container" src=${destination} frameBorder="0"></iframe>`;
     particularDiv.appendChild(div);
-    switchToContent(pageID);
-}
-
-function switchToContent(pageID) {
-    const actions = {
-        face0: () => sim_up(),
-        face1: () => sim_right(),
-        face2: () => { sim_left(); sim_left(); },
-        face3: () => sim_left(),
-        face4: () => sim_down(),
-        face5: () => { sim_right(); sim_right(); },
-    };
-    actions[pageID]?.();
 }
 
 function handleLogoClick() {
