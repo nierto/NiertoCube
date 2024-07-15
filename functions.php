@@ -354,13 +354,7 @@ function nierto_cube_scripts() {
     wp_deregister_script('jquery');
     wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js', false, null, true);
     wp_enqueue_script('jquery');
-    
-    wp_enqueue_style('cube-style', get_template_directory_uri() . '/css/cube.css', array(), '1.0.0');
-    wp_enqueue_style('root-style', get_template_directory_uri() . '/css/rootstyle.css', array(), '1.0.0');
-    wp_enqueue_style('keyframes-style', get_template_directory_uri() . '/css/keyframes.css', array(), '1.0.0');
-    wp_enqueue_style('logo-style', get_template_directory_uri() . '/css/logo.css', array(), '1.0.0');
-    wp_enqueue_style('nav-style', get_template_directory_uri() . '/css/navigation.css', array(), '1.0.0');
-    wp_enqueue_style('media-style', get_template_directory_uri() . '/css/screensizes.css', array(), '1.0.0');
+    wp_enqueue_style('nierto-cube-all-styles', get_template_directory_uri() . '/css/all-styles.css', array(), '1.0.0');
     wp_enqueue_style('nierto-cube-style', get_stylesheet_uri());
     wp_enqueue_script('cube-script', get_template_directory_uri() . '/js/cube.js', array('jquery'), '1.0.0', true);
     wp_enqueue_script('config-script', get_template_directory_uri() . '/js/config/config.js.php', array(), null, true);
