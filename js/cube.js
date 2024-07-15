@@ -1,6 +1,19 @@
 const MOBILE_STATE = window.matchMedia("(min-width: 961px)").matches ? 0 : 1;
 let sideCount = 0;
 let updCount = 0;
+let isTransitioning = false;
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof variables !== 'undefined') {
@@ -14,19 +27,21 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cubeduration = 250;
     window.cubestate = 2;
     document.addEventListener('keydown', arrowKeyHandler);
-
-    // Set up button event listeners
+    
+    // Set up button event listeners with debounce
     document.querySelectorAll('.navButton .navName').forEach(button => {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', debounce(function () {
+            if (isTransitioning) return;
             const faceId = this.getAttribute('data-face');
             const slug = this.getAttribute('data-slug');
             cubeMoveButton(faceId, slug);
-        });
+        }, 250)); // 250ms debounce
     });
 });
 
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
+    cube.css('transition', `transform ${window.cubeduration}ms`);
     const oldMatrix = new WebKitCSSMatrix(cube[0].style.webkitTransform);
     const extrarotate = new WebKitCSSMatrix().rotate(anglex, angley, anglez);
     const final = extrarotate.multiply(oldMatrix);
@@ -78,6 +93,7 @@ function sim_right() {
 }
 
 function goHome(callback) {
+    if (!isTransitioning) return; // Don't proceed if we're not in a transition
     const simActions = [
         { condition: updCount > 0, action: sim_down },
         { condition: updCount < 0, action: sim_up },
@@ -86,28 +102,44 @@ function goHome(callback) {
     ];
     simActions.forEach(({ condition, action }) => condition && action());
     if (sideCount === 0 && updCount === 0) {
-        if (callback) callback(); // Call the callback function if provided
+        if (callback) setTimeout(callback, 100);
     } else {
-        setTimeout(() => goHome(callback), 100); // Retry until the cube is home
+        setTimeout(() => goHome(callback), 100);
     }
 }
 
 function cubeMoveButton(pageID, destPage) {
+    if (isTransitioning) return; // Ignore clicks if a transition is in progress
+    isTransitioning = true;
+
     goHome(() => {
-        rotateToCubeFace(pageID);
-        const xDiv = document.getElementById("contentIframe");
-        if (!xDiv) {
-            createContentDiv(pageID, destPage);
-        } else {
-            if (xDiv.id === pageID) return;
-            xDiv.classList.remove("fade-in");
-            xDiv.classList.add("fade-out");
-            setTimeout(() => {
-                xDiv.remove();
+        setTimeout(() => {
+            rotateToCubeFace(pageID);
+            const xDiv = document.getElementById("contentIframe");
+            if (!xDiv) {
                 createContentDiv(pageID, destPage);
-            }, 500);
-        }
+                finishTransition();
+            } else {
+                if (xDiv.id === pageID) {
+                    finishTransition();
+                    return;
+                }
+                xDiv.classList.remove("fade-in");
+                xDiv.classList.add("fade-out");
+                setTimeout(() => {
+                    xDiv.remove();
+                    createContentDiv(pageID, destPage);
+                    finishTransition();
+                }, 500);
+            }
+        }, 100);
     });
+}
+
+function finishTransition() {
+    setTimeout(() => {
+        isTransitioning = false;
+    }, 100); // Add a small buffer after the transition completes
 }
 
 function rotateToCubeFace(faceID) {
