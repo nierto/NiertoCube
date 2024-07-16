@@ -30,10 +30,10 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // Set up button event listeners with debounce
     document.querySelectorAll('.navButton .navName').forEach(button => {
-        button.addEventListener('click', debounce(function () {
+        button.addEventListener('click', debounce(function (event) {
             if (isTransitioning) return;
-            const faceId = this.getAttribute('data-face');
-            const slug = this.getAttribute('data-slug');
+            const faceId = event.target.getAttribute('data-face');
+            const slug = event.target.getAttribute('data-slug');
             cubeMoveButton(faceId, slug);
         }, 250)); // 250ms debounce
     });
@@ -42,15 +42,13 @@ document.addEventListener('DOMContentLoaded', function () {
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
     cube.css('transition', `transform ${window.cubeduration}ms`);
-    const oldMatrix = new WebKitCSSMatrix(cube[0].style.webkitTransform);
-    const extrarotate = new WebKitCSSMatrix().rotate(anglex, angley, anglez);
-    const final = extrarotate.multiply(oldMatrix);
-    const finalString = Array.from({ length: 4 }, (_, i) =>
-        Array.from({ length: 4 }, (_, j) => Math.round(final[`m${i + 1}${j + 1}`]))
-    ).flat();
-    cube[0].style.webkitTransform = `matrix3d(${finalString.join(",")})`;
+    const currentTransform = cube.css('transform');
+    const newRotation = `rotateX(${anglex}deg) rotateY(${angley}deg) rotateZ(${anglez}deg)`;
+    const finalTransform = currentTransform === 'none' ? newRotation : `${currentTransform} ${newRotation}`;
+    cube.css('transform', finalTransform);
     sideCount = Math.abs(sideCount) === 4 ? 0 : sideCount;
 }
+
 
 function arrowKeyHandler(e) {
     const keyActions = {
@@ -93,19 +91,22 @@ function sim_right() {
 }
 
 function goHome(callback) {
-    if (!isTransitioning) return; // Don't proceed if we're not in a transition
-    const simActions = [
-        { condition: updCount > 0, action: sim_down },
-        { condition: updCount < 0, action: sim_up },
-        { condition: sideCount < 0, action: sim_left },
-        { condition: sideCount > 0, action: sim_right },
+    if (!isTransitioning) return;
+    const actions = [
+        { condition: () => updCount > 0, action: sim_down },
+        { condition: () => updCount < 0, action: sim_up },
+        { condition: () => sideCount < 0, action: sim_left },
+        { condition: () => sideCount > 0, action: sim_right },
     ];
-    simActions.forEach(({ condition, action }) => condition && action());
-    if (sideCount === 0 && updCount === 0) {
-        if (callback) setTimeout(callback, 100);
-    } else {
-        setTimeout(() => goHome(callback), 100);
-    }
+    const intervalId = setInterval(() => {
+        const actionToTake = actions.find(a => a.condition());
+        if (actionToTake) {
+            actionToTake.action();
+        } else {
+            clearInterval(intervalId);
+            if (callback) setTimeout(callback, 100);
+        }
+    }, 100);
 }
 
 function cubeMoveButton(pageID, destPage) {
