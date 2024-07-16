@@ -3,18 +3,6 @@ let sideCount = 0;
 let updCount = 0;
 let isTransitioning = false;
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof variables !== 'undefined') {
         setupCubeButtons();
@@ -27,15 +15,23 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cubeduration = 250;
     window.cubestate = 2;
     document.addEventListener('keydown', arrowKeyHandler);
-    
-    // Set up button event listeners with debounce
+
+    // Set up button event listeners
     document.querySelectorAll('.navButton .navName').forEach(button => {
-        button.addEventListener('click', debounce(function (event) {
+        button.addEventListener('click', function (event) {
             if (isTransitioning) return;
-            const faceId = event.target.getAttribute('data-face');
-            const slug = event.target.getAttribute('data-slug');
-            cubeMoveButton(faceId, slug);
-        }, 250)); // 250ms debounce
+            isTransitioning = true;
+            const faceId = event.currentTarget.getAttribute('data-face');
+            const slug = event.currentTarget.getAttribute('data-slug');
+
+            goHome(() => {
+                // This is the callback that will run after goHome is complete
+                setTimeout(() => {
+                    cubeMoveButton(faceId, slug);
+                    isTransitioning = false;
+                }, 223); // Adjust this delay as needed
+            });
+        });
     });
 });
 
@@ -104,9 +100,9 @@ function goHome(callback) {
             actionToTake.action();
         } else {
             clearInterval(intervalId);
-            if (callback) setTimeout(callback, 100);
+            if (callback) setTimeout(callback, 50);
         }
-    }, 100);
+    }, 50);
 }
 
 function cubeMoveButton(pageID, destPage) {
