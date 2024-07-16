@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+    const logo = document.getElementById('logo_goHome');
+    if (logo) {
+        logo.addEventListener('click', handleLogoClick);
+    } else {
+        console.error('Logo element not found');
+    }
 });
 
 function rotateCube(anglex, angley, anglez) {
@@ -104,6 +110,11 @@ function goHome(callback) {
             actionToTake.action();
         } else {
             clearInterval(intervalId);
+            window.cubeRotationX = 0;
+            window.cubeRotationY = 0;
+            window.cubeRotationZ = 0;
+            const cube = $("#cube");
+            cube.css('transform', 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)');
             if (callback) setTimeout(callback, 50);
         }
     }, 50);
@@ -170,7 +181,25 @@ function createContentDiv(pageID, destPage) {
 }
 
 function handleLogoClick() {
-    goHome(() => {
-        // Additional actions can be added here if needed after the cube has returned home, anybody have an idea what to add?
-    });
+    if (!isTransitioning) {
+        isTransitioning = true;
+        goHome(() => {
+            // Reset rotation values
+            window.cubeRotationX = 0;
+            window.cubeRotationY = 0;
+            window.cubeRotationZ = 0;
+
+            // Apply the reset transform
+            const cube = $("#cube");
+            cube.css('transform', 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)');
+
+            // Reset counters
+            sideCount = 0;
+            updCount = 0;
+
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 100);
+        });
+    }
 }
