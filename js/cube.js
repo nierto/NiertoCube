@@ -4,16 +4,20 @@ let updCount = 0;
 let isTransitioning = false;
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Initialize global variables
+    window.cubeRotationX = 0;
+    window.cubeRotationY = 0;
+    window.cubeRotationZ = 0;
+    window.cubescale = 1;
+    window.cubeduration = 250;
+    window.cubestate = 2;
+
     if (typeof variables !== 'undefined') {
         setupCubeButtons();
     } else {
         console.error('Required variables are not defined.');
     }
 
-    // Initialize other functionalities
-    window.cubescale = 1;
-    window.cubeduration = 250;
-    window.cubestate = 2;
     document.addEventListener('keydown', arrowKeyHandler);
 
     // Set up button event listeners
@@ -23,13 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
             isTransitioning = true;
             const faceId = event.currentTarget.getAttribute('data-face');
             const slug = event.currentTarget.getAttribute('data-slug');
-
             goHome(() => {
-                // This is the callback that will run after goHome is complete
                 setTimeout(() => {
                     cubeMoveButton(faceId, slug);
-                    isTransitioning = false;
-                }, 223); // Adjust this delay as needed
+                }, 223);
             });
         });
     });
@@ -38,13 +39,16 @@ document.addEventListener('DOMContentLoaded', function () {
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
     cube.css('transition', `transform ${window.cubeduration}ms`);
-    const currentTransform = cube.css('transform');
-    const newRotation = `rotateX(${anglex}deg) rotateY(${angley}deg) rotateZ(${anglez}deg)`;
-    const finalTransform = currentTransform === 'none' ? newRotation : `${currentTransform} ${newRotation}`;
-    cube.css('transform', finalTransform);
+
+    window.cubeRotationX += anglex;
+    window.cubeRotationY += angley;
+    window.cubeRotationZ += anglez;
+
+    const newTransform = `rotateX(${window.cubeRotationX}deg) rotateY(${window.cubeRotationY}deg) rotateZ(${window.cubeRotationZ}deg)`;
+    cube.css('transform', newTransform);
+
     sideCount = Math.abs(sideCount) === 4 ? 0 : sideCount;
 }
-
 
 function arrowKeyHandler(e) {
     const keyActions = {
@@ -106,31 +110,24 @@ function goHome(callback) {
 }
 
 function cubeMoveButton(pageID, destPage) {
-    if (isTransitioning) return; // Ignore clicks if a transition is in progress
-    isTransitioning = true;
-
-    goHome(() => {
+    rotateToCubeFace(pageID);
+    const xDiv = document.getElementById("contentIframe");
+    if (!xDiv) {
+        createContentDiv(pageID, destPage);
+        finishTransition();
+    } else {
+        if (xDiv.id === pageID) {
+            finishTransition();
+            return;
+        }
+        xDiv.classList.remove("fade-in");
+        xDiv.classList.add("fade-out");
         setTimeout(() => {
-            rotateToCubeFace(pageID);
-            const xDiv = document.getElementById("contentIframe");
-            if (!xDiv) {
-                createContentDiv(pageID, destPage);
-                finishTransition();
-            } else {
-                if (xDiv.id === pageID) {
-                    finishTransition();
-                    return;
-                }
-                xDiv.classList.remove("fade-in");
-                xDiv.classList.add("fade-out");
-                setTimeout(() => {
-                    xDiv.remove();
-                    createContentDiv(pageID, destPage);
-                    finishTransition();
-                }, 500);
-            }
-        }, 100);
-    });
+            xDiv.remove();
+            createContentDiv(pageID, destPage);
+            finishTransition();
+        }, 500);
+    }
 }
 
 function finishTransition() {
