@@ -44,7 +44,7 @@
         #logoWrapper {
             position: fixed;
             top:8vmin;
-            left:4vmin;
+            left:5vmin;
             will-change: transform;
             z-index: 989;
         }
@@ -123,7 +123,7 @@
         #logoWrapper {
             position: fixed;
             top: 8vmin;
-            left: 4vmin;
+            left: 6vmin;
             will-change: transform;
             z-index: 989;
         }
@@ -213,7 +213,7 @@
     #logoWrapper {
         position: fixed;
         top: 8vmin;
-        left: 4vmin;
+        left: 6vmin;
         will-change: transform;
         z-index: 989;
     }
