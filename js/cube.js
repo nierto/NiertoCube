@@ -4,7 +4,6 @@ let updCount = 0;
 let isTransitioning = false;
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize global variables
     window.cubeRotationX = 0;
     window.cubeRotationY = 0;
     window.cubeRotationZ = 0;
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.addEventListener('keydown', arrowKeyHandler);
 
-    // Set up button event listeners
     document.querySelectorAll('.navButton .navName').forEach(button => {
         button.addEventListener('click', function (event) {
             if (isTransitioning) return;
@@ -144,7 +142,7 @@ function cubeMoveButton(pageID, destPage) {
 function finishTransition() {
     setTimeout(() => {
         isTransitioning = false;
-    }, 100); // Add a small buffer after the transition completes
+    }, 100); // buffer transition complete
 }
 
 function rotateToCubeFace(faceID) {
@@ -184,19 +182,13 @@ function handleLogoClick() {
     if (!isTransitioning) {
         isTransitioning = true;
         goHome(() => {
-            // Reset rotation values
             window.cubeRotationX = 0;
             window.cubeRotationY = 0;
             window.cubeRotationZ = 0;
-
-            // Apply the reset transform
             const cube = $("#cube");
             cube.css('transform', 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)');
-
-            // Reset counters
             sideCount = 0;
             updCount = 0;
-
             setTimeout(() => {
                 isTransitioning = false;
             }, 100);
