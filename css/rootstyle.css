@@ -69,6 +69,10 @@ ul {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 }
+.reversed-content {
+    transform: rotate(180deg);
+    transform-origin: center center;
+}
 #contentIframe {
     width: 100%;
     height: 100%;

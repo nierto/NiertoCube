@@ -169,11 +169,11 @@ function nierto_cube_customize_register($wp_customize) {
             'type' => 'select',
             'choices' => array(
                 'face0' => 'Face 0',
-                'face1' => 'Face 1',
+                'face1' => 'Face 1 = Front',
                 'face2' => 'Face 2',
-                'face3' => 'Face 3',
+                'face3' => 'Face 3 = Back',
                 'face4' => 'Face 4',
-                'face5' => 'Face 5',
+                'face5' => 'Face 5 Reversed',
             ),
         ));
     }
