@@ -2,6 +2,7 @@ const MOBILE_STATE = window.matchMedia("(min-width: 961px)").matches ? 0 : 1;
 let sideCount = 0;
 let updCount = 0;
 let isTransitioning = false;
+let lastTouchY;
 
 document.addEventListener('DOMContentLoaded', function () {
     window.cubeRotationX = 0;
@@ -38,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         console.error('Logo element not found');
     }
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
 });
 
 function rotateCube(anglex, angley, anglez) {
@@ -129,13 +133,13 @@ function cubeMoveButton(pageID, destPage) {
             finishTransition();
             return;
         }
-        xDiv.classList.remove("fade-in");
+        xDiv.classList.remove("fade-in", "focussed");
         xDiv.classList.add("fade-out");
         setTimeout(() => {
             xDiv.remove();
             createContentDiv(pageID, destPage);
             finishTransition();
-        }, 500);
+        }, 389);
     }
 }
 
@@ -173,8 +177,12 @@ function createContentDiv(pageID, destPage) {
     const destination = `${window.location.origin}/${destPage}`;
     const div = document.createElement("div");
     div.id = "contentIframe";
-    div.classList.add("fade-in");
-    div.innerHTML = `<iframe class="iframe-container" src=${destination} frameBorder="0"></iframe>`;
+    div.classList.add("fade-in", "focussed");
+    const iframe = document.createElement("iframe");
+    iframe.className = "iframe-container";
+    iframe.src = destination;
+    iframe.frameBorder = "0";
+    div.appendChild(iframe);
     particularDiv.appendChild(div);
 }
 
@@ -195,3 +203,41 @@ function handleLogoClick() {
         });
     }
 }
+function getActiveIframe() {
+    const focussedDiv = document.querySelector('.focussed');
+    return focussedDiv ? focussedDiv.querySelector('iframe') : null;
+}
+
+function handleWheel(event) {
+    if (isTransitioning) return;
+    const activeIframe = getActiveIframe();
+    if (activeIframe && activeIframe.contentWindow && activeIframe.contentWindow.handleScroll) {
+        activeIframe.contentWindow.handleScroll(event.deltaY);
+        event.preventDefault();
+    }
+}
+function handleTouchStart(event) {
+    if (isTransitioning) return;
+    lastTouchY = event.touches[0].clientY;
+    const activeIframe = getActiveIframe();
+    if (activeIframe && activeIframe.contentWindow) {
+        activeIframe.contentWindow.dispatchEvent(new TouchEvent('touchstart', {
+            bubbles: true,
+            touches: event.touches
+        }));
+    }
+}
+function handleTouchMove(event) {
+    if (isTransitioning) return;
+    const activeIframe = getActiveIframe();
+    if (activeIframe && activeIframe.contentWindow) {
+        activeIframe.contentWindow.dispatchEvent(new TouchEvent('touchmove', {
+            bubbles: true,
+            touches: event.touches
+        }));
+        event.preventDefault();
+    }
+}
+
+
+
