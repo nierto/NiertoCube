@@ -1,7 +1,10 @@
 <?php
 /*
-Template Name: Iframe-Optimized Page
+Template Name: Iframe Page for NiertoCube
 */
+remove_action('wp_head', 'wp_enqueue_scripts', 1);
+remove_action('wp_head', 'wp_print_styles', 8);
+remove_action('wp_head', 'wp_print_head_scripts', 9);
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -34,9 +37,17 @@ Template Name: Iframe-Optimized Page
             right: 0;
             transition: transform 0.3s ease;
         }
-        /* ... other styles ... */
+        a {
+            color: var(--color-highlight);
+        }
+        a:hover {
+            color: var(--color-hover);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--color-header);
+            font-family: var(--font-family-highlights, <?php echo get_theme_mod('font_family_highlights', "'Rubik', sans-serif"); ?>);
+        }
     </style>
-    <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
     <div class="scroll-container">
@@ -49,59 +60,32 @@ Template Name: Iframe-Optimized Page
             ?>
         </div>
     </div>
-
     <script>
-(function() {
-    var container = document.querySelector('.scroll-container');
-    var content = document.querySelector('.content');
-    var scrollPosition = 0;
-    var maxScroll = content.offsetHeight - container.offsetHeight;
-    var lastTouchY;
+    (function() {
+        var container = document.querySelector('.scroll-container');
+        var content = document.querySelector('.content');
+        var scrollPosition = 0;
+        var maxScroll = content.offsetHeight - container.offsetHeight;
 
-    function updateScroll(delta) {
-        scrollPosition = Math.max(0, Math.min(scrollPosition + delta, maxScroll));
-        content.style.transform = `translateY(-${scrollPosition}px)`;
-    }
-
-    // Expose the handleScroll function to be called via the tunnel
-    window.handleScroll = function(delta) {
-        if (window.parent && window.parent.tunnel) {
-            window.parent.tunnel(function() {
-                updateScroll(delta);
-            });
+        function updateScroll(delta) {
+            scrollPosition = Math.max(0, Math.min(scrollPosition + delta, maxScroll));
+            content.style.transform = `translateY(-${scrollPosition}px)`;
         }
-    };
 
-    // Handle touch events within the iframe
-    function handleTouchStart(e) {
-        lastTouchY = e.touches[0].clientY;
-    }
+        // Expose the handleScroll function to be called via the tunnel
+        window.handleScroll = function(delta) {
+            if (window.parent && window.parent.tunnel) {
+                window.parent.tunnel(function() {
+                    updateScroll(delta);
+                });
+            }
+        };
 
-    function handleTouchMove(e) {
-        var touchY = e.touches[0].clientY;
-        var deltaY = lastTouchY - touchY;
-        lastTouchY = touchY;
-        
-        if (window.parent && window.parent.tunnel) {
-            window.parent.tunnel(function() {
-                updateScroll(deltaY);
-            });
+        // Notify the parent that the iframe is ready
+        if (window.parent && window.parent.iframeReady) {
+            window.parent.iframeReady();
         }
-        
-        e.preventDefault();
-    }
-
-    // Add touch event listeners
-    container.addEventListener('touchstart', handleTouchStart);
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-    // Notify the parent that the iframe is ready
-    if (window.parent && window.parent.iframeReady) {
-        window.parent.iframeReady();
-    }
-})();
-</script>
-
-    <?php wp_footer(); ?>
+    })();
+    </script>
 </body>
 </html>

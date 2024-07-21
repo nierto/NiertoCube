@@ -2,7 +2,6 @@
 /*
 Template Name: Iframe Page for NiertoCube (Reversed Content)
 */
-
 remove_action('wp_head', 'wp_enqueue_scripts', 1);
 remove_action('wp_head', 'wp_print_styles', 8);
 remove_action('wp_head', 'wp_print_head_scripts', 9);
@@ -27,19 +26,20 @@ remove_action('wp_head', 'wp_print_head_scripts', 9);
         .scroll-container {
             width: 100%;
             height: 100%;
-            overflow-y: scroll;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            overflow: hidden;
+            position: relative;
             transform: rotate(180deg);
             transform-origin: center center;
-        }
-        .scroll-container::-webkit-scrollbar {
-            display: none;
         }
         .content {
             padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             transform: rotate(180deg);
             transform-origin: center center;
+            transition: transform 0.3s ease;
         }
         a {
             color: var(--color-highlight);
@@ -52,7 +52,6 @@ remove_action('wp_head', 'wp_print_head_scripts', 9);
             font-family: var(--font-family-highlights, <?php echo get_theme_mod('font_family_highlights', "'Rubik', sans-serif"); ?>);
         }
     </style>
-    <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
     <div class="scroll-container">
@@ -65,6 +64,28 @@ remove_action('wp_head', 'wp_print_head_scripts', 9);
             ?>
         </div>
     </div>
-    <?php wp_footer(); ?>
+    <script>
+    (function() {
+        var container = document.querySelector('.scroll-container');
+        var content = document.querySelector('.content');
+        var scrollPosition = 0;
+        var maxScroll = content.offsetHeight - container.offsetHeight;
+
+        function updateScroll(delta) {
+            scrollPosition = Math.max(0, Math.min(scrollPosition - delta, maxScroll));
+            content.style.transform = `rotate(180deg) translateY(${scrollPosition}px)`;
+        }
+        window.handleScroll = function(delta) {
+            if (window.parent && window.parent.tunnel) {
+                window.parent.tunnel(function() {
+                    updateScroll(delta);
+                });
+            }
+        };
+        if (window.parent && window.parent.iframeReady) {
+            window.parent.iframeReady();
+        }
+    })();
+    </script>
 </body>
 </html>
