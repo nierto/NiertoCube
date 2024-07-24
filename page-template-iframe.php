@@ -9,6 +9,12 @@ Template Name: Iframe-Optimized Page
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php wp_title('|', true, 'right'); ?></title>
+    <?php 
+    $google_font_url = get_google_font_url();
+    if ($google_font_url) : 
+    ?>
+    <link href="<?php echo esc_url($google_font_url); ?>" rel="stylesheet">
+    <?php endif; ?>
     <style>
         html, body {
             margin: 0;
@@ -16,7 +22,7 @@ Template Name: Iframe-Optimized Page
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: var(--font-family, <?php echo get_theme_mod('font_family', "'Ubuntu', sans-serif"); ?>);
+            font-family: <?php echo get_font_family('body_font'); ?>;
             background-color: var(--color-bg);
             color: var(--color-txt);
         }
@@ -33,6 +39,19 @@ Template Name: Iframe-Optimized Page
             left: 0;
             right: 0;
             transition: transform 0.3s ease;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: <?php echo get_font_family('heading_font'); ?>;
+            color: var(--color-header);
+        }
+        .custom-font {
+            font-family: <?php echo get_font_family('extra_font'); ?>;
+        }
+        a {
+            color: var(--color-highlight);
+        }
+        a:hover {
+            color: var(--color-hover);
         }
     </style>
 </head>
@@ -58,7 +77,6 @@ Template Name: Iframe-Optimized Page
     function updateScroll(deltaY) {
         scrollPosition = Math.max(0, Math.min(scrollPosition + deltaY, maxScroll));
         requestAnimationFrame(() => {
-            // Round to the nearest pixel
             const roundedPosition = Math.round(scrollPosition);
             content.style.transform = `translateY(-${roundedPosition}px)`;
         });

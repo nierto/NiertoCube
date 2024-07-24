@@ -109,3 +109,7 @@ ul {
     -o-animation: fadeOut ease 0.5s forwards;
     -ms-animation: fadeOut ease 0.5s forwards;
 }
+.navButton,
+.navName {
+    font-family: var(--button-font);
+}

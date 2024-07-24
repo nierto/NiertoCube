@@ -207,37 +207,74 @@ function nierto_cube_customize_register($wp_customize) {
         'section' => 'logo',
         'settings' => 'logo_source',
     ]));
-    //SECTION: FONT
-    $font_settings = [
-        'font_family' => [
-            'default' => "'Ubuntu', sans-serif",
-            'label' => 'the default font-family for the body.'
-        ],
-        'font_family_button' => [
-            'default' => "'Rubik', sans-serif",
-            'label' => 'the default font family for the buttons'
-        ],
-        'font_family_menus' => [
-            'default' => "'Rubik', sans-serif",
-            'label' => 'the default font family for Menu Buttons'
-        ],
-        'font_family_highlights' => [
-            'default' => "'Rubik', sans-serif",
-            'label' => 'the default font family for the Highlight'
+// SECTION: FONT
+$font_settings = [
+    'body_font' => [
+        'label' => 'Body Font',
+        'default_google' => 'Ubuntu:wght@300;400;700&display=swap',
+        'default_local' => 'Ubuntu, sans-serif',
+        'description' => 'The default font-family for the body text.'
+    ],
+    'heading_font' => [
+        'label' => 'Heading Font',
+        'default_google' => 'Ubuntu:wght@300;400;700&display=swap',
+        'default_local' => 'Ubuntu, sans-serif',
+        'description' => 'The default font family for headings.'
+    ],
+    'button_font' => [
+        'label' => 'Button Font',
+        'default_google' => 'Rubik:wght@400;500&display=swap',
+        'default_local' => 'Rubik, sans-serif',
+        'description' => 'The default font family for buttons, including navigation buttons.'
+    ],
+    'extra_font' => [
+        'label' => 'Extra Font',
+        'default_google' => 'Rubik:wght@300;400;700&display=swap',
+        'default_local' => 'Rubik, sans-serif',
+        'description' => 'An additional font for use with custom classes.'
+    ]
+];
+
+foreach ($font_settings as $setting_id => $values) {
+    $wp_customize->add_setting($setting_id . '_source', [
+        'default' => 'google',
+        'sanitize_callback' => 'sanitize_text_field'
+    ]);
+
+    $wp_customize->add_control($setting_id . '_source', [
+        'label' => __($values['label'] . ' Source', 'nierto_cube'),
+        'section' => 'font',
+        'type' => 'radio',
+        'choices' => [
+            'google' => 'Google Font',
+            'local' => 'Local Font'
         ]
-     ];
-    foreach ($font_settings as $id => $values) {
-        $wp_customize->add_setting($id, [
-            'default' => $values['default'],
-            'transport' => 'refresh',
-            'sanitize_callback' => 'sanitize_text_field'
-        ]);
-        $wp_customize->add_control($id, [
-            'label' => __($values['label'], 'nierto_cube'),
-            'section' => 'font',
-            'type' => 'text'
-        ]);
-    }
+    ]);
+
+    $wp_customize->add_setting($setting_id . '_google', [
+        'default' => $values['default_google'],
+        'sanitize_callback' => 'sanitize_text_field'
+    ]);
+
+    $wp_customize->add_control($setting_id . '_google', [
+        'label' => __($values['label'] . ' (Google)', 'nierto_cube'),
+        'description' => __($values['description'] . ' Enter the part of the Google Font URL after "https://fonts.googleapis.com/css2?family=". For example: Ubuntu:wght@300;400;700&display=swap', 'nierto_cube'),
+        'section' => 'font',
+        'type' => 'text'
+    ]);
+
+    $wp_customize->add_setting($setting_id . '_local', [
+        'default' => $values['default_local'],
+        'sanitize_callback' => 'sanitize_text_field'
+    ]);
+
+    $wp_customize->add_control($setting_id . '_local', [
+        'label' => __($values['label'] . ' (Local)', 'nierto_cube'),
+        'description' => __($values['description'] . ' Enter the font-family value for a locally available font. For example: Ubuntu, sans-serif', 'nierto_cube'),
+        'section' => 'font',
+        'type' => 'text'
+    ]);
+}
     // SECTION: NAV STYLING
     // sizes and dimensions
         $nav_texts = [
@@ -306,8 +343,8 @@ function nierto_cube_customizer_css() {
             --nav-button-max-height: <?php echo get_theme_mod('nav_button_max_height', '17%'); ?>;
             --nav-wrapper-default-width:  <?php echo get_theme_mod('nav_wrapper_width', '17%'); ?>;
         }
-        .body {
-            font-family: <?php echo get_theme_mod('font_family', "'Ubuntu', sans-serif"); ?>;
+        body {
+            font-family: <?php echo get_font_family('body_font'); ?>;
             font-optical-sizing: auto;
             font-style: normal;
             background-color: var(--color-bg);
@@ -331,7 +368,7 @@ function nierto_cube_customizer_css() {
         }
         .navButton {
             background-color: var(--nav-button-bg-color);
-            font-family: <?php echo get_theme_mod('font_family_menus', "'Rubik', sans-serif"); ?>;
+            font-family: <?php echo get_font_family('button_font'); ?>;
             color: var(--nav-button-text-color);
             padding: var(--nav-button-padding);
             font-size: var(--nav-button-font-size);
@@ -381,6 +418,48 @@ function clear_config_js_cache() {
     }
 }
 add_action('customize_save_after', 'clear_config_js_cache');
+
+function get_google_font_url() {
+    $google_fonts = [];
+    $font_settings = ['body_font', 'heading_font', 'button_font', 'extra_font'];
+    
+    foreach ($font_settings as $setting) {
+        if (get_theme_mod($setting . '_source', 'google') === 'google') {
+            $font = get_theme_mod($setting . '_google', '');
+            if (!empty($font)) {
+                $google_fonts[] = $font;
+            }
+        }
+    }
+    
+    if (!empty($google_fonts)) {
+        return "https://fonts.googleapis.com/css2?family=" . implode('&family=', array_unique($google_fonts));
+    }
+    
+    return '';
+}
+
+function get_font_family($setting) {
+    $source = get_theme_mod($setting . '_source', 'google');
+    if ($source === 'google') {
+        $font_url = get_theme_mod($setting . '_google', 'Ubuntu:wght@300;400;700&display=swap');
+        $font_family = explode(':', $font_url)[0];
+        return "'" . str_replace('+', ' ', $font_family) . "', sans-serif";
+    } else {
+        return get_theme_mod($setting . '_local', 'Arial, sans-serif');
+    }
+}
+// Output font CSS variables for use in other stylesheets
+function nierto_cube_output_font_css_variables() {
+    ?>
+    <style>
+        :root {
+            --button-font: <?php echo get_font_family('button_font'); ?>;
+        }
+    </style>
+    <?php
+}
+add_action('wp_head', 'nierto_cube_output_font_css_variables', 5);
 
 function add_clear_cache_button() {
     if (isset($_GET['clear_config_cache']) && current_user_can('manage_options')) {
