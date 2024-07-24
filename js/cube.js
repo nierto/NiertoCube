@@ -3,6 +3,11 @@ let sideCount = 0;
 let updCount = 0;
 let isTransitioning = false;
 let lastTouchY;
+let touchScrolling = false;
+let scrollVelocity = 0;
+let lastTouchTime;
+let lastScrollTime = 0;
+const scrollThrottle = 10; // ms
 
 document.addEventListener('DOMContentLoaded', function () {
     window.cubeRotationX = 0;
@@ -27,33 +32,38 @@ document.addEventListener('DOMContentLoaded', function () {
             const faceId = event.currentTarget.getAttribute('data-face');
             const slug = event.currentTarget.getAttribute('data-slug');
             goHome(() => {
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     cubeMoveButton(faceId, slug);
-                }, 223);
+                });
             });
         });
     });
+
     const logo = document.getElementById('logo_goHome');
     if (logo) {
         logo.addEventListener('click', handleLogoClick);
     } else {
         console.error('Logo element not found');
     }
+
     window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
 });
 
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
     cube.css('transition', `transform ${window.cubeduration}ms`);
 
-    window.cubeRotationX += anglex;
-    window.cubeRotationY += angley;
-    window.cubeRotationZ += anglez;
+    window.cubeRotationX = Math.round(window.cubeRotationX + anglex);
+    window.cubeRotationY = Math.round(window.cubeRotationY + angley);
+    window.cubeRotationZ = Math.round(window.cubeRotationZ + anglez);
 
-    const newTransform = `rotateX(${window.cubeRotationX}deg) rotateY(${window.cubeRotationY}deg) rotateZ(${window.cubeRotationZ}deg)`;
-    cube.css('transform', newTransform);
+    requestAnimationFrame(() => {
+        const newTransform = `rotateX(${window.cubeRotationX}deg) rotateY(${window.cubeRotationY}deg) rotateZ(${window.cubeRotationZ}deg)`;
+        cube.css('transform', newTransform);
+    });
 
     sideCount = Math.abs(sideCount) === 4 ? 0 : sideCount;
 }
@@ -210,34 +220,82 @@ function getActiveIframe() {
 
 function handleWheel(event) {
     if (isTransitioning) return;
+    const now = performance.now();
+    if (now - lastScrollTime < scrollThrottle) return;
+    lastScrollTime = now;
+
     const activeIframe = getActiveIframe();
-    if (activeIframe && activeIframe.contentWindow && activeIframe.contentWindow.handleScroll) {
-        activeIframe.contentWindow.handleScroll(event.deltaY);
+    if (activeIframe && activeIframe.contentWindow) {
+        requestAnimationFrame(() => {
+            activeIframe.contentWindow.postMessage({ type: 'wheel', deltaY: event.deltaY }, '*');
+        });
         event.preventDefault();
     }
 }
+
 function handleTouchStart(event) {
     if (isTransitioning) return;
+    touchScrolling = true;
     lastTouchY = event.touches[0].clientY;
+    lastTouchTime = Date.now();
+    scrollVelocity = 0;
+
     const activeIframe = getActiveIframe();
     if (activeIframe && activeIframe.contentWindow) {
-        activeIframe.contentWindow.dispatchEvent(new TouchEvent('touchstart', {
-            bubbles: true,
-            touches: event.touches
-        }));
+        activeIframe.contentWindow.postMessage({ type: 'touchstart', y: lastTouchY }, '*');
     }
 }
+
 function handleTouchMove(event) {
-    if (isTransitioning) return;
+    if (isTransitioning || !touchScrolling) return;
+
+    const currentTouchY = event.touches[0].clientY;
+    const deltaY = lastTouchY - currentTouchY;
+    const currentTime = Date.now();
+    const deltaTime = currentTime - lastTouchTime;
+
+    scrollVelocity = deltaY / deltaTime;
+
     const activeIframe = getActiveIframe();
     if (activeIframe && activeIframe.contentWindow) {
-        activeIframe.contentWindow.dispatchEvent(new TouchEvent('touchmove', {
-            bubbles: true,
-            touches: event.touches
-        }));
-        event.preventDefault();
+        requestAnimationFrame(() => {
+            activeIframe.contentWindow.postMessage({ type: 'touchmove', deltaY: deltaY }, '*');
+        });
+    }
+
+    lastTouchY = currentTouchY;
+    lastTouchTime = currentTime;
+
+    event.preventDefault();
+}
+
+function handleTouchEnd() {
+    touchScrolling = false;
+    if (Math.abs(scrollVelocity) > 0.1) {
+        decelerateScroll();
     }
 }
 
+function decelerateScroll() {
+    if (Math.abs(scrollVelocity) < 0.01) {
+        // Ensure we end on a whole pixel
+        const activeIframe = getActiveIframe();
+        if (activeIframe && activeIframe.contentWindow) {
+            requestAnimationFrame(() => {
+                activeIframe.contentWindow.postMessage({ type: 'finalScroll', position: Math.round(scrollPosition) }, '*');
+            });
+        }
+        return;
+    }
 
+    const activeIframe = getActiveIframe();
+    if (activeIframe && activeIframe.contentWindow) {
+        requestAnimationFrame(() => {
+            scrollPosition += scrollVelocity * 16; // 16ms is roughly one frame at 60fps
+            activeIframe.contentWindow.postMessage({ type: 'scroll', deltaY: scrollVelocity * 16 }, '*');
+        });
+    }
 
+    scrollVelocity *= 0.95; // Deceleration factor
+    requestAnimationFrame(decelerateScroll);
+}

@@ -54,46 +54,35 @@ Template Name: Iframe-Optimized Page
     var content = document.querySelector('.content');
     var scrollPosition = 0;
     var maxScroll = content.offsetHeight - container.offsetHeight;
-    var lastTouchY;
 
-    function updateScroll(delta) {
-        scrollPosition = Math.max(0, Math.min(scrollPosition + delta, maxScroll));
-        content.style.transform = `translateY(-${scrollPosition}px)`;
+    function updateScroll(deltaY) {
+        scrollPosition = Math.max(0, Math.min(scrollPosition + deltaY, maxScroll));
+        requestAnimationFrame(() => {
+            // Round to the nearest pixel
+            const roundedPosition = Math.round(scrollPosition);
+            content.style.transform = `translateY(-${roundedPosition}px)`;
+        });
     }
 
-    // Expose the handleScroll function to be called via the tunnel
-    window.handleScroll = function(delta) {
-        if (window.parent && window.parent.tunnel) {
-            window.parent.tunnel(function() {
-                updateScroll(delta);
-            });
+    window.addEventListener('message', function(event) {
+        switch(event.data.type) {
+            case 'wheel':
+            case 'touchmove':
+            case 'scroll':
+                updateScroll(event.data.deltaY);
+                break;
+            case 'finalScroll':
+                scrollPosition = event.data.position;
+                requestAnimationFrame(() => {
+                    content.style.transform = `translateY(-${scrollPosition}px)`;
+                });
+                break;
+            case 'touchstart':
+                // Handle touch start if needed
+                break;
         }
-    };
+    });
 
-    // Handle touch events within the iframe
-    function handleTouchStart(e) {
-        lastTouchY = e.touches[0].clientY;
-    }
-
-    function handleTouchMove(e) {
-        var touchY = e.touches[0].clientY;
-        var deltaY = lastTouchY - touchY;
-        lastTouchY = touchY;
-        
-        if (window.parent && window.parent.tunnel) {
-            window.parent.tunnel(function() {
-                updateScroll(deltaY);
-            });
-        }
-        
-        e.preventDefault();
-    }
-
-    // Add touch event listeners
-    container.addEventListener('touchstart', handleTouchStart);
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-    // Notify the parent that the iframe is ready
     if (window.parent && window.parent.iframeReady) {
         window.parent.iframeReady();
     }
