@@ -73,6 +73,7 @@ Template Name: Iframe-Optimized Page
     var content = document.querySelector('.content');
     var scrollPosition = 0;
     var maxScroll = content.offsetHeight - container.offsetHeight;
+    var lastTouchY;
 
     function updateScroll(deltaY) {
         scrollPosition = Math.max(0, Math.min(scrollPosition + deltaY, maxScroll));
@@ -82,24 +83,25 @@ Template Name: Iframe-Optimized Page
         });
     }
 
-    window.addEventListener('message', function(event) {
-        switch(event.data.type) {
-            case 'wheel':
-            case 'touchmove':
-            case 'scroll':
-                updateScroll(event.data.deltaY);
-                break;
-            case 'finalScroll':
-                scrollPosition = event.data.position;
-                requestAnimationFrame(() => {
-                    content.style.transform = `translateY(-${scrollPosition}px)`;
-                });
-                break;
-            case 'touchstart':
-                // Handle touch start if needed
-                break;
-        }
-    });
+    function handleTouchStart(e) {
+        lastTouchY = e.touches[0].clientY;
+    }
+
+    function handleTouchMove(e) {
+        var touchY = e.touches[0].clientY;
+        var deltaY = lastTouchY - touchY;
+        lastTouchY = touchY;
+        
+        updateScroll(deltaY);
+        e.preventDefault();
+    }
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    window.handleScroll = function(deltaY) {
+        updateScroll(deltaY);
+    };
 
     if (window.parent && window.parent.iframeReady) {
         window.parent.iframeReady();

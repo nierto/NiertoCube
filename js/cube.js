@@ -1,12 +1,9 @@
-const MOBILE_STATE = window.matchMedia("(min-width: 961px)").matches ? 0 : 1;
 let sideCount = 0;
 let updCount = 0;
 let isTransitioning = false;
 let lastTouchY;
-let touchScrolling = false;
-let scrollVelocity = 0;
-let lastTouchTime;
 let lastScrollTime = 0;
+let lastWheelDelta = 0;
 const scrollThrottle = 10; // ms
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -49,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
 });
 
 function rotateCube(anglex, angley, anglez) {
@@ -220,14 +216,24 @@ function getActiveIframe() {
 
 function handleWheel(event) {
     if (isTransitioning) return;
+
     const now = performance.now();
-    if (now - lastScrollTime < scrollThrottle) return;
+    if (now - lastScrollTime < scrollThrottle) {
+        lastWheelDelta += event.deltaY;
+        event.preventDefault();
+        return;
+    }
+
+    const deltaY = lastWheelDelta + event.deltaY;
+    lastWheelDelta = 0;
     lastScrollTime = now;
 
     const activeIframe = getActiveIframe();
-    if (activeIframe && activeIframe.contentWindow) {
+    if (activeIframe && activeIframe.contentWindow && activeIframe.contentWindow.handleScroll) {
         requestAnimationFrame(() => {
-            activeIframe.contentWindow.postMessage({ type: 'wheel', deltaY: event.deltaY }, '*');
+            tunnel(function () {
+                activeIframe.contentWindow.handleScroll(deltaY);
+            });
         });
         event.preventDefault();
     }
@@ -235,67 +241,22 @@ function handleWheel(event) {
 
 function handleTouchStart(event) {
     if (isTransitioning) return;
-    touchScrolling = true;
     lastTouchY = event.touches[0].clientY;
-    lastTouchTime = Date.now();
-    scrollVelocity = 0;
-
-    const activeIframe = getActiveIframe();
-    if (activeIframe && activeIframe.contentWindow) {
-        activeIframe.contentWindow.postMessage({ type: 'touchstart', y: lastTouchY }, '*');
-    }
 }
 
 function handleTouchMove(event) {
-    if (isTransitioning || !touchScrolling) return;
+    if (isTransitioning) return;
 
     const currentTouchY = event.touches[0].clientY;
     const deltaY = lastTouchY - currentTouchY;
-    const currentTime = Date.now();
-    const deltaTime = currentTime - lastTouchTime;
-
-    scrollVelocity = deltaY / deltaTime;
 
     const activeIframe = getActiveIframe();
-    if (activeIframe && activeIframe.contentWindow) {
-        requestAnimationFrame(() => {
-            activeIframe.contentWindow.postMessage({ type: 'touchmove', deltaY: deltaY }, '*');
+    if (activeIframe && activeIframe.contentWindow && activeIframe.contentWindow.handleScroll) {
+        tunnel(function () {
+            activeIframe.contentWindow.handleScroll(deltaY);
         });
     }
 
     lastTouchY = currentTouchY;
-    lastTouchTime = currentTime;
-
     event.preventDefault();
-}
-
-function handleTouchEnd() {
-    touchScrolling = false;
-    if (Math.abs(scrollVelocity) > 0.1) {
-        decelerateScroll();
-    }
-}
-
-function decelerateScroll() {
-    if (Math.abs(scrollVelocity) < 0.01) {
-        // Ensure we end on a whole pixel
-        const activeIframe = getActiveIframe();
-        if (activeIframe && activeIframe.contentWindow) {
-            requestAnimationFrame(() => {
-                activeIframe.contentWindow.postMessage({ type: 'finalScroll', position: Math.round(scrollPosition) }, '*');
-            });
-        }
-        return;
-    }
-
-    const activeIframe = getActiveIframe();
-    if (activeIframe && activeIframe.contentWindow) {
-        requestAnimationFrame(() => {
-            scrollPosition += scrollVelocity * 16; // 16ms is roughly one frame at 60fps
-            activeIframe.contentWindow.postMessage({ type: 'scroll', deltaY: scrollVelocity * 16 }, '*');
-        });
-    }
-
-    scrollVelocity *= 0.95; // Deceleration factor
-    requestAnimationFrame(decelerateScroll);
 }
