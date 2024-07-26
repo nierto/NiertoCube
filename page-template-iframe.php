@@ -122,6 +122,23 @@ Template Name: Iframe-Optimized Page
         e.preventDefault();
     }
 
+
+    function notifyParentOfContentChange() {
+        window.parent.postMessage({ type: 'contentHeightChanged' }, '*');
+    }
+
+    // Call this whenever content changes
+    window.addEventListener('load', notifyParentOfContentChange);
+    
+    // If you have dynamic content, call notifyParentOfContentChange() after content updates
+
+    // Listen for height updates from parent
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'setHeight') {
+            document.body.style.height = event.data.height + 'px';
+        }
+    });
+
     window.addEventListener('load', updateParentHeight);
     window.addEventListener('resize', updateParentHeight);
     container.addEventListener('touchstart', handleTouchStart, { passive: true });

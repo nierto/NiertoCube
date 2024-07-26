@@ -48,6 +48,11 @@
             will-change: transform;
             z-index: 989;
         }
+        #cube {
+            margin-left: 0vmin;
+            margin-top: 25vmin;
+            margin-bottom: 0vmin;
+        }
     }
 
     @media (orientation: landscape) {
@@ -60,13 +65,11 @@
             height: 100%;
             flex-direction: column;
         }
-
         #wrapper_left {
             left: 0;
             top: 0;
             z-index: 889;
         }
-
         #wrapper_right {
             right: 0;
             top: 0;
@@ -76,15 +79,15 @@
             height: 100vh; /* Ensure the scroll container takes full height */
             max-height: none; /* Remove any max-height limitation */
         }
-
         .content {
             min-height: 100%; /* Ensure content takes at least full height */
         }
-    }
-    #cube {
-        margin-left: 0vmin;
-        margin-top: 25vmin;
-        margin-bottom: 0vmin;
+        #cube {
+            margin-left: 0vmin;
+            margin-top: 5vmin;
+            margin-bottom: 0vmin;
+        }
+    
     }
 
     .navButton {
@@ -204,7 +207,10 @@
         min-width: var(--nav-button-min-width);
         min-height: var(--nav-button-max-height);
     }
-
+    .scroll-container {
+        height: 100%;
+        overflow: auto;
+    }
     .navButton:first-child {
         margin-top: 28vmin;
     }
