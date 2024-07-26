@@ -4,7 +4,7 @@ let isTransitioning = false;
 let lastTouchY;
 let lastScrollTime = 0;
 let lastWheelDelta = 0;
-const scrollThrottle = 10; // ms
+const scrollThrottle = 16; // ms
 
 document.addEventListener('DOMContentLoaded', function () {
     window.cubeRotationX = 0;
@@ -249,14 +249,23 @@ function handleTouchMove(event) {
 
     const currentTouchY = event.touches[0].clientY;
     const deltaY = lastTouchY - currentTouchY;
+    lastTouchY = currentTouchY;
 
-    const activeIframe = getActiveIframe();
-    if (activeIframe && activeIframe.contentWindow && activeIframe.contentWindow.handleScroll) {
-        tunnel(function () {
-            activeIframe.contentWindow.handleScroll(deltaY);
+    const now = performance.now();
+    if (now - lastScrollTime > scrollThrottle) {
+        requestAnimationFrame(() => {
+            const activeIframe = getActiveIframe();
+            if (activeIframe && activeIframe.contentWindow && activeIframe.contentWindow.handleScroll) {
+                tunnel(() => {
+                    activeIframe.contentWindow.handleScroll(Math.round(accumulatedDelta + deltaY));
+                });
+            }
+            accumulatedDelta = 0;
+            lastScrollTime = now;
         });
+    } else {
+        accumulatedDelta += deltaY;
     }
 
-    lastTouchY = currentTouchY;
     event.preventDefault();
 }

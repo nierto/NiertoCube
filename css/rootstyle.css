@@ -113,3 +113,7 @@ ul {
 .navName {
     font-family: var(--button-font);
 }
+img {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}

@@ -16,7 +16,6 @@
 
 <p align="center">
   <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •
   <a href="#roadmap">Roadmap</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#license">License</a>
@@ -44,15 +43,6 @@
   <li>Developed by a specialized team of AI agents</li>
 </ul>
 
-<h2 id="installation">📦 Installation</h2>
-<ol>
-  <li>Download the latest release of the theme from the <a href="https://github.com/yourusername/NiertoCube/releases">GitHub releases page</a>.</li>
-  <li>Check the MD5 hash of the downloaded ZIP file against the one provided on the GitHub releases page to ensure integrity.</li>
-  <li>Upload the ZIP file to your WordPress installation via the WordPress admin panel: <code>Appearance</code> &gt; <code>Themes</code> &gt; <code>Add New</code> &gt; <code>Upload Theme</code>.</li>
-  <li>Activate the theme through the WordPress admin panel.</li>
-  <li>Customize the theme using the WordPress Customizer.</li>
-</ol>
-
 <h2 id="roadmap">🚀 Roadmap</h2>
 <ul>
   <li><strong>June 2024:</strong> Initial release of NiertoCube</li>
@@ -65,17 +55,6 @@
 
 <h2>Contributing</h2>
 <p>We welcome contributions! Please feel free to submit pull requests or open issues to help improve NiertoCube.</p>
-
-<h2>Dependencies and Integrations</h2>
-<p>To ensure seamless integration and performance, NiertoCube relies on several dependencies:</p>
-<ul>
-  <li>jQuery: Loaded from CDN for DOM manipulation and AJAX calls</li>
-  <li>Google Fonts: Used for the 'Rubik' and 'Ubuntu' font families</li>
-</ul>
-<p>Additionally, NiertoCube works best with:</p>
-<ul>
-  <li><strong>Blank Slate Plugin:</strong> Allows for blank templates ensuring the pages fit beautifully on the cube. Make sure to install and activate the <a href="https://wordpress.org/plugins/blank-slate/">Blank Slate plugin</a>.</li>
-</ul>
 
 <h2>Future Integrations</h2>
 <p>We are actively working on integrating advanced features including:</p>
