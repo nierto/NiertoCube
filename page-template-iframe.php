@@ -31,6 +31,7 @@ Template Name: Iframe-Optimized Page
             height: 100%;
             overflow: hidden;
             position: relative;
+            -webkit-overflow-scrolling: touch;
         }
         .content {
             padding: 20px;
@@ -39,6 +40,7 @@ Template Name: Iframe-Optimized Page
             left: 0;
             right: 0;
             transition: transform 0.3s ease;
+            min-height: 100%;
         }
         h1, h2, h3, h4, h5, h6 {
             font-family: <?php echo get_font_family('heading_font'); ?>;
@@ -52,6 +54,10 @@ Template Name: Iframe-Optimized Page
         }
         a:hover {
             color: var(--color-hover);
+        }
+        img {
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
     </style>
 </head>
@@ -75,11 +81,31 @@ Template Name: Iframe-Optimized Page
     var maxScroll = content.offsetHeight - container.offsetHeight;
     var lastTouchY;
 
+    function updateParentHeight() {
+    const height = document.body.scrollHeight;
+    window.parent.tunnel(() => {
+        window.parent.updateIframeHeight(height);
+        });
+    }
+
+    const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+           updateParentHeight();
+        }
+    });
+
+    resizeObserver.observe(document.body);
+
     function updateScroll(deltaY) {
+        maxScroll = content.offsetHeight - container.offsetHeight; // Recalculate maxScroll
         scrollPosition = Math.max(0, Math.min(scrollPosition + deltaY, maxScroll));
         requestAnimationFrame(() => {
             const roundedPosition = Math.round(scrollPosition);
             content.style.transform = `translateY(-${roundedPosition}px)`;
+    
+            window.parent.tunnel(() => {
+                window.parent.updateScrollPosition(roundedPosition, maxScroll);
+            });
         });
     }
 
@@ -96,6 +122,8 @@ Template Name: Iframe-Optimized Page
         e.preventDefault();
     }
 
+    window.addEventListener('load', updateParentHeight);
+    window.addEventListener('resize', updateParentHeight);
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
 

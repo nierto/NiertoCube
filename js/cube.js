@@ -5,6 +5,7 @@ let lastTouchY;
 let lastScrollTime = 0;
 let lastWheelDelta = 0;
 const scrollThrottle = 16; // ms
+let accumulatedDelta = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
     window.cubeRotationX = 0;
@@ -268,4 +269,16 @@ function handleTouchMove(event) {
     }
 
     event.preventDefault();
+}
+
+function updateIframeHeight(height) {
+    const iframe = document.querySelector('#contentIframe iframe');
+    if (iframe) {
+        iframe.style.height = height + 'px';
+    }
+}
+
+function updateScrollPosition(scrollPosition, maxScroll) {
+    // Use these values to update any necessary UI elements or perform any required actions
+    console.log('Scroll position:', scrollPosition, 'Max scroll:', maxScroll);
 }
