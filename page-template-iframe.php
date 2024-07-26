@@ -102,7 +102,7 @@ Template Name: Iframe-Optimized Page
         requestAnimationFrame(() => {
             const roundedPosition = Math.round(scrollPosition);
             content.style.transform = `translateY(-${roundedPosition}px)`;
-    
+        
             window.parent.tunnel(() => {
                 window.parent.updateScrollPosition(roundedPosition, maxScroll);
             });

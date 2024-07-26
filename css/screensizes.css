@@ -72,6 +72,14 @@
             top: 0;
             z-index: 890;
         }
+        .scroll-container {
+            height: 100vh; /* Ensure the scroll container takes full height */
+            max-height: none; /* Remove any max-height limitation */
+        }
+
+        .content {
+            min-height: 100%; /* Ensure content takes at least full height */
+        }
     }
     #cube {
         margin-left: 0vmin;
