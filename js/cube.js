@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
             updateIframeHeight();
         }
     });
+    window.addEventListener('resize', function() {
+        setTimeout(updateIframeHeight, 100);
+    });
 });
 
 function rotateCube(anglex, angley, anglez) {
@@ -279,12 +282,11 @@ function handleTouchMove(event) {
 function updateIframeHeight() {
     const iframe = document.querySelector('#contentIframe iframe');
     if (iframe && iframe.contentWindow) {
-        const iframeContent = iframe.contentWindow.document.body;
-        const contentHeight = iframeContent.scrollHeight;
-        iframe.style.height = contentHeight + 'px';
-        
-        // Notify the iframe content about the new height
-        iframe.contentWindow.postMessage({ type: 'setHeight', height: contentHeight }, '*');
+        tunnel(() => {
+            const contentHeight = iframe.contentWindow.document.body.scrollHeight;
+            iframe.style.height = contentHeight + 'px';
+            iframe.contentWindow.postMessage({ type: 'setHeight', height: contentHeight }, '*');
+        });
     }
 }
 

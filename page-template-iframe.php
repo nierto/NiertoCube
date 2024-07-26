@@ -27,20 +27,20 @@ Template Name: Iframe-Optimized Page
             color: var(--color-txt);
         }
         .scroll-container {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-            -webkit-overflow-scrolling: touch;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        -webkit-overflow-scrolling: touch;
         }
         .content {
-            padding: 20px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            transition: transform 0.3s ease;
-            min-height: 100%;
+        padding: 20px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        transition: transform 0.3s ease;
+        min-height: 100%;
         }
         h1, h2, h3, h4, h5, h6 {
             font-family: <?php echo get_font_family('heading_font'); ?>;
@@ -82,9 +82,9 @@ Template Name: Iframe-Optimized Page
     var lastTouchY;
 
     function updateParentHeight() {
-    const height = document.body.scrollHeight;
-    window.parent.tunnel(() => {
-        window.parent.updateIframeHeight(height);
+        const height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
+        window.parent.tunnel(() => {
+            window.parent.updateIframeHeight(height);
         });
     }
 
@@ -122,9 +122,14 @@ Template Name: Iframe-Optimized Page
         e.preventDefault();
     }
 
-
     function notifyParentOfContentChange() {
+        updateParentHeight();
         window.parent.postMessage({ type: 'contentHeightChanged' }, '*');
+    }
+
+    function handleResize() {
+        updateParentHeight();
+        maxScroll = content.offsetHeight - container.offsetHeight;
     }
 
     // Call this whenever content changes
@@ -140,7 +145,7 @@ Template Name: Iframe-Optimized Page
     });
 
     window.addEventListener('load', updateParentHeight);
-    window.addEventListener('resize', updateParentHeight);
+    window.addEventListener('resize', handleResize);
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
 
@@ -149,7 +154,9 @@ Template Name: Iframe-Optimized Page
     };
 
     if (window.parent && window.parent.iframeReady) {
-        window.parent.iframeReady();
+        window.parent.tunnel(() => {
+            window.parent.iframeReady();
+        });
     }
 })();
 </script>
