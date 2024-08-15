@@ -137,14 +137,29 @@ function nierto_cube_customize_register($wp_customize) {
         // CUBE PAGE NAMES
     for ($i = 1; $i <= 6; $i++) {
         $wp_customize->add_setting("cube_face_{$i}_text", array(
-            'default' => "example",
+            'default' => "Face {$i}",
             'sanitize_callback' => 'sanitize_text_field',
         ));
 
         $wp_customize->add_control("cube_face_{$i}_text", array(
-            'label' => "Button {$i} Text",
+            'label' => "Face {$i} Text",
             'section' => 'cube_face_settings',
             'type' => 'text',
+        ));
+
+        $wp_customize->add_setting("cube_face_{$i}_type", array(
+            'default' => 'page',
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+
+        $wp_customize->add_control("cube_face_{$i}_type", array(
+            'label' => "Face {$i} Content Type",
+            'section' => 'cube_face_settings',
+            'type' => 'select',
+            'choices' => array(
+                'page' => 'Page (iframe)',
+                'post' => 'Custom Post'
+            ),
         ));
 
         $wp_customize->add_setting("cube_face_{$i}_slug", array(
@@ -153,18 +168,20 @@ function nierto_cube_customize_register($wp_customize) {
         ));
 
         $wp_customize->add_control("cube_face_{$i}_slug", array(
-            'label' => "Button {$i} URL Slug",
+            'label' => "Face {$i} Slug/Title",
             'section' => 'cube_face_settings',
             'type' => 'text',
+            'description' => 'Enter URL slug for Page or post title for Custom Post',
         ));
 
+        // Keep your existing position setting
         $wp_customize->add_setting("cube_face_{$i}_position", array(
             'default' => "face" . ($i - 1),
             'sanitize_callback' => 'sanitize_text_field',
         ));
 
         $wp_customize->add_control("cube_face_{$i}_position", array(
-            'label' => "Button {$i} Face Position",
+            'label' => "Face {$i} Position",
             'section' => 'cube_face_settings',
             'type' => 'select',
             'choices' => array(
@@ -437,6 +454,161 @@ function get_google_font_url() {
     }
     
     return '';
+}
+
+// new iframe-less way to render content unto one of the cube sides.
+function register_cube_face_post_type() {
+    register_post_type('cube_face', [
+        'labels' => [
+            'name' => 'Cube Faces',
+            'singular_name' => 'Cube Face',
+        ],
+        'public' => true,
+        'has_archive' => false,
+        'supports' => ['title', 'editor', 'custom-fields'],
+    ]);
+}
+add_action('init', 'register_cube_face_post_type');
+
+// adding the admin panel (new august 2024):
+function nierto_cube_add_admin_menu() {
+    add_menu_page('Nierto Cube Settings', 'Nierto Cube', 'manage_options', 'nierto_cube', 'nierto_cube_settings_page', 'dashicons-admin-generic', 99);
+}
+add_action('admin_menu', 'nierto_cube_add_admin_menu');
+
+function nierto_cube_register_settings() {
+    register_setting('nierto_cube_options', 'nierto_cube_settings');
+}
+add_action('admin_init', 'nierto_cube_register_settings');
+
+function nierto_cube_settings_page() {
+    // Implementation in admin-settings.php
+}
+
+// ValKey integration (new August 2024):
+function is_valkey_enabled() {
+    $settings = get_option('nierto_cube_settings');
+    return isset($settings['use_valkey']) && $settings['use_valkey'] && !empty($settings['valkey_ip']);
+}
+
+function valkey_get($key) {
+    if (!is_valkey_enabled()) {
+        return false;
+    }
+    
+    $settings = get_option('nierto_cube_settings');
+    $valkey_ip = $settings['valkey_ip'];
+    $valkey_port = isset($settings['valkey_port']) ? $settings['valkey_port'] : '6379';
+    
+    $redis = new Redis();
+    try {
+        $redis->connect($valkey_ip, $valkey_port);
+        return $redis->get($key);
+    } catch (Exception $e) {
+        error_log('ValKey connection failed: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function valkey_set($key, $value, $ttl = 3600) {
+    if (!is_valkey_enabled()) {
+        return false;
+    }
+    
+    $settings = get_option('nierto_cube_settings');
+    $valkey_ip = $settings['valkey_ip'];
+    $valkey_port = isset($settings['valkey_port']) ? $settings['valkey_port'] : '6379';
+    
+    $redis = new Redis();
+    try {
+        $redis->connect($valkey_ip, $valkey_port);
+        return $redis->setex($key, $ttl, $value);
+    } catch (Exception $e) {
+        error_log('ValKey connection failed: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function register_face_content_endpoint() {
+    register_rest_route('nierto-cube/v1', '/face-content/(?P<slug>[\w-]+)', [
+        'methods' => 'GET',
+        'callback' => 'get_face_content',
+    ]);
+}
+add_action('rest_api_init', 'register_face_content_endpoint');
+
+function get_face_content($request) {
+    $slug = $request['slug'];
+    
+    // Find the face settings based on the slug
+    $settings = get_option('nierto_cube_settings');
+    $face_id = null;
+    $face_type = null;
+    $face_source = null;
+
+    for ($i = 1; $i <= 6; $i++) {
+        if (isset($settings['face'.$i.'_slug']) && $settings['face'.$i.'_slug'] === $slug) {
+            $face_id = $i;
+            $face_type = isset($settings['face'.$i.'_type']) ? $settings['face'.$i.'_type'] : 'post';
+            $face_source = isset($settings['face'.$i.'_source']) ? $settings['face'.$i.'_source'] : '';
+            break;
+        }
+    }
+
+    if (!$face_id) {
+        return new WP_Error('not_found', 'Face content not found', ['status' => 404]);
+    }
+
+    $cache_key = "face_content_{$slug}";
+    $cache_time = 604800; // Cache for 1 week
+
+    // Try ValKey first
+    if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
+        $cached_content = valkey_get($cache_key);
+        if ($cached_content !== false) {
+            return json_decode($cached_content, true);
+        }
+    }
+
+    // If not in ValKey, check WordPress transients
+    $cached_content = get_transient($cache_key);
+    if ($cached_content !== false) {
+        return $cached_content;
+    }
+
+    // If not cached, generate content
+    if ($face_type === 'page') {
+        $content = [
+            'type' => 'page',
+            'content' => home_url($slug)
+        ];
+    } else {
+        $args = array(
+            'name' => $slug,
+            'post_type' => 'cube_face',
+            'post_status' => 'publish',
+            'numberposts' => 1
+        );
+        $posts = get_posts($args);
+        
+        if ($posts) {
+            $post = $posts[0];
+            $content = [
+                'type' => 'post',
+                'content' => apply_filters('the_content', $post->post_content)
+            ];
+        } else {
+            return new WP_Error('not_found', 'Custom post not found', ['status' => 404]);
+        }
+    }
+
+    // Cache the content
+    if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
+        valkey_set($cache_key, json_encode($content), $cache_time);
+    }
+    set_transient($cache_key, $content, $cache_time);
+
+    return $content;
 }
 
 function get_font_family($setting) {

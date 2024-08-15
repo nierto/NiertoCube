@@ -189,16 +189,35 @@ function rotateToCubeFace(faceID) {
 
 function createContentDiv(pageID, destPage) {
     const particularDiv = document.getElementById(pageID);
-    const destination = `${window.location.origin}/${destPage}`;
     const div = document.createElement("div");
     div.id = "contentIframe";
     div.classList.add("fade-in", "focussed");
-    const iframe = document.createElement("iframe");
-    iframe.className = "iframe-container";
-    iframe.src = destination;
-    iframe.frameBorder = "0";
-    div.appendChild(iframe);
-    particularDiv.appendChild(div);
+
+    // Find the face settings based on the destPage
+    const faceSettings = variables.cubeFaces.find(face => face.urlSlug === destPage);
+    if (!faceSettings) {
+        console.error(`Face settings not found for slug: ${destPage}`);
+        return;
+    }
+
+    if (faceSettings.contentType === 'page') {
+        // Existing iframe logic
+        const iframe = document.createElement("iframe");
+        iframe.className = "iframe-container";
+        iframe.src = `${window.location.origin}/${destPage}`;
+        div.appendChild(iframe);
+        particularDiv.appendChild(div);
+    } else {
+        // New custom post logic
+        fetch(`/wp-json/nierto-cube/v1/face-content/${destPage}`)
+            .then(response => response.json())
+            .then(data => {
+                div.innerHTML = data.content;
+                particularDiv.appendChild(div);
+                setupScrolling(div);
+            })
+            .catch(error => console.error('Error:', error));
+    }
 }
 
 function handleLogoClick() {
@@ -293,4 +312,14 @@ function updateIframeHeight() {
 function updateScrollPosition(scrollPosition, maxScroll) {
     // Use these values to update any necessary UI elements or perform any required actions
     console.log('Scroll position:', scrollPosition, 'Max scroll:', maxScroll);
+}
+
+function setupScrolling(container) {
+    container.style.height = '100%';
+    container.style.overflowY = 'scroll';
+    container.style.scrollbarWidth = 'none';
+    container.style.msOverflowStyle = 'none';
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
 }

@@ -18,10 +18,11 @@ for ($i = 1; $i <= 6; $i++) {
         'buttonText' => get_theme_mod("cube_face_{$i}_text", "Face {$i}"),
         'urlSlug' => get_theme_mod("cube_face_{$i}_slug", "face-{$i}"),
         'facePosition' => get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1)),
+        'contentType' => get_theme_mod("cube_face_{$i}_type", "page"),
     ];
 }
 
-$jsContent = 'const variables = ' . json_encode(['cubeFaces' => $cube_faces]) . ';
+$jsContent = 'const variables = ' . json_encode(['cubeFaces' => $cube_faces]) . ';';
 
 function setupCubeButtons() {
     const navButtons = document.querySelectorAll(\'.navButton\');
