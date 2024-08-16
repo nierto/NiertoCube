@@ -417,6 +417,16 @@ function nierto_cube_scripts() {
 
 add_action('wp_enqueue_scripts', 'nierto_cube_scripts');
 
+function nierto_cube_admin_enqueue_styles($hook) {
+    // Only load this CSS on the Nierto Cube settings page
+    if ('toplevel_page_nierto_cube' !== $hook) {
+        return;
+    }
+    
+    wp_enqueue_style('nierto-cube-admin-styles', get_template_directory_uri() . '/css/admin-nierto-cube.css', array(), '1.0.0');
+}
+add_action('admin_enqueue_scripts', 'nierto_cube_admin_enqueue_styles');
+
 function get_theme_logo_details() {
     return array(
         'url' => get_theme_mod('logo_source', ''),
@@ -482,7 +492,7 @@ function nierto_cube_register_settings() {
 add_action('admin_init', 'nierto_cube_register_settings');
 
 function nierto_cube_settings_page() {
-    // Implementation in admin-settings.php
+    require_once get_template_directory() . '/admin-settings.php';
 }
 
 // ValKey integration (new August 2024):

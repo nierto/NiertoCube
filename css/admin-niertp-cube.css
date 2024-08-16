@@ -1,0 +1,232 @@
+/* Main container */
+.nierto-cube-admin {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: #f7f9fc;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2.618em;
+    /* Golden ratio */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Typography */
+.nierto-cube-title {
+    color: #2c3e50;
+    font-size: 2.618em;
+    /* Golden ratio */
+    font-weight: 300;
+    margin-bottom: 0.618em;
+    /* Golden ratio */
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.382em;
+    /* Golden ratio */
+}
+
+.nierto-cube-subtitle {
+    color: #34495e;
+    font-size: 1.618em;
+    /* Golden ratio */
+    font-weight: 400;
+    margin: 1.618em 0 0.618em;
+    /* Golden ratio */
+}
+
+.nierto-cube-face-title {
+    color: #7f8c8d;
+    font-size: 1.2em;
+    font-weight: 500;
+    margin: 1em 0 0.5em;
+}
+
+/* Form elements */
+.nierto-cube-form {
+    display: grid;
+    grid-gap: 1.618em;
+    /* Golden ratio */
+}
+
+.nierto-cube-table {
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1.618em;
+    /* Golden ratio */
+    margin-bottom: 1.618em;
+    /* Golden ratio */
+}
+
+.nierto-cube-label {
+    display: block;
+    color: #2c3e50;
+    font-weight: 500;
+    margin-bottom: 0.5em;
+}
+
+.nierto-cube-input,
+.nierto-cube-select {
+    width: 100%;
+    padding: 0.8em;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 1em;
+    color: #34495e;
+    transition: border-color 0.3s ease;
+}
+
+.nierto-cube-input:focus,
+.nierto-cube-select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.nierto-cube-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.nierto-cube-checkbox input[type="checkbox"] {
+    margin-right: 0.5em;
+}
+
+.nierto-cube-description {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-top: 0.5em;
+}
+
+/* Submit button */
+.nierto-cube-submit {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 0.8em 1.618em;
+    /* Golden ratio */
+    font-size: 1em;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.nierto-cube-submit:hover {
+    background-color: #27ae60;
+}
+
+/* Specific sections */
+.valkey-settings {
+    border-left: 4px solid #e74c3c;
+}
+
+.face-settings {
+    border-left: 4px solid #f39c12;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .nierto-cube-admin {
+        padding: 1.618em;
+        /* Golden ratio */
+    }
+
+    .nierto-cube-title {
+        font-size: 2em;
+    }
+
+    .nierto-cube-subtitle {
+        font-size: 1.4em;
+    }
+}
+
+/* Animation for smooth transitions */
+.nierto-cube-admin * {
+    transition: all 0.3s ease;
+}
+
+/* Custom scrollbar */
+.nierto-cube-admin::-webkit-scrollbar {
+    width: 8px;
+}
+
+.nierto-cube-admin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.nierto-cube-admin::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.nierto-cube-admin::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Card-like layout for face settings */
+.face-settings-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.618em;
+    /* Golden ratio */
+}
+
+.face-settings {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.618em;
+    /* Golden ratio */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.face-settings:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Toggle switch for ValKey */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #2ecc71;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
