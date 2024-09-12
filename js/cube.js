@@ -8,6 +8,8 @@ const scrollThrottle = 16; // ms
 let accumulatedDelta = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
+    const cube = document.getElementById('cube');
+
     check3DSupport();
     window.cubeRotationX = 0;
     window.cubeRotationY = 0;
@@ -75,8 +77,8 @@ function handleNavButtonClick(event) {
 }
 
 function rotateCube(anglex, angley, anglez) {
-    const cube = $("#cube");
-    cube.css('transition', `transform ${window.cubeduration}ms`);
+    const cube = document.getElementById('cube');
+    cube.style.transition = `transform ${window.cubeduration}ms`;
 
     window.cubeRotationX = Math.round(window.cubeRotationX + anglex);
     window.cubeRotationY = Math.round(window.cubeRotationY + angley);
@@ -84,7 +86,7 @@ function rotateCube(anglex, angley, anglez) {
 
     requestAnimationFrame(() => {
         const newTransform = `rotateX(${window.cubeRotationX}deg) rotateY(${window.cubeRotationY}deg) rotateZ(${window.cubeRotationZ}deg)`;
-        cube.css('transform', newTransform);
+        cube.style.transform = newTransform;
     });
 
     sideCount = Math.abs(sideCount) === 4 ? 0 : sideCount;
@@ -147,8 +149,8 @@ function goHome(callback) {
             window.cubeRotationX = 0;
             window.cubeRotationY = 0;
             window.cubeRotationZ = 0;
-            const cube = $("#cube");
-            cube.css('transform', 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)');
+            const cube = document.getElementById('cube');
+            cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
             if (callback) setTimeout(callback, 50);
         }
     }, 50);
@@ -207,23 +209,30 @@ function rotateToCubeFace(faceID) {
 function preloadCubeFaces() {
     niertoCubeData.faces.forEach(face => {
         if (face.type === 'post') {
-            $.ajax({
-                url: niertoCubeData.ajaxurl,
-                type: 'POST',
-                data: {
+            fetch(niertoCubeData.ajaxurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
                     action: 'nierto_cube_get_face_content',
-                    slug: destPage,
+                    slug: face.slug,
                     nonce: niertoCubeData.nonce
-                },
-                success: function (response) {
-                    if (response.success) {
-                        div.innerHTML = response.data;
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Store the preloaded content somewhere, e.g., in a data attribute
+                        const faceElement = document.getElementById(face.position);
+                        if (faceElement) {
+                            faceElement.setAttribute('data-content', data.data);
+                        }
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading face content:', error);
-                }
-            });
+                })
+                .catch(error => {
+                    console.error('Error preloading face content:', error);
+                });
         }
         // We don't preload iframes
     });
@@ -253,22 +262,25 @@ function createContentDiv(pageID, destPage) {
             div.appendChild(contentDiv);
         } else {
             // If content is not preloaded, load it now
-            $.ajax({
-                url: niertoCubeData.ajaxurl,
-                type: 'POST',
-                data: {
+            fetch(niertoCubeData.ajaxurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
                     action: 'nierto_cube_get_face_content',
                     slug: destPage
-                },
-                success: function (response) {
-                    if (response.success) {
-                        div.innerHTML = response.data;
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        div.innerHTML = data.data;
                     }
-                },
-                error: function (xhr, status, error) {
+                })
+                .catch(error => {
                     console.error('Error loading face content:', error);
-                }
-            });
+                });
         }
     }
     particularDiv.appendChild(div);
@@ -281,8 +293,8 @@ function handleLogoClick() {
             window.cubeRotationX = 0;
             window.cubeRotationY = 0;
             window.cubeRotationZ = 0;
-            const cube = $("#cube");
-            cube.css('transform', 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)');
+            const cube = document.getElementById('cube');
+            cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
             sideCount = 0;
             updCount = 0;
             setTimeout(() => {
@@ -291,6 +303,7 @@ function handleLogoClick() {
         });
     }
 }
+
 function getActiveIframe() {
     const focussedDiv = document.querySelector('.focussed');
     return focussedDiv ? focussedDiv.querySelector('iframe') : null;

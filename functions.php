@@ -9,6 +9,7 @@ $functionality_files = [
     'aria-functionality.php',
     'caching-functionality.php',
     'cookies-functionality.php',
+    'errors-functionality.php',
     'google-functionality.php',
     'metatags-functionality.php',
     'sanitation-functionality.php',
@@ -531,10 +532,6 @@ function nierto_cube_customizer_css() {
 add_action('wp_head', 'nierto_cube_customizer_css');
 
 function nierto_cube_scripts() {
-    wp_deregister_script('jquery');
-    wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js', false, null, true);
-    wp_enqueue_script('jquery');
-
     $theme_dir = get_template_directory();
     $theme_uri = get_template_directory_uri();
 
@@ -543,10 +540,10 @@ function nierto_cube_scripts() {
     wp_enqueue_style('nierto-cube-style', get_stylesheet_uri(), array(), filemtime(get_stylesheet_directory() . '/style.css'));
 
     // Enqueue scripts
-    wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array('jquery'), filemtime($theme_dir . '/js/cookies.js'), true);
-    wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('jquery'), filemtime($theme_dir . '/js/cube.js'), true);
-    wp_enqueue_script('pwa-script', $theme_uri . '/js/pwa.js', array('jquery'), filemtime($theme_dir . '/js/pwa.js'), true);
-    wp_enqueue_script('serviceworker-script', $theme_uri . '/js/service-worker.js', array('jquery'), filemtime($theme_dir . '/js/service-worker.js'), true);
+    wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array(), filemtime($theme_dir . '/js/cookies.js'), true);
+    wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array(), filemtime($theme_dir . '/js/cube.js'), true);
+    wp_enqueue_script('pwa-script', $theme_uri . '/js/pwa.js', array(), filemtime($theme_dir . '/js/pwa.js'), true);
+    wp_enqueue_script('serviceworker-script', $theme_uri . '/js/service-worker.js', array(), filemtime($theme_dir . '/js/service-worker.js'), true);
 
     // Config script is dynamically generated, so we'll use the current time for versioning
     wp_enqueue_script('config-script', $theme_uri . '/js/config/config.js.php', array(), current_time('timestamp'), true);
@@ -615,6 +612,24 @@ function get_face_content($request) {
     try {
         $slug = $request['slug'];
         
+        $cache_key = "face_content_{$slug}";
+        $cache_time = 86400; // Cache for 1 day
+
+        // Check if ValKey is enabled and try to get cached content
+        if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
+            $content = valkey_get($cache_key);
+            if ($content !== false) {
+                return json_decode($content, true);
+            }
+        } else {
+            // If ValKey is not enabled, use WordPress transients
+            $content = get_transient($cache_key);
+            if ($content !== false) {
+                return $content;
+            }
+        }
+
+        // If cache miss, generate the content
         $settings = get_option('nierto_cube_settings');
         $face_id = null;
         $face_type = null;
@@ -631,21 +646,6 @@ function get_face_content($request) {
 
         if (!$face_id) {
             throw new Exception('Face content not found');
-        }
-
-        $cache_key = "face_content_{$slug}";
-        $cache_time = 604800;
-
-        if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
-            $cached_content = valkey_get($cache_key);
-            if ($cached_content !== false) {
-                return json_decode($cached_content, true);
-            }
-        }
-
-        $cached_content = get_transient($cache_key);
-        if ($cached_content !== false) {
-            return $cached_content;
         }
 
         if ($face_type === 'page') {
@@ -673,13 +673,16 @@ function get_face_content($request) {
             }
         }
 
+        // Cache the content
         if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
             valkey_set($cache_key, json_encode($content), $cache_time);
+        } else {
+            set_transient($cache_key, $content, $cache_time);
         }
-        set_transient($cache_key, $content, $cache_time);
 
         return $content;
     } catch (Exception $e) {
+        nierto_cube_log_error('Error in get_face_content: ' . $e->getMessage());
         return new WP_Error('error', $e->getMessage(), ['status' => 500]);
     }
 }
