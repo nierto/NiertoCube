@@ -8,6 +8,7 @@ const scrollThrottle = 16; // ms
 let accumulatedDelta = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
+    check3DSupport();
     window.cubeRotationX = 0;
     window.cubeRotationY = 0;
     window.cubeRotationZ = 0;
@@ -15,27 +16,31 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cubeduration = 250;
     window.cubestate = 2;
 
-    if (typeof variables !== 'undefined') {
-        setupCubeButtons();
-    } else {
-        console.error('Required variables are not defined.');
-    }
+    setupCubeButtons();
 
     document.addEventListener('keydown', arrowKeyHandler);
+    document.querySelectorAll('.navButton .navName').forEach((button, index) => {
+        const faceData = niertoCubeData.faces[index];
+        button.textContent = faceData.text;
+        button.setAttribute('aria-label', `Navigate to ${faceData.text}`);
+        button.setAttribute('data-face', faceData.position);
+        button.setAttribute('data-slug', faceData.slug);
 
-    document.querySelectorAll('.navButton .navName').forEach(button => {
-        button.addEventListener('click', function (event) {
-            if (isTransitioning) return;
-            isTransitioning = true;
-            const faceId = event.currentTarget.getAttribute('data-face');
-            const slug = event.currentTarget.getAttribute('data-slug');
-            goHome(() => {
-                requestAnimationFrame(() => {
-                    cubeMoveButton(faceId, slug);
-                });
-            });
+        button.addEventListener('click', handleNavButtonClick);
+        button.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleNavButtonClick.call(this, event);
+            }
         });
     });
+
+    const cubeFaces = document.querySelectorAll('#cube .face');
+    cubeFaces.forEach((face, index) => {
+        face.setAttribute('aria-label', `Cube face ${niertoCubeData.faces[index].text}`);
+    });
+
+    preloadCubeFaces();
 
     const logo = document.getElementById('logo_goHome');
     if (logo) {
@@ -47,15 +52,27 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', function (event) {
         if (event.data.type === 'contentHeightChanged') {
             updateIframeHeight();
         }
     });
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         setTimeout(updateIframeHeight, 100);
     });
 });
+
+function handleNavButtonClick(event) {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    const faceId = event.currentTarget.getAttribute('data-face');
+    const slug = event.currentTarget.getAttribute('data-slug');
+    goHome(() => {
+        requestAnimationFrame(() => {
+            cubeMoveButton(faceId, slug);
+        });
+    });
+}
 
 function rotateCube(anglex, angley, anglez) {
     const cube = $("#cube");
@@ -187,37 +204,74 @@ function rotateToCubeFace(faceID) {
     }
 }
 
+function preloadCubeFaces() {
+    niertoCubeData.faces.forEach(face => {
+        if (face.type === 'post') {
+            $.ajax({
+                url: niertoCubeData.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'nierto_cube_get_face_content',
+                    slug: destPage,
+                    nonce: niertoCubeData.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        div.innerHTML = response.data;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading face content:', error);
+                }
+            });
+        }
+        // We don't preload iframes
+    });
+}
+
 function createContentDiv(pageID, destPage) {
     const particularDiv = document.getElementById(pageID);
     const div = document.createElement("div");
     div.id = "contentIframe";
     div.classList.add("fade-in", "focussed");
 
-    // Find the face settings based on the destPage
-    const faceSettings = variables.cubeFaces.find(face => face.urlSlug === destPage);
+    const faceSettings = niertoCubeData.faces.find(face => face.slug === destPage);
     if (!faceSettings) {
         console.error(`Face settings not found for slug: ${destPage}`);
         return;
     }
 
-    if (faceSettings.contentType === 'page') {
-        // Existing iframe logic
+    if (faceSettings.type === 'page') {
         const iframe = document.createElement("iframe");
         iframe.className = "iframe-container";
         iframe.src = `${window.location.origin}/${destPage}`;
         div.appendChild(iframe);
-        particularDiv.appendChild(div);
     } else {
-        // New custom post logic
-        fetch(`/wp-json/nierto-cube/v1/face-content/${destPage}`)
-            .then(response => response.json())
-            .then(data => {
-                div.innerHTML = data.content;
-                particularDiv.appendChild(div);
-                setupScrolling(div);
-            })
-            .catch(error => console.error('Error:', error));
+        const contentDiv = particularDiv.querySelector('div');
+        if (contentDiv) {
+            contentDiv.style.display = 'block';
+            div.appendChild(contentDiv);
+        } else {
+            // If content is not preloaded, load it now
+            $.ajax({
+                url: niertoCubeData.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'nierto_cube_get_face_content',
+                    slug: destPage
+                },
+                success: function (response) {
+                    if (response.success) {
+                        div.innerHTML = response.data;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading face content:', error);
+                }
+            });
+        }
     }
+    particularDiv.appendChild(div);
 }
 
 function handleLogoClick() {
@@ -322,4 +376,31 @@ function setupScrolling(container) {
     container.addEventListener('wheel', handleWheel, { passive: false });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
+}
+
+function check3DSupport() {
+    var el = document.createElement('p'),
+        has3d,
+        transforms = {
+            'webkitTransform': '-webkit-transform',
+            'OTransform': '-o-transform',
+            'msTransform': '-ms-transform',
+            'MozTransform': '-moz-transform',
+            'transform': 'transform'
+        };
+
+    document.body.insertBefore(el, null);
+
+    for (var t in transforms) {
+        if (el.style[t] !== undefined) {
+            el.style[t] = "translate3d(1px,1px,1px)";
+            has3d = window.getComputedStyle(el).getPropertyValue(transforms[t]);
+        }
+    }
+
+    document.body.removeChild(el);
+
+    if (!(has3d !== undefined && has3d.length > 0 && has3d !== "none")) {
+        document.body.innerHTML = '<div style="padding: 20px; background: #f0f0f0; text-align: center;">Please update your browser to view this website properly.</div>';
+    }
 }

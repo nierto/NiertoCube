@@ -1,16 +1,49 @@
 <?php
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Include custom functionality
+$functionality_files = [
+    'aria-functionality.php',
+    'caching-functionality.php',
+    'cookies-functionality.php',
+    'google-functionality.php',
+    'metatags-functionality.php',
+    'sanitation-functionality.php',
+    'structureddate-functionality.php',
+    'valkey-functionality.php',
+];
+
+foreach ($functionality_files as $file) {
+    $file_path = get_template_directory() . '/inc/' . $file;
+    if (file_exists($file_path)) {
+        require_once $file_path;
+    }
+}
+
 function nierto_cube_customize_register($wp_customize) {
     // Registering sections
     // COLORS
     $wp_customize->add_section('colors', array(
         'title' => __('Colors', 'nierto_cube'),
         'description' => __('Customize the colors of the theme.', 'nierto_cube'),
-        'priority' => 30,
+        'priority' => 23,
+    ));
+    // VALKEY INTEGRATION - JWZ
+    $wp_customize->add_section('nierto_cube_valkey', array(
+    'title' => __('ValKey Settings', 'nierto_cube'),
+    'priority' => 29,
+    ));
+    $wp_customize->add_section('nierto_cube_pwa', array(
+    'title' => __('PWA Settings', 'nierto_cube'),
+    'priority' => 35,
     ));
     // CUBE SETTINGS
     $wp_customize->add_section('cube_settings', array(
         'title' => __('Cube Settings', 'nierto_cube'),
-        'priority' => 160,
+        'priority' => 150,
     ));
     $wp_customize->add_section('cube_face_settings', array(
         'title' => __('Cube Face Settings', 'nierto_cube'),
@@ -33,7 +66,6 @@ function nierto_cube_customize_register($wp_customize) {
         'priority' => 203,
     ));
 
-
     //SECTION: COLORS
     // Gradient colors settings
     $gradient_colors = ['1', '2', '3', '4'];
@@ -41,7 +73,7 @@ function nierto_cube_customize_register($wp_customize) {
         $wp_customize->add_setting("grad_color{$num}", array(
             'default' => '#ee7752',
             'transport' => 'refresh',
-            'sanitize_callback' => 'nierto_cube_sanitize_css'
+            'sanitize_callback' => 'nierto_cube_sanitize_hex_color'
         ));
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, "grad_color{$num}", array(
             'label' => __("Gradient Color {$num}", 'nierto_cube'),
@@ -71,7 +103,7 @@ function nierto_cube_customize_register($wp_customize) {
         $wp_customize->add_setting($setting_id, [
             'default' => $default,
             'transport' => 'refresh',
-            'sanitize_callback' => 'nierto_cube_sanitize_css'
+            'sanitize_callback' => 'nierto_cube_sanitize_hex_color'
         ]);
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, $setting_id, array(
             'label' => __(ucfirst(str_replace('_', ' ', $setting_id)), 'nierto_cube'),
@@ -79,6 +111,100 @@ function nierto_cube_customize_register($wp_customize) {
             'settings' => $setting_id,
         )));
     }
+    // SECTION: VALKEY INTEGRATION
+    $wp_customize->add_setting('use_valkey', array(
+    'default' => 0,
+    'sanitize_callback' => 'absint',
+    ));
+    $wp_customize->add_control('use_valkey', array(
+        'label' => __('Use ValKey', 'nierto_cube'),
+        'section' => 'nierto_cube_valkey',
+        'type' => 'checkbox',
+    ));
+    $wp_customize->add_setting('valkey_ip', array(
+        'default' => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('valkey_ip', array(
+        'label' => __('ValKey IP Address', 'nierto_cube'),
+        'section' => 'nierto_cube_valkey',
+        'type' => 'text',
+    ));
+    $wp_customize->add_setting('valkey_port', array(
+        'default' => '6379',
+        'sanitize_callback' => 'absint',
+    ));
+    $wp_customize->add_control('valkey_port', array(
+        'label' => __('ValKey Port', 'nierto_cube'),
+        'section' => 'nierto_cube_valkey',
+        'type' => 'number',
+    ));
+
+    // SECTION: PWA SETTINGS
+    $wp_customize->add_setting('pwa_icon_192', array(
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'pwa_icon_192', array(
+        'label' => __('PWA Icon (192x192)', 'nierto_cube'),
+        'section' => 'nierto_cube_pwa',
+        'settings' => 'pwa_icon_192',
+    )));
+
+    $wp_customize->add_setting('pwa_icon_512', array(
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'pwa_icon_512', array(
+        'label' => __('PWA Icon (512x512)', 'nierto_cube'),
+        'section' => 'nierto_cube_pwa',
+        'settings' => 'pwa_icon_512',
+    )));
+    $wp_customize->add_setting('pwa_short_name', array(
+        'default' => 'NCube',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('pwa_short_name', array(
+        'label' => __('PWA Short Name', 'nierto_cube'),
+        'section' => 'nierto_cube_pwa',
+        'type' => 'text',
+    ));
+
+    $wp_customize->add_setting('pwa_background_color', array(
+        'default' => '#ffffff',
+        'sanitize_callback' => 'sanitize_hex_color',
+    ));
+
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'pwa_background_color', array(
+        'label' => __('PWA Background Color', 'nierto_cube'),
+        'section' => 'nierto_cube_pwa',
+    )));
+
+    $wp_customize->add_setting('pwa_theme_color', array(
+        'default' => '#000000',
+        'sanitize_callback' => 'sanitize_hex_color',
+    ));
+
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'pwa_theme_color', array(
+        'label' => __('PWA Theme Color', 'nierto_cube'),
+        'section' => 'nierto_cube_pwa',
+    )));
+
+    $wp_customize->add_setting('pwa_install_banner', array(
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'pwa_install_banner', array(
+        'label' => __('PWA Install Banner Image', 'nierto_cube'),
+        'description' => __('Upload an image to use as the install banner. If not set, a default banner will be used.', 'nierto_cube'),
+        'section' => 'nierto_cube_pwa',
+        'settings' => 'pwa_install_banner',
+    )));
+    
     // SECTION: CUBE SETTINGS
     $cube_settings = [
         'perspective_scene' => [
@@ -102,7 +228,7 @@ function nierto_cube_customize_register($wp_customize) {
         $wp_customize->add_setting($id, [
             'default' => $values['default'],
             'transport' => 'refresh',
-            'sanitize_callback' => 'nierto_cube_sanitize_css'
+            'sanitize_callback' => 'nierto_cube_sanitize_css_value'
         ]);
         $wp_customize->add_control($id, [
             'label' => __($values['label'], 'nierto_cube'),
@@ -408,24 +534,34 @@ function nierto_cube_scripts() {
     wp_deregister_script('jquery');
     wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js', false, null, true);
     wp_enqueue_script('jquery');
-    wp_enqueue_style('nierto-cube-all-styles', get_template_directory_uri() . '/css/all-styles.css', array(), '1.0.0');
-    wp_enqueue_style('nierto-cube-style', get_stylesheet_uri());
-    wp_enqueue_script('cube-script', get_template_directory_uri() . '/js/cube.js', array('jquery'), '1.0.0', true);
-    wp_enqueue_script('config-script', get_template_directory_uri() . '/js/config/config.js.php', array(), null, true);
-  
-}
 
+    $theme_dir = get_template_directory();
+    $theme_uri = get_template_directory_uri();
+
+    // Enqueue styles
+    wp_enqueue_style('nierto-cube-all-styles', $theme_uri . '/css/all-styles.css', array(), filemtime($theme_dir . '/css/all-styles.css'));
+    wp_enqueue_style('nierto-cube-style', get_stylesheet_uri(), array(), filemtime(get_stylesheet_directory() . '/style.css'));
+
+    // Enqueue scripts
+    wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array('jquery'), filemtime($theme_dir . '/js/cookies.js'), true);
+    wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('jquery'), filemtime($theme_dir . '/js/cube.js'), true);
+    wp_enqueue_script('pwa-script', $theme_uri . '/js/pwa.js', array('jquery'), filemtime($theme_dir . '/js/pwa.js'), true);
+    wp_enqueue_script('serviceworker-script', $theme_uri . '/js/service-worker.js', array('jquery'), filemtime($theme_dir . '/js/service-worker.js'), true);
+
+    // Config script is dynamically generated, so we'll use the current time for versioning
+    wp_enqueue_script('config-script', $theme_uri . '/js/config/config.js.php', array(), current_time('timestamp'), true);
+
+    wp_localize_script('cube-script', 'niertoCubeData', array(
+        'faces' => nierto_cube_get_face_content(),
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('nierto_cube_get_face_content')
+    ));
+
+    wp_localize_script('pwa-script', 'niertoCubePWA', array(
+        'installBanner' => get_theme_mod('pwa_install_banner', ''),
+    ));
+}
 add_action('wp_enqueue_scripts', 'nierto_cube_scripts');
-
-function nierto_cube_admin_enqueue_styles($hook) {
-    // Only load this CSS on the Nierto Cube settings page
-    if ('toplevel_page_nierto_cube' !== $hook) {
-        return;
-    }
-    
-    wp_enqueue_style('nierto-cube-admin-styles', get_template_directory_uri() . '/css/admin-nierto-cube.css', array(), '1.0.0');
-}
-add_action('admin_enqueue_scripts', 'nierto_cube_admin_enqueue_styles');
 
 function get_theme_logo_details() {
     return array(
@@ -434,37 +570,6 @@ function get_theme_logo_details() {
     );
 }
 
-function nierto_cube_sanitize_css($input) {
-    // Sanitize the input to ensure proper CSS formatting
-    return preg_replace('/[^0-9a-zA-Z\.\-\% \,\(\)\:]/', '', $input);
-}
-function clear_config_js_cache() {
-    $cache_file = get_template_directory() . '/js/config/cached_config.js';
-    if (file_exists($cache_file)) {
-        unlink($cache_file);
-    }
-}
-add_action('customize_save_after', 'clear_config_js_cache');
-
-function get_google_font_url() {
-    $google_fonts = [];
-    $font_settings = ['body_font', 'heading_font', 'button_font', 'extra_font'];
-    
-    foreach ($font_settings as $setting) {
-        if (get_theme_mod($setting . '_source', 'google') === 'google') {
-            $font = get_theme_mod($setting . '_google', '');
-            if (!empty($font)) {
-                $google_fonts[] = $font;
-            }
-        }
-    }
-    
-    if (!empty($google_fonts)) {
-        return "https://fonts.googleapis.com/css2?family=" . implode('&family=', array_unique($google_fonts));
-    }
-    
-    return '';
-}
 
 // new iframe-less way to render content unto one of the cube sides.
 function register_cube_face_post_type() {
@@ -480,11 +585,6 @@ function register_cube_face_post_type() {
 }
 add_action('init', 'register_cube_face_post_type');
 
-// adding the admin panel (new august 2024):
-function nierto_cube_add_admin_menu() {
-    add_menu_page('Nierto Cube Settings', 'Nierto Cube', 'manage_options', 'nierto_cube', 'nierto_cube_settings_page', 'dashicons-admin-generic', 99);
-}
-add_action('admin_menu', 'nierto_cube_add_admin_menu');
 
 function nierto_cube_register_settings() {
     register_setting('nierto_cube_options', 'nierto_cube_settings');
@@ -495,49 +595,13 @@ function nierto_cube_settings_page() {
     require_once get_template_directory() . '/admin-settings.php';
 }
 
-// ValKey integration (new August 2024):
-function is_valkey_enabled() {
-    $settings = get_option('nierto_cube_settings');
-    return isset($settings['use_valkey']) && $settings['use_valkey'] && !empty($settings['valkey_ip']);
-}
-
-function valkey_get($key) {
-    if (!is_valkey_enabled()) {
-        return false;
-    }
-    
-    $settings = get_option('nierto_cube_settings');
-    $valkey_ip = $settings['valkey_ip'];
-    $valkey_port = isset($settings['valkey_port']) ? $settings['valkey_port'] : '6379';
-    
-    $redis = new Redis();
-    try {
-        $redis->connect($valkey_ip, $valkey_port);
-        return $redis->get($key);
-    } catch (Exception $e) {
-        error_log('ValKey connection failed: ' . $e->getMessage());
-        return false;
+function nierto_cube_conditional_scripts() {
+    if (is_front_page()) {
+        wp_enqueue_script('pwa-script', get_template_directory_uri() . '/js/pwa.js', array('jquery'), filemtime(get_template_directory() . '/js/pwa.js'), true);
+        wp_script_add_data('pwa-script', 'async', true);
     }
 }
-
-function valkey_set($key, $value, $ttl = 3600) {
-    if (!is_valkey_enabled()) {
-        return false;
-    }
-    
-    $settings = get_option('nierto_cube_settings');
-    $valkey_ip = $settings['valkey_ip'];
-    $valkey_port = isset($settings['valkey_port']) ? $settings['valkey_port'] : '6379';
-    
-    $redis = new Redis();
-    try {
-        $redis->connect($valkey_ip, $valkey_port);
-        return $redis->setex($key, $ttl, $value);
-    } catch (Exception $e) {
-        error_log('ValKey connection failed: ' . $e->getMessage());
-        return false;
-    }
-}
+add_action('wp_enqueue_scripts', 'nierto_cube_conditional_scripts', 20);
 
 function register_face_content_endpoint() {
     register_rest_route('nierto-cube/v1', '/face-content/(?P<slug>[\w-]+)', [
@@ -548,120 +612,104 @@ function register_face_content_endpoint() {
 add_action('rest_api_init', 'register_face_content_endpoint');
 
 function get_face_content($request) {
-    $slug = $request['slug'];
-    
-    // Find the face settings based on the slug
-    $settings = get_option('nierto_cube_settings');
-    $face_id = null;
-    $face_type = null;
-    $face_source = null;
-
-    for ($i = 1; $i <= 6; $i++) {
-        if (isset($settings['face'.$i.'_slug']) && $settings['face'.$i.'_slug'] === $slug) {
-            $face_id = $i;
-            $face_type = isset($settings['face'.$i.'_type']) ? $settings['face'.$i.'_type'] : 'post';
-            $face_source = isset($settings['face'.$i.'_source']) ? $settings['face'.$i.'_source'] : '';
-            break;
-        }
-    }
-
-    if (!$face_id) {
-        return new WP_Error('not_found', 'Face content not found', ['status' => 404]);
-    }
-
-    $cache_key = "face_content_{$slug}";
-    $cache_time = 604800; // Cache for 1 week
-
-    // Try ValKey first
-    if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
-        $cached_content = valkey_get($cache_key);
-        if ($cached_content !== false) {
-            return json_decode($cached_content, true);
-        }
-    }
-
-    // If not in ValKey, check WordPress transients
-    $cached_content = get_transient($cache_key);
-    if ($cached_content !== false) {
-        return $cached_content;
-    }
-
-    // If not cached, generate content
-    if ($face_type === 'page') {
-        $content = [
-            'type' => 'page',
-            'content' => home_url($slug)
-        ];
-    } else {
-        $args = array(
-            'name' => $slug,
-            'post_type' => 'cube_face',
-            'post_status' => 'publish',
-            'numberposts' => 1
-        );
-        $posts = get_posts($args);
+    try {
+        $slug = $request['slug'];
         
-        if ($posts) {
-            $post = $posts[0];
+        $settings = get_option('nierto_cube_settings');
+        $face_id = null;
+        $face_type = null;
+        $face_source = null;
+
+        for ($i = 1; $i <= 6; $i++) {
+            if (isset($settings['face'.$i.'_slug']) && $settings['face'.$i.'_slug'] === $slug) {
+                $face_id = $i;
+                $face_type = isset($settings['face'.$i.'_type']) ? $settings['face'.$i.'_type'] : 'post';
+                $face_source = isset($settings['face'.$i.'_source']) ? $settings['face'.$i.'_source'] : '';
+                break;
+            }
+        }
+
+        if (!$face_id) {
+            throw new Exception('Face content not found');
+        }
+
+        $cache_key = "face_content_{$slug}";
+        $cache_time = 604800;
+
+        if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
+            $cached_content = valkey_get($cache_key);
+            if ($cached_content !== false) {
+                return json_decode($cached_content, true);
+            }
+        }
+
+        $cached_content = get_transient($cache_key);
+        if ($cached_content !== false) {
+            return $cached_content;
+        }
+
+        if ($face_type === 'page') {
             $content = [
-                'type' => 'post',
-                'content' => apply_filters('the_content', $post->post_content)
+                'type' => 'page',
+                'content' => home_url($slug)
             ];
         } else {
-            return new WP_Error('not_found', 'Custom post not found', ['status' => 404]);
+            $args = array(
+                'name' => $slug,
+                'post_type' => 'cube_face',
+                'post_status' => 'publish',
+                'numberposts' => 1
+            );
+            $posts = get_posts($args);
+            
+            if ($posts) {
+                $post = $posts[0];
+                $content = [
+                    'type' => 'post',
+                    'content' => apply_filters('the_content', $post->post_content)
+                ];
+            } else {
+                throw new Exception('Custom post not found');
+            }
         }
-    }
 
-    // Cache the content
-    if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
-        valkey_set($cache_key, json_encode($content), $cache_time);
-    }
-    set_transient($cache_key, $content, $cache_time);
-
-    return $content;
-}
-
-function get_font_family($setting) {
-    $source = get_theme_mod($setting . '_source', 'google');
-    if ($source === 'google') {
-        $font_url = get_theme_mod($setting . '_google', 'Ubuntu:wght@300;400;700&display=swap');
-        $font_family = explode(':', $font_url)[0];
-        return "'" . str_replace('+', ' ', $font_family) . "', sans-serif";
-    } else {
-        return get_theme_mod($setting . '_local', 'Arial, sans-serif');
-    }
-}
-// Output font CSS variables for use in other stylesheets
-function nierto_cube_output_font_css_variables() {
-    ?>
-    <style>
-        :root {
-            --button-font: <?php echo get_font_family('button_font'); ?>;
+        if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
+            valkey_set($cache_key, json_encode($content), $cache_time);
         }
-    </style>
-    <?php
-}
-add_action('wp_head', 'nierto_cube_output_font_css_variables', 5);
+        set_transient($cache_key, $content, $cache_time);
 
-function add_clear_cache_button() {
-    if (isset($_GET['clear_config_cache']) && current_user_can('manage_options')) {
-        clear_config_js_cache();
-        add_action('admin_notices', function() {
-            echo '<div class="notice notice-success"><p>Config cache cleared successfully!</p></div>';
-        });
+        return $content;
+    } catch (Exception $e) {
+        return new WP_Error('error', $e->getMessage(), ['status' => 500]);
     }
 }
-add_action('admin_init', 'add_clear_cache_button');
 
-function add_clear_cache_link($wp_admin_bar) {
-    if (current_user_can('manage_options')) {
-        $wp_admin_bar->add_menu(array(
-            'id'    => 'clear_config_cache',
-            'title' => 'Clear Config Cache',
-            'href'  => add_query_arg('clear_config_cache', '1'),
-        ));
+function nierto_cube_get_face_content_ajax() {
+    nierto_cube_verify_nonce($_POST['nonce'], 'nierto_cube_get_face_content');
+    if (!current_user_can('edit_posts')) {
+        wp_die('Unauthorized access');
     }
+    $slug = sanitize_text_field($_POST['slug']);
+    $content = get_face_content(['slug' => $slug]);
+    wp_send_json_success($content);
 }
-add_action('admin_bar_menu', 'add_clear_cache_link', 100);
+add_action('wp_ajax_nierto_cube_get_face_content', 'nierto_cube_get_face_content_ajax');
+add_action('wp_ajax_nopriv_nierto_cube_get_face_content', 'nierto_cube_get_face_content_ajax');
+
+function nierto_cube_get_face_content() {
+    $faces = [];
+    for ($i = 1; $i <= 6; $i++) {
+        $type = get_theme_mod("cube_face_{$i}_type", "page");
+        $slug = get_theme_mod("cube_face_{$i}_slug", "face-{$i}");
+        $position = get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1));
+        $faces[] = [
+            'type' => $type,
+            'slug' => $slug,
+            'position' => $position
+        ];
+    }
+    return $faces;
+}
+
 
 remove_filter('the_content', 'wpautop');

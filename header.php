@@ -3,10 +3,12 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="<?php echo get_template_directory_uri(); ?>/manifest.php">
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
-<div id="page">
+    <a href="#main-content" class="skip-link screen-reader-text"><?php esc_html_e( 'Skip to content', 'nierto_cube' ); ?></a>
+    <div id="page">
 <header>
 <?php
 $logo_details = get_theme_logo_details();
@@ -15,7 +17,7 @@ $logo_width = $logo_details['width'];
 if ($logo_url):
 ?>
     <div id="logoWrapper" class="leftcorner">
-        <img src="<?php echo esc_url($logo_url); ?>" alt="Logo that moves the page back to the home screen" id="logo_goHome" onclick="handleLogoClick()" style="max-width: <?php echo esc_attr($logo_width); ?>;">
+        <?php echo nierto_cube_get_image_with_alt(attachment_url_to_postid($logo_url), 'full', false, 'id="logo_goHome" onclick="handleLogoClick()" style="max-width: ' . esc_attr($logo_width) . ';"'); ?>
     </div>
 <?php
 endif;
