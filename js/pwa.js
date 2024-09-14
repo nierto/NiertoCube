@@ -1,6 +1,6 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/wp-content/themes/nierto-cube/js/service-worker.js').then(function (registration) {
+        navigator.serviceWorker.register(getThemeUrl() + 'js/service-worker.js').then(function (registration) {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
         }, function (err) {
             console.log('ServiceWorker registration failed: ', err);
@@ -10,7 +10,7 @@ if ('serviceWorker' in navigator) {
 
 // Check if the app is already installed
 window.addEventListener('appinstalled', (evt) => {
-    console.log('NiertoCube is installed');
+    console.log('NiertoCube-PWA was installed successfully');
 });
 
 // 'beforeinstallprompt' event to handle installation
@@ -47,9 +47,9 @@ function showInstallPromotion() {
         banner.appendChild(img);
     } else {
         banner.innerHTML = `
-            <p>Install this Site as an App for a better experience!</p>
-            <button onclick="installApp()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">Install</button>
-        `;
+            <p id="installNotice">Install this Site as an App</p>
+            <button id="installNoticeButton' onclick="installApp()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">Install</button>
+        `; // the banner uses a p with id installNotice and a button with id installNoticeButton
     }
 
     const closeButton = document.createElement('button');

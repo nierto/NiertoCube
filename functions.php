@@ -434,7 +434,7 @@ foreach ($font_settings as $setting_id => $values) {
 }
     // SECTION: NAV STYLING
     // sizes and dimensions
-        $nav_texts = [
+    $nav_texts = [
         'nav_button_padding' => '10px 20px',
         'nav_button_font_size' => '16px',
         'nav_button_border_style' => 'solid',
@@ -554,9 +554,9 @@ function nierto_cube_enqueue_assets() {
 
     // Enqueue scripts
     wp_enqueue_script('utils-script', $theme_uri . '/js/utils.js', array(), filemtime($theme_dir . '/js/utils.js'), true);
+    wp_enqueue_script('config-script', $theme_uri . '/js/config.js', array('utils-script'), filemtime($theme_dir . '/js/config.js'), true);
     wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array('utils-script'), filemtime($theme_dir . '/js/cookies.js'), true);
     wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('utils-script'), filemtime($theme_dir . '/js/cube.js'), true);
-    wp_enqueue_script('serviceworker-script', $theme_uri . '/js/service-worker.js', array('utils-script'), filemtime($theme_dir . '/js/service-worker.js'), true);
 
     // Conditional scripts
     if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))){
@@ -565,7 +565,7 @@ function nierto_cube_enqueue_assets() {
     }
 
     // Localize scripts
-    wp_localize_script('cube-script', 'niertoCubeData', array(
+    wp_localize_script('config-script', 'niertoCubeData', array(
         'faces' => nierto_cube_get_face_content(),
         'ajaxurl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('nierto_cube_get_face_content')
@@ -575,9 +575,11 @@ function nierto_cube_enqueue_assets() {
         'themeName' => wp_get_theme()->get_stylesheet()
     ));
 
-    wp_localize_script('pwa-script', 'niertoCubePWA', array(
-        'installBanner' => get_theme_mod('pwa_install_banner', ''),
-    ));
+    if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
+        wp_localize_script('pwa-script', 'niertoCubePWA', array(
+            'installBanner' => get_theme_mod('pwa_install_banner', ''),
+        ));
+    }
 }
 add_action('wp_enqueue_scripts', 'nierto_cube_enqueue_assets');
 
@@ -727,6 +729,4 @@ function nierto_cube_get_face_content() {
     }
     return $faces;
 }
-
-
 remove_filter('the_content', 'wpautop');

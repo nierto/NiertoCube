@@ -4,4 +4,4 @@ function getThemeUrl() {
 }
 
 // Export the function if using ES6 modules
-export { getThemeUrl };
+window.getThemeUrl = getThemeUrl;
