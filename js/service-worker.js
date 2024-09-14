@@ -1,30 +1,53 @@
 // service-worker.js
 const CACHE_NAME = 'nierto-cube-cache-v1';
+const themeUrl = getThemeUrl();
+
 const urlsToCache = [
     '/',
-    '/wp-content/themes/nierto-cube/css/all-styles.css',
-    '/wp-content/themes/nierto-cube/css/cube.css',
-    '/wp-content/themes/nierto-cube/css/keyframes.css',
-    '/wp-content/themes/nierto-cube/css/logo.css',
-    '/wp-content/themes/nierto-cube/css/navigation.css',
-    '/wp-content/themes/nierto-cube/css/rootstyle.css',
-    '/wp-content/themes/nierto-cube/css/screensizes.css',
-    '/wp-content/themes/nierto-cube/js/config/config.js.php',
-    '/wp-content/themes/nierto-cube/js/cube.js',
-    '/wp-content/themes/nierto-cube/js/service-worker.js',
-    '/wp-content/themes/nierto-cube/style.css',
-    '/wp-content/themes/nierto-cube/inc/caching-functionality.php',
-    '/wp-content/themes/nierto-cube/inc/google-functionality.php',
-    '/wp-content/themes/nierto-cube/inc/metatags-functionality.php',
-    '/wp-content/themes/nierto-cube/inc/santitation-functionality.php',
-    '/wp-content/themes/nierto-cube/inc/structureddata-functionality.php',
-    '/wp-content/themes/nierto-cube/inc/valkey-functionality.php',
-    '/wp-content/themes/nierto-cube/footer.php',
-    '/wp-content/themes/nierto-cube/functions.php',
-    '/wp-content/themes/nierto-cube/header.php',
-    '/wp-content/themes/nierto-cube/index.php',
-    '/wp-content/themes/nierto-cube/page-template-iframe.php',
+    themeUrl + 'css/all-styles.css',
+    themeUrl + 'css/cube.css',
+    themeUrl + 'css/keyframes.css',
+    themeUrl + 'css/logo.css',
+    themeUrl + 'css/navigation.css',
+    themeUrl + 'css/rootstyle.css',
+    themeUrl + 'css/screensizes.css',
+    themeUrl + 'js/config.js',
+    themeUrl + 'js/cube.js',
+    themeUrl + 'js/service-worker.js',
+    themeUrl + 'js/pwa.js',
+    themeUrl + 'style.css',
+    themeUrl + 'inc/aria-functionality.php',
+    themeUrl + 'inc/caching-functionality.php',
+    themeUrl + 'inc/cookies-functionality.php',
+    themeUrl + 'inc/google-functionality.php',
+    themeUrl + 'inc/metatags-functionality.php',
+    themeUrl + 'inc/santitation-functionality.php',
+    themeUrl + 'inc/structureddata-functionality.php',
+    themeUrl + 'inc/valkey-functionality.php',
+    themeUrl + 'inc/errors-functionality.php',
+    themeUrl + 'inc/security-functionality.php',
+    themeUrl + 'footer.php',
+    themeUrl + 'functions.php',
+    themeUrl + 'header.php',
+    themeUrl + 'index.php',
+    themeUrl + 'page-template-iframe.php',
 ];
+
+self.addEventListener('install', function (event) {
+    event.waitUntil(
+        fetch('/wp-admin/admin-ajax.php?action=is_pwa_enabled')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.enabled) {
+                    self.skipWaiting();
+                    return;
+                }
+                // Rest of your service worker installation code...
+            })
+    );
+});
+
+
 
 self.addEventListener('install', function (event) {
     event.waitUntil(
@@ -89,3 +112,8 @@ self.addEventListener('activate', function (event) {
         })
     );
 });
+
+// get the theme url
+function getThemeUrl() {
+    return '/wp-content/themes/' + window.themeData.themeName + '/';
+}

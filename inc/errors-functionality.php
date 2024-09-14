@@ -2,6 +2,7 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) {
     exit;
+}
 
 function nierto_cube_log_error($message, $error_data = null) {
     $log_entry = date('[Y-m-d H:i:s]') . " $message";

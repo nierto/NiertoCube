@@ -4,13 +4,22 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Include the updated config.js.php
-require_once get_template_directory() . '/js/config/config.js.php';
+function nierto_cube_get_config_data() {
+    $cube_faces = [];
+    for ($i = 1; $i <= 6; $i++) {
+        $cube_faces[] = [
+            'buttonText' => get_theme_mod("cube_face_{$i}_text", "Face {$i}"),
+            'urlSlug' => get_theme_mod("cube_face_{$i}_slug", "face-{$i}"),
+            'facePosition' => get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1)),
+            'contentType' => get_theme_mod("cube_face_{$i}_type", "page"),
+        ];
+    }
+    return $cube_faces;
+}
 
 function nierto_cube_ajax_get_config() {
     check_ajax_referer('nierto_cube_config', 'nonce');
     
-    // This function should be defined in config.js.php
     $cube_faces = nierto_cube_get_config_data();
     
     // Prepare the JavaScript content
@@ -32,7 +41,7 @@ function nierto_cube_ajax_get_config() {
     ';
     
     // Send the response
-    wp_send_json_success(['js_content' => $js_content]);
+    wp_send_json_success(['data' => $js_content]);
 }
 
 add_action('wp_ajax_nierto_cube_get_config', 'nierto_cube_ajax_get_config');
