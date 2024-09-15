@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once get_template_directory() . '/inc/cache-version.php';
+
 // Add this new function for secure settings retrieval
 function get_valkey_settings() {
     $settings = get_option('nierto_cube_settings');
@@ -22,18 +24,6 @@ function get_valkey_settings() {
 function is_valkey_enabled() {
     $settings = get_valkey_settings();
     return $settings['use_valkey'] && !empty($settings['valkey_ip']);
-}
-
-// Add this new function for cache versioning
-function nierto_cube_get_cache_version() {
-    $version = get_option('nierto_cube_cache_version', 1);
-    return $version;
-}
-
-// Add this new function to increment cache version
-function nierto_cube_increment_cache_version() {
-    $version = nierto_cube_get_cache_version();
-    update_option('nierto_cube_cache_version', $version + 1);
 }
 
 function valkey_get($key) {
