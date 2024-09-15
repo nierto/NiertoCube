@@ -4,21 +4,68 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-function get_cached_content($key) {
+function nierto_cube_get_cache_version() {
+    return get_option('nierto_cube_cache_version', 1);
+}
+
+function nierto_cube_increment_cache_version() {
+    $version = nierto_cube_get_cache_version();
+    update_option('nierto_cube_cache_version', $version + 1);
+}
+
+function get_cached_content($key, $generate_callback = null) {
+    $version = nierto_cube_get_cache_version();
+    $versioned_key = "v{$version}_{$key}";
+
     if (is_valkey_enabled()) {
-        $content = valkey_get($key);
+        $content = valkey_get($versioned_key);
+        if ($content !== false) {
+            return json_decode($content, true);
+        }
+    } else {
+        $content = get_transient($versioned_key);
         if ($content !== false) {
             return $content;
         }
     }
-    return get_transient($key);
+
+    // Cache miss, generate content if callback provided
+    if ($generate_callback && is_callable($generate_callback)) {
+        $content = $generate_callback();
+        set_cached_content($key, $content);
+        return $content;
+    }
+
+    return false;
 }
 
-function set_cached_content($key, $value, $expiration) {
+function set_cached_content($key, $value, $expiration = 86400) {
+    $version = nierto_cube_get_cache_version();
+    $versioned_key = "v{$version}_{$key}";
+    $json_value = json_encode($value);
+
     if (is_valkey_enabled()) {
-        valkey_set($key, $value, $expiration);
+        valkey_set($versioned_key, $json_value, $expiration);
+    } else {
+        set_transient($versioned_key, $value, $expiration);
     }
-    set_transient($key, $value, $expiration);
+}
+
+function clear_cached_content($key) {
+    $version = nierto_cube_get_cache_version();
+    $versioned_key = "v{$version}_{$key}";
+
+    if (is_valkey_enabled()) {
+        valkey_delete($versioned_key);
+    } else {
+        delete_transient($versioned_key);
+    }
+}
+
+function clear_all_cache() {
+    nierto_cube_increment_cache_version();
+    // Clear browser caches via service worker
+    wp_enqueue_script('clear-cache', get_template_directory_uri() . '/js/clear-cache.js', array(), '1.0', true);
 }
 
 function clear_config_js_cache() {
@@ -26,15 +73,15 @@ function clear_config_js_cache() {
     if (file_exists($cache_file)) {
         unlink($cache_file);
     }
+    clear_cached_content('config_js');
 }
 add_action('customize_save_after', 'clear_config_js_cache');
 
-
 function add_clear_cache_button() {
     if (isset($_GET['clear_config_cache']) && current_user_can('manage_options')) {
-        clear_config_js_cache();
+        clear_all_cache();
         add_action('admin_notices', function() {
-            echo '<div class="notice notice-success"><p>Config cache cleared successfully!</p></div>';
+            echo '<div class="notice notice-success"><p>All caches cleared successfully!</p></div>';
         });
     }
 }
@@ -44,7 +91,7 @@ function add_clear_cache_link($wp_admin_bar) {
     if (current_user_can('manage_options')) {
         $wp_admin_bar->add_menu(array(
             'id'    => 'clear_config_cache',
-            'title' => 'Clear Config Cache',
+            'title' => 'Clear All Caches',
             'href'  => add_query_arg('clear_config_cache', '1'),
         ));
     }

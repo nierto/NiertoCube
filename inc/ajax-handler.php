@@ -28,13 +28,13 @@ function nierto_cube_ajax_get_config() {
     // Add the setupCubeButtons function
     $js_content .= '
     function setupCubeButtons() {
-        const navButtons = document.querySelectorAll(\'.navButton\');
+        const navButtons = document.querySelectorAll(".navButton");
         variables.cubeFaces.forEach((face, index) => {
-            const navName = navButtons[index]?.querySelector(\'.navName\');
+            const navName = navButtons[index]?.querySelector(".navName");
             if (navName) {
                 navName.textContent = face.buttonText;
-                navName.setAttribute(\'data-face\', face.facePosition);
-                navName.setAttribute(\'data-slug\', face.urlSlug);
+                navName.setAttribute("data-face", face.facePosition);
+                navName.setAttribute("data-slug", face.urlSlug);
             }
         });
     }

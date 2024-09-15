@@ -11,24 +11,10 @@ const urlsToCache = [
     themeUrl + 'css/navigation.css',
     themeUrl + 'css/rootstyle.css',
     themeUrl + 'css/screensizes.css',
-    themeUrl + 'js/config.js',
     themeUrl + 'js/cube.js',
-    themeUrl + 'js/service-worker.js',
     themeUrl + 'js/pwa.js',
     themeUrl + 'style.css',
-    themeUrl + 'inc/aria-functionality.php',
-    themeUrl + 'inc/caching-functionality.php',
-    themeUrl + 'inc/cookies-functionality.php',
-    themeUrl + 'inc/google-functionality.php',
-    themeUrl + 'inc/metatags-functionality.php',
-    themeUrl + 'inc/santitation-functionality.php',
-    themeUrl + 'inc/structureddata-functionality.php',
-    themeUrl + 'inc/valkey-functionality.php',
-    themeUrl + 'inc/errors-functionality.php',
-    themeUrl + 'inc/security-functionality.php',
-    themeUrl + 'footer.php',
-    themeUrl + 'functions.php',
-    themeUrl + 'header.php',
+    themeUrl + 'js/clear-cache.js',
     themeUrl + 'index.php',
     themeUrl + 'page-template-iframe.php',
 ];
@@ -42,12 +28,73 @@ self.addEventListener('install', function (event) {
                     self.skipWaiting();
                     return;
                 }
+
                 // Rest of your service worker installation code...
+                return caches.open(CACHE_NAME).then(function (cache) {
+                    console.log('Opened cache');
+
+                    // Fetch and cache the theme URL dynamically
+                    return fetch('/wp-admin/admin-ajax.php?action=get_theme_url')
+                        .then(response => response.json())
+                        .then(data => {
+                            const themeUrl = data.theme_url;
+
+                            // Define the URLs to cache
+                            const urlsToCache = [
+                                '/',
+                                themeUrl + 'css/all-styles.css',
+                                themeUrl + 'css/cube.css',
+                                themeUrl + 'css/keyframes.css',
+                                themeUrl + 'css/logo.css',
+                                themeUrl + 'css/navigation.css',
+                                themeUrl + 'css/rootstyle.css',
+                                themeUrl + 'css/screensizes.css',
+                                themeUrl + 'js/cube.js',
+                                themeUrl + 'js/pwa.js',
+                                themeUrl + 'js/clear-cache.js',
+                                themeUrl + 'style.css',
+                                themeUrl + 'index.php',
+                                themeUrl + 'page-template-iframe.php',
+                            ];
+
+                            // Cache all the URLs
+                            return Promise.all(
+                                urlsToCache.map(function (url) {
+                                    return fetch(url, {
+                                        credentials: 'same-origin',
+                                        headers: {
+                                            'X-WP-Nonce': data.nonce // Use the nonce provided by WordPress
+                                        }
+                                    }).then(function (response) {
+                                        // Check if we received a valid response
+                                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                                            return;
+                                        }
+
+                                        return cache.put(url, response);
+                                    }).catch(function (error) {
+                                        console.error('Caching failed for', url, error);
+                                    });
+                                })
+                            );
+                        });
+                });
+            })
+            .then(() => {
+                return self.skipWaiting();
             })
     );
 });
 
-
+self.addEventListener('message', function (event) {
+    if (event.data.action === 'clearCache') {
+        caches.keys().then(function (names) {
+            for (let name of names) {
+                caches.delete(name);
+            }
+        });
+    }
+});
 
 self.addEventListener('install', function (event) {
     event.waitUntil(

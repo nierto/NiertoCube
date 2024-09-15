@@ -629,74 +629,51 @@ function get_face_content($request) {
         $slug = $request['slug'];
         
         $cache_key = "face_content_{$slug}";
-        $cache_time = 86400; // Cache for 1 day
 
-        // Check if ValKey is enabled and try to get cached content
-        if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
-            $content = valkey_get($cache_key);
-            if ($content !== false) {
-                return json_decode($content, true);
+        return get_cached_content($cache_key, function() use ($slug) {
+            $settings = get_option('nierto_cube_settings');
+            $face_id = null;
+            $face_type = null;
+            $face_source = null;
+
+            for ($i = 1; $i <= 6; $i++) {
+                if (isset($settings['face'.$i.'_slug']) && $settings['face'.$i.'_slug'] === $slug) {
+                    $face_id = $i;
+                    $face_type = isset($settings['face'.$i.'_type']) ? $settings['face'.$i.'_type'] : 'post';
+                    $face_source = isset($settings['face'.$i.'_source']) ? $settings['face'.$i.'_source'] : '';
+                    break;
+                }
             }
-        } else {
-            // If ValKey is not enabled, use WordPress transients
-            $content = get_transient($cache_key);
-            if ($content !== false) {
-                return $content;
+
+            if (!$face_id) {
+                throw new Exception('Face content not found');
             }
-        }
 
-        // If cache miss, generate the content
-        $settings = get_option('nierto_cube_settings');
-        $face_id = null;
-        $face_type = null;
-        $face_source = null;
-
-        for ($i = 1; $i <= 6; $i++) {
-            if (isset($settings['face'.$i.'_slug']) && $settings['face'.$i.'_slug'] === $slug) {
-                $face_id = $i;
-                $face_type = isset($settings['face'.$i.'_type']) ? $settings['face'.$i.'_type'] : 'post';
-                $face_source = isset($settings['face'.$i.'_source']) ? $settings['face'.$i.'_source'] : '';
-                break;
-            }
-        }
-
-        if (!$face_id) {
-            throw new Exception('Face content not found');
-        }
-
-        if ($face_type === 'page') {
-            $content = [
-                'type' => 'page',
-                'content' => home_url($slug)
-            ];
-        } else {
-            $args = array(
-                'name' => $slug,
-                'post_type' => 'cube_face',
-                'post_status' => 'publish',
-                'numberposts' => 1
-            );
-            $posts = get_posts($args);
-            
-            if ($posts) {
-                $post = $posts[0];
-                $content = [
-                    'type' => 'post',
-                    'content' => apply_filters('the_content', $post->post_content)
+            if ($face_type === 'page') {
+                return [
+                    'type' => 'page',
+                    'content' => home_url($slug)
                 ];
             } else {
-                throw new Exception('Custom post not found');
+                $args = array(
+                    'name' => $slug,
+                    'post_type' => 'cube_face',
+                    'post_status' => 'publish',
+                    'numberposts' => 1
+                );
+                $posts = get_posts($args);
+                
+                if ($posts) {
+                    $post = $posts[0];
+                    return [
+                        'type' => 'post',
+                        'content' => apply_filters('the_content', $post->post_content)
+                    ];
+                } else {
+                    throw new Exception('Custom post not found');
+                }
             }
-        }
-
-        // Cache the content
-        if (function_exists('is_valkey_enabled') && is_valkey_enabled()) {
-            valkey_set($cache_key, json_encode($content), $cache_time);
-        } else {
-            set_transient($cache_key, $content, $cache_time);
-        }
-
-        return $content;
+        });
     } catch (Exception $e) {
         nierto_cube_log_error('Error in get_face_content: ' . $e->getMessage());
         return new WP_Error('error', $e->getMessage(), ['status' => 500]);
@@ -729,4 +706,15 @@ function nierto_cube_get_face_content() {
     }
     return $faces;
 }
+
+function nierto_cube_get_theme_url() {
+    wp_send_json(array(
+        'theme_url' => get_template_directory_uri() . '/',
+        'nonce' => wp_create_nonce('nierto_cube_sw_cache')
+    ));
+}
+add_action('wp_ajax_get_theme_url', 'nierto_cube_get_theme_url');
+add_action('wp_ajax_nopriv_get_theme_url', 'nierto_cube_get_theme_url');
+
+
 remove_filter('the_content', 'wpautop');

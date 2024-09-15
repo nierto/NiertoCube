@@ -1,5 +1,4 @@
 // config.js
-
 document.addEventListener('DOMContentLoaded', function () {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', niertoCubeData.ajaxurl, true);
