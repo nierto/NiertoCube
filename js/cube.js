@@ -18,7 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cubeduration = 250;
     window.cubestate = 2;
 
-    setupCubeButtons();
+    if (window.setupCubeButtons) {
+        setupCubeButtons();
+    } else {
+        document.addEventListener('setupCubeButtonsReady', function () {
+            setupCubeButtons();
+        });
+    }
 
     document.addEventListener('keydown', arrowKeyHandler);
     document.querySelectorAll('.navButton .navName').forEach((button, index) => {

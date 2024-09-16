@@ -57,6 +57,7 @@ function clear_cached_content($key) {
 
 function clear_all_cache() {
     nierto_cube_increment_cache_version();
+    clear_config_js_cache();
     // Clear browser caches via service worker
     wp_enqueue_script('clear-cache', get_template_directory_uri() . '/js/clear-cache.js', array(), '1.0', true);
 }

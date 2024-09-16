@@ -11,7 +11,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Execute the received JavaScript
                 eval(response.data);
 
-                // Call setupCubeButtons after the variables are defined
+                // Make setupCubeButtons globally available
+                window.setupCubeButtons = setupCubeButtons;
+
+                // Dispatch a custom event to signal that setupCubeButtons is ready
+                document.dispatchEvent(new Event('setupCubeButtonsReady'));
+
+                // Call setupCubeButtons
                 setupCubeButtons();
             }
         } else {

@@ -556,8 +556,8 @@ function nierto_cube_enqueue_assets() {
     wp_enqueue_script('utils-script', $theme_uri . '/js/utils.js', array(), filemtime($theme_dir . '/js/utils.js'), true);
     wp_enqueue_script('config-script', $theme_uri . '/js/config.js', array('utils-script'), filemtime($theme_dir . '/js/config.js'), true);
     wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array('utils-script'), filemtime($theme_dir . '/js/cookies.js'), true);
-    wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('utils-script'), filemtime($theme_dir . '/js/cube.js'), true);
-
+    wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('utils-script', 'config-script'), filemtime($theme_dir . '/js/cube.js'), true);
+    
     // Conditional scripts
     if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))){
         wp_enqueue_script('pwa-script', $theme_uri . '/js/pwa.js', array('utils-script'), filemtime($theme_dir . '/js/pwa.js'), true);
