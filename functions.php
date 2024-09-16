@@ -624,65 +624,9 @@ function register_face_content_endpoint() {
 }
 add_action('rest_api_init', 'register_face_content_endpoint');
 
-function get_face_content($request) {
-    try {
-        $slug = $request['slug'];
-        
-        $cache_key = "face_content_{$slug}";
-
-        return get_cached_content($cache_key, function() use ($slug) {
-            $settings = get_option('nierto_cube_settings');
-            $face_id = null;
-            $face_type = null;
-            $face_source = null;
-
-            for ($i = 1; $i <= 6; $i++) {
-                if (isset($settings['face'.$i.'_slug']) && $settings['face'.$i.'_slug'] === $slug) {
-                    $face_id = $i;
-                    $face_type = isset($settings['face'.$i.'_type']) ? $settings['face'.$i.'_type'] : 'post';
-                    $face_source = isset($settings['face'.$i.'_source']) ? $settings['face'.$i.'_source'] : '';
-                    break;
-                }
-            }
-
-            if (!$face_id) {
-                throw new Exception('Face content not found');
-            }
-
-            if ($face_type === 'page') {
-                return [
-                    'type' => 'page',
-                    'content' => home_url($slug)
-                ];
-            } else {
-                $args = array(
-                    'name' => $slug,
-                    'post_type' => 'cube_face',
-                    'post_status' => 'publish',
-                    'numberposts' => 1
-                );
-                $posts = get_posts($args);
-                
-                if ($posts) {
-                    $post = $posts[0];
-                    return [
-                        'type' => 'post',
-                        'content' => apply_filters('the_content', $post->post_content)
-                    ];
-                } else {
-                    throw new Exception('Custom post not found');
-                }
-            }
-        });
-    } catch (Exception $e) {
-        nierto_cube_log_error('Error in get_face_content: ' . $e->getMessage());
-        return new WP_Error('error', $e->getMessage(), ['status' => 500]);
-    }
-}
-
 function nierto_cube_get_face_content_ajax() {
-    nierto_cube_verify_nonce($_POST['nonce'], 'nierto_cube_get_face_content');
-    if (!current_user_can('edit_posts')) {
+    check_ajax_referer('nierto_cube_get_face_content', 'nonce');
+    if (!current_user_can('read')) {
         wp_die('Unauthorized access');
     }
     $slug = sanitize_text_field($_POST['slug']);
@@ -693,19 +637,100 @@ add_action('wp_ajax_nierto_cube_get_face_content', 'nierto_cube_get_face_content
 add_action('wp_ajax_nopriv_nierto_cube_get_face_content', 'nierto_cube_get_face_content_ajax');
 
 function nierto_cube_get_face_content() {
-    $faces = [];
-    for ($i = 1; $i <= 6; $i++) {
-        $type = get_theme_mod("cube_face_{$i}_type", "page");
-        $slug = get_theme_mod("cube_face_{$i}_slug", "face-{$i}");
-        $position = get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1));
-        $faces[] = [
-            'type' => $type,
-            'slug' => $slug,
-            'position' => $position
-        ];
+    $cache_key = 'nierto_cube_face_content';
+    
+    // Try to get the cached content
+    $faces = get_cached_content($cache_key);
+    
+    if ($faces === false) {
+        $faces = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $type = get_theme_mod("cube_face_{$i}_type", "page");
+            $slug = get_theme_mod("cube_face_{$i}_slug", "face-{$i}");
+            $position = get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1));
+            $faces[] = [
+                'type' => $type,
+                'slug' => $slug,
+                'position' => $position
+            ];
+        }
+        
+        // Cache the content for 1 hour (3600 seconds)
+        set_cached_content($cache_key, $faces, 3600);
     }
+    
     return $faces;
 }
+
+function get_face_content($request) {
+    $slug = $request['slug'];
+    $cache_key = "face_content_{$slug}";
+
+    // Try to get the cached content
+    $content = get_cached_content($cache_key);
+
+    if ($content === false) {
+        $faces = nierto_cube_get_face_content();
+        $face = array_filter($faces, function($f) use ($slug) {
+            return $f['slug'] === $slug;
+        });
+
+        if (empty($face)) {
+            return new WP_Error('not_found', 'Face content not found', ['status' => 404]);
+        }
+
+        $face = reset($face);
+
+        if ($face['type'] === 'page') {
+            $content = [
+                'type' => 'page',
+                'content' => home_url($slug)
+            ];
+        } else {
+            $args = [
+                'name' => $slug,
+                'post_type' => 'cube_face',
+                'post_status' => 'publish',
+                'numberposts' => 1
+            ];
+            $posts = get_posts($args);
+
+            if ($posts) {
+                $post = $posts[0];
+                $content = [
+                    'type' => 'post',
+                    'content' => apply_filters('the_content', $post->post_content)
+                ];
+            } else {
+                return new WP_Error('not_found', 'Custom post not found', ['status' => 404]);
+            }
+        }
+
+        // Cache the content for 1 hour (3600 seconds)
+        set_cached_content($cache_key, $content, 3600);
+    }
+
+    return $content;
+}
+
+// Function to clear the cache when a cube face is updated
+function clear_face_content_cache($post_id) {
+    if (get_post_type($post_id) === 'cube_face') {
+        $slug = get_post_field('post_name', $post_id);
+        clear_cached_content("face_content_{$slug}");
+        clear_cached_content('nierto_cube_face_content');
+    }
+}
+add_action('save_post', 'clear_face_content_cache');
+add_action('delete_post', 'clear_face_content_cache');
+
+// Clear cache when theme mods are updated
+function clear_face_content_cache_on_customize_save() {
+    clear_cached_content('nierto_cube_face_content');
+}
+add_action('customize_save_after', 'clear_face_content_cache_on_customize_save');
+
+
 
 function nierto_cube_get_theme_url() {
     wp_send_json(array(
