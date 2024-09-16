@@ -288,7 +288,7 @@ function nierto_cube_customize_register($wp_customize) {
         ));
 
         $wp_customize->add_setting("cube_face_{$i}_type", array(
-            'default' => 'page',
+            'default' => 'post',
             'sanitize_callback' => 'sanitize_text_field',
         ));
 
