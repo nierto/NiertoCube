@@ -564,6 +564,13 @@ function nierto_cube_enqueue_assets() {
         wp_script_add_data('pwa-script', 'async', true);
     }
 
+    if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
+        wp_enqueue_script('sw-reg', $theme_uri . '/js/sw-reg.js', array(), filemtime($theme_dir . '/js/sw-reg.js'), true);
+        wp_localize_script('sw-reg', 'swData', array(
+            'themeUrl' => $theme_uri . '/'
+        ));
+    }
+
     // Localize scripts
     wp_localize_script('config-script', 'niertoCubeData', array(
         'faces' => nierto_cube_get_face_content(),

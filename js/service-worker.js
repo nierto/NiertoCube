@@ -1,23 +1,18 @@
 // service-worker.js
 const CACHE_NAME = 'nierto-cube-cache-v1';
-const themeUrl = getThemeUrl();
+let themeUrl;
 
-const urlsToCache = [
-    '/',
-    themeUrl + 'css/all-styles.css',
-    themeUrl + 'css/cube.css',
-    themeUrl + 'css/keyframes.css',
-    themeUrl + 'css/logo.css',
-    themeUrl + 'css/navigation.css',
-    themeUrl + 'css/rootstyle.css',
-    themeUrl + 'css/screensizes.css',
-    themeUrl + 'js/cube.js',
-    themeUrl + 'js/pwa.js',
-    themeUrl + 'style.css',
-    themeUrl + 'js/clear-cache.js',
-    themeUrl + 'index.php',
-    themeUrl + 'page-template-iframe.php',
-];
+self.addEventListener('message', function (event) {
+    if (event.data.action === 'clearCache') {
+        caches.keys().then(function (names) {
+            for (let name of names) {
+                caches.delete(name);
+            }
+        });
+    } else if (event.data.type === 'SET_THEME_URL') {
+        themeUrl = event.data.themeUrl;
+    }
+});
 
 self.addEventListener('install', function (event) {
     event.waitUntil(
@@ -25,11 +20,9 @@ self.addEventListener('install', function (event) {
             .then(response => response.json())
             .then(data => {
                 if (!data.enabled) {
-                    self.skipWaiting();
-                    return;
+                    return self.skipWaiting();
                 }
 
-                // Rest of your service worker installation code...
                 return caches.open(CACHE_NAME).then(function (cache) {
                     console.log('Opened cache');
 
@@ -80,9 +73,7 @@ self.addEventListener('install', function (event) {
                         });
                 });
             })
-            .then(() => {
-                return self.skipWaiting();
-            })
+            .then(() => self.skipWaiting())
     );
 });
 
@@ -159,8 +150,3 @@ self.addEventListener('activate', function (event) {
         })
     );
 });
-
-// get the theme url
-function getThemeUrl() {
-    return '/wp-content/themes/' + window.themeData.themeName + '/';
-}
