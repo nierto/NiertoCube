@@ -25,6 +25,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function showInstallPromotion() {
+    if (!document.cookie.includes('nierto_cube_cookie_notice_accepted=1')) {
+        return; // Don't show install promotion if cookies haven't been accepted
+    }
+
     const bannerImage = niertoCubePWA.installBanner;
     const banner = document.createElement('div');
     banner.id = 'DownloadAsApp';
@@ -35,7 +39,7 @@ function showInstallPromotion() {
     banner.style.padding = '10px';
     banner.style.backgroundColor = '#f0f0f0';
     banner.style.textAlign = 'center';
-    banner.style.zIndex = '9999';
+    banner.style.zIndex = '9998'; // Set z-index lower than cookie notice but higher than other elements
 
     if (bannerImage) {
         const img = document.createElement('img');
@@ -48,7 +52,7 @@ function showInstallPromotion() {
     } else {
         banner.innerHTML = `
             <p id="installNotice">Install this Site as an App</p>
-            <button id="installNoticeButton' onclick="installApp()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">Install</button>
+            <button id="installNoticeButton" onclick="installApp()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">Install</button>
         `; // the banner uses a p with id installNotice and a button with id installNoticeButton
     }
 

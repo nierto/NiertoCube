@@ -91,3 +91,28 @@ function valkey_delete($key) {
         return false;
     }
 }
+
+// Add AJAX handler for the connection test
+add_action('wp_ajax_test_valkey_connection', 'ajax_test_valkey_connection');
+
+function ajax_test_valkey_connection() {
+    check_ajax_referer('test_valkey_connection', 'nonce');
+    
+    $result = test_valkey_connection();
+    
+    if ($result) {
+        wp_send_json_success(__('Connection successful!', 'nierto_cube'));
+    } else {
+        wp_send_json_error(__('Connection failed. Please check your settings.', 'nierto_cube'));
+    }
+}
+
+// Enqueue script for AJAX call
+function enqueue_valkey_test_script() {
+    wp_enqueue_script('valkey-test', get_template_directory_uri() . '/js/valkey-test.js', array('jquery'), '1.0', true);
+    wp_localize_script('valkey-test', 'valkeyTest', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('test_valkey_connection')
+    ));
+}
+add_action('customize_controls_enqueue_scripts', 'enqueue_valkey_test_script');

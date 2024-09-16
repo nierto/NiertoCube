@@ -145,7 +145,7 @@ function nierto_cube_customize_register($wp_customize) {
     // SECTION: PWA SETTINGS
 
     $wp_customize->add_setting('enable_pwa', array(
-        'default' => 1,
+        'default' => 0,
         'sanitize_callback' => 'absint',
     ));
 
