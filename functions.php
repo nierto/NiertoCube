@@ -6,8 +6,8 @@ if (!defined('ABSPATH')) {
 
 // Include custom functionality
 $functionality_files = [
-    'ajax-handlers.php',
-    'aria-functionality.php',
+    'ajax-handler.php',
+    'cache-version.php',
     'caching-functionality.php',
     'cookies-functionality.php',
     'errors-functionality.php',
@@ -575,7 +575,7 @@ function nierto_cube_enqueue_assets() {
     wp_localize_script('config-script', 'niertoCubeData', array(
         'faces' => nierto_cube_get_face_content(),
         'ajaxurl' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('nierto_cube_get_face_content')
+        'nonce' => wp_create_nonce('nierto_cube_ajax')
     ));
 
     wp_localize_script('utils-script', 'themeData', array(
@@ -632,9 +632,9 @@ function register_face_content_endpoint() {
 add_action('rest_api_init', 'register_face_content_endpoint');
 
 function nierto_cube_get_face_content_ajax() {
-    check_ajax_referer('nierto_cube_get_face_content', 'nonce');
-    if (!current_user_can('read')) {
-        wp_die('Unauthorized access');
+    if (!check_ajax_referer('nierto_cube_ajax', 'nonce', false)) {
+        wp_send_json_error(['message' => 'Nonce verification failed']);
+        return;
     }
     $slug = sanitize_text_field($_POST['slug']);
     $content = get_face_content(['slug' => $slug]);

@@ -18,34 +18,14 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cubeduration = 250;
     window.cubestate = 2;
 
-    if (window.setupCubeButtons) {
-        setupCubeButtons();
-    } else {
-        document.addEventListener('setupCubeButtonsReady', function () {
-            setupCubeButtons();
-        });
-    }
+    // We'll call setupCubeButtons after fetching the config data
+    fetchCubeConfig();
 
     document.addEventListener('keydown', arrowKeyHandler);
-    document.querySelectorAll('.navButton .navName').forEach((button, index) => {
-        const faceData = niertoCubeData.faces[index];
-        button.textContent = faceData.text;
-        button.setAttribute('aria-label', `Navigate to ${faceData.text}`);
-        button.setAttribute('data-face', faceData.position);
-        button.setAttribute('data-slug', faceData.slug);
-
-        button.addEventListener('click', handleNavButtonClick);
-        button.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                handleNavButtonClick.call(this, event);
-            }
-        });
-    });
 
     const cubeFaces = document.querySelectorAll('#cube .face');
     cubeFaces.forEach((face, index) => {
-        face.setAttribute('aria-label', `Cube face ${niertoCubeData.faces[index].text}`);
+        face.setAttribute('aria-label', `Cube face ${index + 1}`);
     });
 
     preloadCubeFaces();
@@ -69,6 +49,45 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(updateIframeHeight, 100);
     });
 });
+
+function fetchCubeConfig() {
+    fetch(niertoCubeData.ajaxurl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            action: 'nierto_cube_ajax',
+            cube_action: 'get_config',
+            nonce: niertoCubeData.nonce
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                eval(data.data);
+                setupCubeButtons();
+                setupButtonListeners();
+            } else {
+                console.error('Error fetching cube configuration:', data.data?.message || 'Unknown error');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cube configuration:', error);
+        });
+}
+
+function setupButtonListeners() {
+    document.querySelectorAll('.navButton .navName').forEach((button) => {
+        button.addEventListener('click', handleNavButtonClick);
+        button.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleNavButtonClick.call(this, event);
+            }
+        });
+    });
+}
 
 function handleNavButtonClick(event) {
     if (isTransitioning) return;
@@ -221,7 +240,8 @@ function preloadCubeFaces() {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    action: 'nierto_cube_get_face_content',
+                    action: 'nierto_cube_ajax',
+                    cube_action: 'get_face_content',
                     slug: face.slug,
                     nonce: niertoCubeData.nonce
                 })
@@ -229,7 +249,6 @@ function preloadCubeFaces() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Store the preloaded content somewhere, e.g., in a data attribute
                         const faceElement = document.getElementById(face.position);
                         if (faceElement) {
                             faceElement.setAttribute('data-content', data.data);
@@ -240,7 +259,6 @@ function preloadCubeFaces() {
                     console.error('Error preloading face content:', error);
                 });
         }
-        // We don't preload iframes
     });
 }
 
