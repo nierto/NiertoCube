@@ -8,22 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (xhr.status === 200) {
             const response = JSON.parse(xhr.responseText);
             if (response.success && response.data) {
-                // Parse the JSON data
-                const configData = JSON.parse(response.data);
+                // Define variables in the global scope
+                window.variables = response.data.variables;
 
                 // Define setupCubeButtons function
-                window.setupCubeButtons = function () {
-                    const navButtons = document.querySelectorAll(".navButton");
-                    configData.cubeFaces.forEach((face, index) => {
-                        const navName = navButtons[index]?.querySelector(".navName");
-                        if (navName) {
-                            navName.textContent = face.buttonText;
-                            navName.setAttribute("data-face", face.facePosition);
-                            navName.setAttribute("data-slug", face.urlSlug);
-                            navButtons[index].setAttribute("aria-label", `Navigate to ${face.buttonText}`);
-                        }
-                    });
-                };
+                window.setupCubeButtons = new Function(response.data.setupCubeButtons)();
 
                 // Call setupCubeButtons
                 setupCubeButtons();
