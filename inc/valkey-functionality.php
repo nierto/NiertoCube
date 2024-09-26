@@ -92,20 +92,6 @@ function valkey_delete($key) {
     }
 }
 
-// Add AJAX handler for the connection test
-add_action('wp_ajax_test_valkey_connection', 'ajax_test_valkey_connection');
-
-function ajax_test_valkey_connection() {
-    check_ajax_referer('test_valkey_connection', 'nonce');
-    
-    $result = test_valkey_connection();
-    
-    if ($result) {
-        wp_send_json_success(__('Connection successful!', 'nierto_cube'));
-    } else {
-        wp_send_json_error(__('Connection failed. Please check your settings.', 'nierto_cube'));
-    }
-}
 
 // Enqueue script for AJAX call
 function enqueue_valkey_test_script() {

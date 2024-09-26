@@ -12,36 +12,12 @@ function nierto_cube_log_error($message, $error_data = null) {
     error_log($log_entry . PHP_EOL, 3, get_template_directory() . '/logs/nierto-cube-errors.log');
 }
 
-function nierto_cube_ajax_error_handler($errno, $errstr, $errfile, $errline) {
-    nierto_cube_log_error("AJAX Error: $errstr in $errfile on line $errline");
-    return true; // Don't execute the PHP internal error handler
-}
 
-// Use this function to wrap your AJAX callbacks
-function nierto_cube_ajax_wrapper($callback) {
-    return function() use ($callback) {
-        try {
-            set_error_handler('nierto_cube_ajax_error_handler');
-            $result = call_user_func($callback);
-            restore_error_handler();
-            wp_send_json_success($result);
-        } catch (Exception $e) {
-            nierto_cube_log_error('AJAX Exception: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            wp_send_json_error(['message' => 'An error occurred. Please try again later.']);
-        }
-    };
-}
 
 // Example usage in your AJAX handlers
-add_action('wp_ajax_nierto_cube_get_face_content', nierto_cube_ajax_wrapper('nierto_cube_get_face_content_callback'));
-add_action('wp_ajax_nopriv_nierto_cube_get_face_content', nierto_cube_ajax_wrapper('nierto_cube_get_face_content_callback'));
+
 
 function nierto_cube_get_face_content_callback() {
-    // Your existing code here, but now with better error handling
     $slug = sanitize_text_field($_POST['slug']);
     $content = get_face_content(['slug' => $slug]);
     
@@ -49,7 +25,17 @@ function nierto_cube_get_face_content_callback() {
         throw new Exception($content->get_error_message());
     }
     
-    return $content;
+    // If it's a page, we'll return the URL for the iframe
+    if ($content['type'] === 'page') {
+        return $content;
+    }
+    
+    // If it's a custom post, we'll return the content directly
+    if ($content['type'] === 'post') {
+        return $content['content'];
+    }
+    
+    throw new Exception('Invalid content type');
 }
 
 // Add this to your theme's init function or directly in functions.php

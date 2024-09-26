@@ -24,11 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching cube configuration:', xhr.statusText);
         }
     };
-
     xhr.onerror = function () {
         console.error('Network error while fetching cube configuration');
     };
-
-    const data = 'action=nierto_cube_get_config&nonce=' + niertoCubeData.nonce;
+    const data = 'action=nierto_cube_ajax&cube_action=get_config&nonce=' + niertoCubeData.nonce;
     xhr.send(data);
 });
