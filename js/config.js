@@ -8,17 +8,28 @@ document.addEventListener('DOMContentLoaded', function () {
         if (xhr.status === 200) {
             const response = JSON.parse(xhr.responseText);
             if (response.success && response.data) {
-                // Execute the received JavaScript
-                eval(response.data);
+                // Parse the JSON data
+                const configData = JSON.parse(response.data);
 
-                // Make setupCubeButtons globally available
-                window.setupCubeButtons = setupCubeButtons;
-
-                // Dispatch a custom event to signal that setupCubeButtons is ready
-                document.dispatchEvent(new Event('setupCubeButtonsReady'));
+                // Define setupCubeButtons function
+                window.setupCubeButtons = function () {
+                    const navButtons = document.querySelectorAll(".navButton");
+                    configData.cubeFaces.forEach((face, index) => {
+                        const navName = navButtons[index]?.querySelector(".navName");
+                        if (navName) {
+                            navName.textContent = face.buttonText;
+                            navName.setAttribute("data-face", face.facePosition);
+                            navName.setAttribute("data-slug", face.urlSlug);
+                            navButtons[index].setAttribute("aria-label", `Navigate to ${face.buttonText}`);
+                        }
+                    });
+                };
 
                 // Call setupCubeButtons
                 setupCubeButtons();
+
+                // Dispatch a custom event to signal that setupCubeButtons is ready
+                document.dispatchEvent(new Event('setupCubeButtonsReady'));
             }
         } else {
             console.error('Error fetching cube configuration:', xhr.statusText);

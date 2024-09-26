@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if (!get_theme_mod('enable_pwa', 0)) {
     header("HTTP/1.0 404 Not Found");
     exit;

@@ -1,10 +1,17 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-        navigator.serviceWorker.register(getThemeUrl() + '/js/service-worker.js').then(function (registration) {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, function (err) {
-            console.log('ServiceWorker registration failed: ', err);
-        });
+        navigator.serviceWorker.register(swData.themeUrl + 'service-worker.js')
+            .then(function (registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                if (registration.active) {
+                    registration.active.postMessage({
+                        type: 'SET_THEME_URL',
+                        themeUrl: swData.themeUrl
+                    });
+                }
+            }, function (err) {
+                console.log('ServiceWorker registration failed: ', err);
+            });
     });
 }
 
@@ -88,4 +95,12 @@ function installApp() {
         }
         deferredPrompt = null;
     });
+}
+
+// Function to hide the install promotion
+function hideInstallPromotion() {
+    const banner = document.getElementById('DownloadAsApp');
+    if (banner) {
+        banner.style.display = 'none';
+    }
 }

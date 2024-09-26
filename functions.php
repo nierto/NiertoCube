@@ -25,6 +25,10 @@ foreach ($functionality_files as $file) {
     }
 }
 
+add_action('wp_head', function() {
+    echo '<link rel="manifest" href="' . get_template_directory_uri() . '/manifest.php">';
+});
+
 function nierto_cube_customize_register($wp_customize) {
     // Registering sections
     // COLORS
@@ -559,15 +563,14 @@ function nierto_cube_enqueue_assets() {
     wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('utils-script', 'config-script'), filemtime($theme_dir . '/js/cube.js'), true);
     
     // Conditional scripts
-    if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))){
+    if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
         wp_enqueue_script('pwa-script', $theme_uri . '/js/pwa.js', array('utils-script'), filemtime($theme_dir . '/js/pwa.js'), true);
         wp_script_add_data('pwa-script', 'async', true);
-    }
-
-    if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
-        wp_enqueue_script('sw-reg', $theme_uri . '/js/sw-reg.js', array(), filemtime($theme_dir . '/js/sw-reg.js'), true);
-        wp_localize_script('sw-reg', 'swData', array(
+        wp_localize_script('pwa-script', 'swData', array(
             'themeUrl' => $theme_uri . '/'
+        ));
+        wp_localize_script('pwa-script', 'niertoCubePWA', array(
+            'installBanner' => get_theme_mod('pwa_install_banner', ''),
         ));
     }
 
@@ -581,12 +584,6 @@ function nierto_cube_enqueue_assets() {
     wp_localize_script('utils-script', 'themeData', array(
         'themeName' => wp_get_theme()->get_stylesheet()
     ));
-
-    if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
-        wp_localize_script('pwa-script', 'niertoCubePWA', array(
-            'installBanner' => get_theme_mod('pwa_install_banner', ''),
-        ));
-    }
 }
 add_action('wp_enqueue_scripts', 'nierto_cube_enqueue_assets');
 
