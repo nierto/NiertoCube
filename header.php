@@ -19,11 +19,23 @@ $logo_details = get_theme_logo_details();
 $logo_url = $logo_details['url'];
 $logo_width = $logo_details['width'];
 if ($logo_url):
+    $attachment_id = attachment_url_to_postid($logo_url);
+    if ($attachment_id):
 ?>
     <div id="logoWrapper" class="leftcorner">
-        <?php echo nierto_cube_get_image_with_alt(attachment_url_to_postid($logo_url), 'full', false, 'id="logo_goHome" onclick="handleLogoClick()" style="max-width: ' . esc_attr($logo_width) . ';"'); ?>
+        <?php echo nierto_cube_get_image_with_alt(
+            $attachment_id,
+            'full',
+            false,
+            array(
+                'id' => 'logo_goHome',
+                'onclick' => 'handleLogoClick()',
+                'style' => 'max-width: ' . esc_attr($logo_width) . ';'
+            )
+        ); ?>
     </div>
 <?php
+    endif;
 endif;
 ?>
 </header>

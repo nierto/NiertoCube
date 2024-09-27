@@ -744,6 +744,29 @@ function clear_face_content_cache_on_customize_save() {
 }
 add_action('customize_save_after', 'clear_face_content_cache_on_customize_save');
 
+function nierto_cube_get_image_with_alt($attachment_id, $size = 'full', $icon = false, $attr = '') {
+    // Get the image HTML
+    $html = wp_get_attachment_image($attachment_id, $size, $icon, $attr);
+    
+    // If no image is found, return an empty string
+    if (!$html) {
+        return '';
+    }
+    
+    // Get the alt text
+    $alt = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
+    
+    // If no alt text is set, use the site name as a fallback
+    if (empty($alt)) {
+        $alt = get_bloginfo('name') . ' logo';
+    }
+    
+    // Add or update the alt attribute
+    $html = preg_replace('/alt=(["\']).*?\1/', sprintf('alt=$1%s$1', esc_attr($alt)), $html);
+    
+    return $html;
+}
+
 function nierto_cube_remove_wpautop_for_cube_faces($content) {
     global $post;
     if ($post->post_type == 'cube_face') {
