@@ -29,11 +29,6 @@ function nierto_cube_ajax_handler() {
 
     $action = isset($_POST['cube_action']) ? sanitize_text_field($_POST['cube_action']) : '';
 
-function nierto_cube_ajax_handler() {
-    nierto_cube_verify_ajax_nonce();
-
-    $action = isset($_POST['cube_action']) ? sanitize_text_field($_POST['cube_action']) : '';
-
     switch ($action) {
         case 'get_config':
             $cube_faces = nierto_cube_get_config_data();
@@ -54,22 +49,6 @@ function nierto_cube_ajax_handler() {
             ';
             wp_send_json_success(['data' => $js_content]);
             break;
-
-        case 'get_face_content':
-            $slug = sanitize_text_field($_POST['slug']);
-            $content = get_face_content(['slug' => $slug]);
-            if (is_wp_error($content)) {
-                wp_send_json_error(['message' => $content->get_error_message()]);
-            } else {
-                wp_send_json_success($content);
-            }
-            break;
-
-        default:
-            wp_send_json_error(['message' => 'Invalid action']);
-            break;
-    }
-}
 
         case 'get_face_content':
             $slug = sanitize_text_field($_POST['slug']);
