@@ -18,16 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cubeduration = 250;
     window.cubestate = 2;
 
-    // We'll call setupCubeButtons after fetching the config data
-    fetchCubeConfig();
-
     document.addEventListener('keydown', arrowKeyHandler);
 
     const cubeFaces = document.querySelectorAll('#cube .face');
     cubeFaces.forEach((face, index) => {
         face.setAttribute('aria-label', `Cube face ${index + 1}`);
     });
-
+    setupCubeButtons();
     preloadCubeFaces();
 
     const logo = document.getElementById('logo_goHome');
@@ -50,35 +47,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function fetchCubeConfig() {
-    fetch(niertoCubeData.ajaxurl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            action: 'nierto_cube_ajax',
-            cube_action: 'get_config',
-            nonce: niertoCubeData.nonce
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.data) {
-                eval(data.data);
-                setupCubeButtons();
-                setupButtonListeners();
-            } else {
-                console.error('Error fetching cube configuration:', data.data?.message || 'Unknown error');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching cube configuration:', error);
-        });
-}
 
-function setupButtonListeners() {
-    document.querySelectorAll('.navButton .navName').forEach((button) => {
+function setupCubeButtons() {
+    const navButtons = document.querySelectorAll(".navButton .navName");
+    navButtons.forEach((button, index) => {
+        const customFace = niertoCubeCustomizer.cubeFaces[index];
+        if (customFace) {
+            button.textContent = customFace.buttonText;
+            button.setAttribute("data-face", customFace.facePosition);
+            button.setAttribute("data-slug", customFace.urlSlug);
+        }
         button.addEventListener('click', handleNavButtonClick);
         button.addEventListener('keydown', function (event) {
             if (event.key === 'Enter' || event.key === ' ') {
@@ -232,8 +210,8 @@ function rotateToCubeFace(faceID) {
 }
 
 function preloadCubeFaces() {
-    niertoCubeData.faces.forEach(face => {
-        if (face.type === 'post') {
+    niertoCubeCustomizer.cubeFaces.forEach(face => {
+        if (face.contentType === 'post') {
             fetch(niertoCubeData.ajaxurl, {
                 method: 'POST',
                 headers: {
@@ -242,14 +220,14 @@ function preloadCubeFaces() {
                 body: new URLSearchParams({
                     action: 'nierto_cube_ajax',
                     cube_action: 'get_face_content',
-                    slug: face.slug,
+                    slug: face.urlSlug,
                     nonce: niertoCubeData.nonce
                 })
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const faceElement = document.getElementById(face.position);
+                        const faceElement = document.getElementById(face.facePosition);
                         if (faceElement) {
                             faceElement.setAttribute('data-content', data.data);
                         }
@@ -262,19 +240,20 @@ function preloadCubeFaces() {
     });
 }
 
+
 function createContentDiv(pageID, destPage) {
     const particularDiv = document.getElementById(pageID);
     const div = document.createElement("div");
     div.id = "contentIframe";
     div.classList.add("fade-in", "focussed");
 
-    const faceSettings = niertoCubeData.faces.find(face => face.slug === destPage);
+    const faceSettings = niertoCubeCustomizer.cubeFaces.find(face => face.urlSlug === destPage);
     if (!faceSettings) {
         console.error(`Face settings not found for slug: ${destPage}`);
         return;
     }
 
-    if (faceSettings.type === 'page') {
+    if (faceSettings.contentType === 'page') {
         const iframe = document.createElement("iframe");
         iframe.className = "iframe-container";
         iframe.src = `${window.location.origin}/${destPage}`;
@@ -293,7 +272,8 @@ function createContentDiv(pageID, destPage) {
                 },
                 body: new URLSearchParams({
                     action: 'nierto_cube_get_face_content',
-                    slug: destPage
+                    slug: destPage,
+                    nonce: niertoCubeData.nonce
                 })
             })
                 .then(response => response.json())

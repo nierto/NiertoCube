@@ -1,14 +1,10 @@
 <?php get_header(); ?>
         <div id="wrapper_left">
-            <div id="button_one" class="navButton accelerated">
-                <button class="navName" data-face-index="0" tabindex="0"></button>
-            </div>
-            <div id="button_two" class="navButton accelerated">
-                <button class="navName" data-face-index="1" tabindex="0"></button>
-            </div>
-            <div id="button_three" class="navButton accelerated">
-                <button class="navName" data-face-index="2" tabindex="0"></button>
-            </div>
+            <?php for ($i = 0; $i < 3; $i++): ?>
+                <div id="button_<?php echo $i+1; ?>" class="navButton accelerated">
+                    <button class="navName" data-face-index="<?php echo $i; ?>" data-face="face<?php echo $i; ?>" data-slug="face-<?php echo $i+1; ?>" tabindex="0">Face <?php echo $i+1; ?></button>
+                </div>
+            <?php endfor; ?>
         </div>
         <div id="scene" role="region" aria-label="3D Cube Scene">
             <div id="cube" aria-hidden="true">
@@ -22,15 +18,11 @@
             </div>
         </div>
         <div id="wrapper_right">
-            <div id="button_four" class="navButton accelerated">
-                <button class="navName" data-face-index="3" tabindex="0"></button>
-            </div>
-            <div id="button_five" class="navButton accelerated">
-                <button class="navName" data-face-index="4" tabindex="0"></button>
-            </div>
-            <div id="button_six" class="navButton accelerated">
-                <button class="navName" data-face-index="5" tabindex="0"></button>
-            </div>
+            <?php for ($i = 3; $i < 6; $i++): ?>
+                <div id="button_<?php echo $i+1; ?>" class="navButton accelerated">
+                    <button class="navName" data-face-index="<?php echo $i; ?>" data-face="face<?php echo $i; ?>" data-slug="face-<?php echo $i+1; ?>" tabindex="0">Face <?php echo $i+1; ?></button>
+                </div>
+            <?php endfor; ?>
         </div>
     </div>
     <script type="text/javascript">

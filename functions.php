@@ -574,9 +574,22 @@ function nierto_cube_enqueue_assets() {
         ));
     }
 
+    $cube_faces = array();
+    for ($i = 1; $i <= 6; $i++) {
+        $cube_faces[] = array(
+            'buttonText' => get_theme_mod("cube_face_{$i}_text", "Face {$i}"),
+            'urlSlug' => get_theme_mod("cube_face_{$i}_slug", "face-{$i}"),
+            'facePosition' => get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1)),
+            'contentType' => get_theme_mod("cube_face_{$i}_type", "page"),
+        );
+    }
+
+    wp_localize_script('cube-script', 'niertoCubeCustomizer', array(
+        'cubeFaces' => $cube_faces
+    ));
+
     // Localize scripts
     wp_localize_script('config-script', 'niertoCubeData', array(
-        'faces' => nierto_cube_get_face_content(),
         'ajaxurl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('nierto_cube_ajax')
     ));
@@ -638,14 +651,12 @@ function nierto_cube_get_face_content() {
     if ($faces === false) {
         $faces = [];
         for ($i = 1; $i <= 6; $i++) {
-            $type = get_theme_mod("cube_face_{$i}_type", "page");
-            $slug = get_theme_mod("cube_face_{$i}_slug", "face-{$i}");
-            $position = get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1));
-            $faces[] = [
-                'type' => $type,
-                'slug' => $slug,
-                'position' => $position
-            ];
+            $faces[] = array(
+                'buttonText' => get_theme_mod("cube_face_{$i}_text", "Face {$i}"),
+                'urlSlug' => get_theme_mod("cube_face_{$i}_slug", "face-{$i}"),
+                'facePosition' => get_theme_mod("cube_face_{$i}_position", "face" . ($i - 1)),
+                'contentType' => get_theme_mod("cube_face_{$i}_type", "page"),
+            );
         }
         
         // Cache the content for 1 hour (3600 seconds)
@@ -681,10 +692,15 @@ function get_face_content($request) {
         }
 
         if ($face_settings['type'] === 'page') {
-            $content = [
-                'type' => 'page',
-                'content' => home_url($slug)
-            ];
+            $page = get_page_by_path($slug);
+            if ($page) {
+                $content = [
+                    'type' => 'page',
+                    'content' => get_permalink($page->ID)
+                ];
+            } else {
+                return new WP_Error('not_found', 'Page not found', ['status' => 404]);
+            }
         } else {
             $args = [
                 'name' => $slug,
@@ -728,8 +744,11 @@ function clear_face_content_cache_on_customize_save() {
 }
 add_action('customize_save_after', 'clear_face_content_cache_on_customize_save');
 
-
-
-
-
-remove_filter('the_content', 'wpautop');
+function nierto_cube_remove_wpautop_for_cube_faces($content) {
+    global $post;
+    if ($post->post_type == 'cube_face') {
+        remove_filter('the_content', 'wpautop');
+    }
+    return $content;
+}
+add_filter('the_content', 'nierto_cube_remove_wpautop_for_cube_faces', 0);
