@@ -51,7 +51,7 @@ function nierto_cube_ajax_wrapper($callback) {
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            wp_send_json_error(['message' => 'An error occurred. Please try again later.']);
+            wp_send_json_error(['message' => $e->getMessage()]);
         }
     };
 }
@@ -59,8 +59,30 @@ function nierto_cube_ajax_wrapper($callback) {
 function nierto_cube_get_face_content_ajax() {
     nierto_cube_verify_ajax_nonce();
     $slug = sanitize_text_field($_POST['slug']);
-    $content = get_face_content(['slug' => $slug]);
-    wp_send_json_success($content);
+    $args = array(
+        'name'        => $slug,
+        'post_type'   => 'cube_face',
+        'post_status' => 'publish',
+        'numberposts' => 1
+    );
+    $posts = get_posts($args);
+    if ($posts) {
+        $post = $posts[0];
+        $content = apply_filters('the_content', $post->post_content);
+        $content = do_shortcode($content); // Process shortcodes
+        
+        // Get sidebar content
+        ob_start();
+        dynamic_sidebar('cube-face-sidebar');
+        $sidebar_content = ob_get_clean();
+        
+        return array(
+            'content' => $content,
+            'sidebar' => $sidebar_content
+        );
+    } else {
+        throw new Exception('Post not found');
+    }
 }
 
 function nierto_cube_get_theme_url() {
@@ -70,9 +92,9 @@ function nierto_cube_get_theme_url() {
     ));
 }
 
-add_action('wp_ajax_nierto_cube_ajax', 'nierto_cube_ajax_handler');
-add_action('wp_ajax_nopriv_nierto_cube_ajax', 'nierto_cube_ajax_handler');
+add_action('wp_ajax_nierto_cube_ajax', nierto_cube_ajax_wrapper('nierto_cube_ajax_handler'));
+add_action('wp_ajax_nopriv_nierto_cube_ajax', nierto_cube_ajax_wrapper('nierto_cube_ajax_handler'));
 add_action('wp_ajax_nierto_cube_get_face_content', nierto_cube_ajax_wrapper('nierto_cube_get_face_content_ajax'));
 add_action('wp_ajax_nopriv_nierto_cube_get_face_content', nierto_cube_ajax_wrapper('nierto_cube_get_face_content_ajax'));
-add_action('wp_ajax_get_theme_url', 'nierto_cube_get_theme_url');
-add_action('wp_ajax_nopriv_get_theme_url', 'nierto_cube_get_theme_url');
+add_action('wp_ajax_get_theme_url', nierto_cube_ajax_wrapper('nierto_cube_get_theme_url'));
+add_action('wp_ajax_nopriv_get_theme_url', nierto_cube_ajax_wrapper('nierto_cube_get_theme_url'));

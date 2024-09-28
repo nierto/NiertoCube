@@ -8,14 +8,16 @@ if (!defined('ABSPATH')) {
 $functionality_files = [
     'ajax-handler.php',
     'cache-version.php',
-    'caching-functionality.php',
-    'cookies-functionality.php',
-    'errors-functionality.php',
-    'google-functionality.php',
-    'metatags-functionality.php',
-    'sanitation-functionality.php',
-    'structureddate-functionality.php',
-    'valkey-functionality.php',
+    'caching-funcs.php',
+    'cookies-funcs.php',
+    'errors-funcs.php',
+    'google-funcs.php',
+    'hooks-funcs.php',
+    'metatags-funcs.php',
+    'sanitation-funcs.php',
+    'structureddate-funcs.php',
+    'valkey-funcs.php',
+    'widgets-funcs.php',
 ];
 
 foreach ($functionality_files as $file) {
@@ -144,6 +146,16 @@ function nierto_cube_customize_register($wp_customize) {
         'label' => __('ValKey Port', 'nierto_cube'),
         'section' => 'nierto_cube_valkey',
         'type' => 'number',
+    ));
+    $wp_customize->add_setting('nierto_cube_cache_prefix', array(
+        'default' => 'nierto_cube_',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('nierto_cube_cache_prefix', array(
+        'label' => __('Cache Prefix', 'nierto_cube'),
+        'section' => 'nierto_cube_valkey',
+        'type' => 'text',
     ));
 
     // SECTION: PWA SETTINGS
