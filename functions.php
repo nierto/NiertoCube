@@ -726,7 +726,8 @@ function get_face_content($request) {
                 $post = $posts[0];
                 $content = [
                     'type' => 'post',
-                    'content' => apply_filters('the_content', $post->post_content)
+                    'content' => apply_filters('the_content', $post->post_content),
+                    'title' => $post->post_title
                 ];
             } else {
                 return new WP_Error('not_found', 'Custom post not found', ['status' => 404]);
