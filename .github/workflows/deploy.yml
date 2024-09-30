@@ -1,0 +1,24 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SERVER_IP }}
+
+      - name: Deploy to Server via SSH
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+        run: |
+          ssh $DEPLOY_USER@$SERVER_IP 'exit'
