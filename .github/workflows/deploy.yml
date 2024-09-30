@@ -14,11 +14,15 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.SERVER_IP }}
-
+          known_hosts: ${{ secrets.SERVER_IP }}:${{ secrets.SSH_PORT }}
+          config: |
+            Host ${{ secrets.SERVER_IP }}
+            HostName ${{ secrets.SERVER_IP }}
+              Port ${{ secrets.SSH_PORT }}
       - name: Deploy to Server via SSH
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          ssh $DEPLOY_USER@$SERVER_IP 'exit'
+          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP 'exit'
