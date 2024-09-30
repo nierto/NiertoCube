@@ -646,7 +646,7 @@ function nierto_cube_settings_page() {
 
 
 function register_face_content_endpoint() {
-    register_rest_route('nierto-cube/v1', '/face-content/(?P<slug>[\w-]+)', [
+    register_rest_route('nierto-cube/v1', '/face-content/(?P<post_type>[\w-]+)/(?P<slug>[\w-]+)', [
         'methods' => 'GET',
         'callback' => 'get_face_content',
     ]);
@@ -679,8 +679,9 @@ function nierto_cube_get_face_content() {
 }
 
 function get_face_content($request) {
+    $post_type = $request['post_type'];
     $slug = $request['slug'];
-    $cache_key = "face_content_{$slug}";
+    $cache_key = "face_content_{$post_type}_{$slug}";
 
     // Try to get the cached content
     $content = get_cached_content($cache_key);
@@ -716,7 +717,7 @@ function get_face_content($request) {
         } else {
             $args = [
                 'name' => $slug,
-                'post_type' => 'cube_face',
+                'post_type' => $post_type,
                 'post_status' => 'publish',
                 'numberposts' => 1
             ];

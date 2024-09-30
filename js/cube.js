@@ -262,7 +262,7 @@ function createContentDiv(pageID, destPage) {
         const contentDiv = document.createElement("div");
         contentDiv.className = "custom-post-content";
 
-        fetch(`/wp-json/nierto-cube/v1/face-content/${destPage}`)
+        fetch(`/wp-json/nierto-cube/v1/face-content/cube_face/${destPage}`)
             .then(response => response.json())
             .then(data => {
                 if (data.type === 'post') {
