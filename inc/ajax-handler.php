@@ -59,9 +59,10 @@ function nierto_cube_ajax_wrapper($callback) {
 function nierto_cube_get_face_content_ajax() {
     nierto_cube_verify_ajax_nonce();
     $slug = sanitize_text_field($_POST['slug']);
+    $post_type = sanitize_text_field($_POST['post_type']);
     $args = array(
         'name'        => $slug,
-        'post_type'   => 'cube_face',
+        'post_type'   => $post_type,  // Use the provided post type instead of hardcoding 'cube_face'
         'post_status' => 'publish',
         'numberposts' => 1
     );
@@ -78,7 +79,8 @@ function nierto_cube_get_face_content_ajax() {
         
         return array(
             'content' => $content,
-            'sidebar' => $sidebar_content
+            'sidebar' => $sidebar_content,
+            'title'   => $post->post_title
         );
     } else {
         throw new Exception('Post not found');

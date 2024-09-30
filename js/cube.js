@@ -211,7 +211,7 @@ function rotateToCubeFace(faceID) {
 
 function preloadCubeFaces() {
     niertoCubeCustomizer.cubeFaces.forEach(face => {
-        if (face.contentType === 'post') {
+        if (face.contentType !== 'page') {  // Changed from 'post' to check if it's not a page
             fetch(niertoCubeData.ajaxurl, {
                 method: 'POST',
                 headers: {
@@ -221,6 +221,7 @@ function preloadCubeFaces() {
                     action: 'nierto_cube_ajax',
                     cube_action: 'get_face_content',
                     slug: face.urlSlug,
+                    post_type: face.contentType,  // Added post_type to the request
                     nonce: niertoCubeData.nonce
                 })
             })
@@ -229,7 +230,7 @@ function preloadCubeFaces() {
                     if (data.success) {
                         const faceElement = document.getElementById(face.facePosition);
                         if (faceElement) {
-                            faceElement.setAttribute('data-content', data.data);
+                            faceElement.setAttribute('data-content', JSON.stringify(data.data));
                         }
                     }
                 })
@@ -262,31 +263,43 @@ function createContentDiv(pageID, destPage) {
         const contentDiv = document.createElement("div");
         contentDiv.className = "custom-post-content";
 
-        fetch(`/wp-json/nierto-cube/v1/face-content/cube_face/${destPage}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.type === 'post') {
-                    const titleElement = document.createElement("h1");
-                    titleElement.textContent = data.title;
-                    contentDiv.appendChild(titleElement);
-
-                    const contentElement = document.createElement("div");
-                    contentElement.innerHTML = data.content;
-                    contentDiv.appendChild(contentElement);
-                } else {
+        // Use the stored data if available
+        const storedContent = particularDiv.getAttribute('data-content');
+        if (storedContent) {
+            const data = JSON.parse(storedContent);
+            renderContent(data, contentDiv);
+            div.appendChild(contentDiv);
+        } else {
+            // Fetch content if not preloaded
+            fetch(`/wp-json/nierto-cube/v1/face-content/${faceSettings.contentType}/${destPage}`)
+                .then(response => response.json())
+                .then(data => {
+                    renderContent(data, contentDiv);
+                    div.appendChild(contentDiv);
+                })
+                .catch(error => {
+                    console.error('Error loading face content:', error);
                     contentDiv.textContent = 'Error loading content.';
-                }
-                div.appendChild(contentDiv);
-            })
-            .catch(error => {
-                console.error('Error loading face content:', error);
-                contentDiv.textContent = 'Error loading content.';
-                div.appendChild(contentDiv);
-            });
+                    div.appendChild(contentDiv);
+                });
+        }
     }
     particularDiv.appendChild(div);
 }
 
+function renderContent(data, contentDiv) {
+    if (data.type === 'post' || data.title) {
+        const titleElement = document.createElement("h1");
+        titleElement.textContent = data.title;
+        contentDiv.appendChild(titleElement);
+
+        const contentElement = document.createElement("div");
+        contentElement.innerHTML = data.content;
+        contentDiv.appendChild(contentElement);
+    } else {
+        contentDiv.textContent = 'Error loading content.';
+    }
+}
 function handleLogoClick() {
     if (!isTransitioning) {
         isTransitioning = true;

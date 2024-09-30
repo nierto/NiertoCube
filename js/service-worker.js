@@ -124,7 +124,7 @@ self.addEventListener('fetch', function (event) {
                         caches.open(CACHE_NAME)
                             .then(function (cache) {
                                 // Cache any successful requests
-                                if (event.request.url.indexOf('/wp-json/nierto-cube/v1/face-content/cube_face/') !== -1) {
+                                if (event.request.url.indexOf('/wp-json/nierto-cube/v1/face-content/') !== -1) {
                                     cache.put(event.request, responseToCache);
                                 }
                             });
