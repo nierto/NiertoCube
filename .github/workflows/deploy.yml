@@ -14,15 +14,30 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.SERVER_IP }}:${{ secrets.SSH_PORT }}
-          config: |
-            Host ${{ secrets.SERVER_IP }}
-            HostName ${{ secrets.SERVER_IP }}
-              Port ${{ secrets.SSH_PORT }}
-      - name: Deploy to Server via SSH
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Add Server to Known Hosts
+        run: |
+          if [ "${{ secrets.KNOWN_HOSTS }}" = "$(echo -e '\n')" ]; then
+            ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          fi
+
+      - name: Deploy to Staging
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP 'exit'
+          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
+          if [ $? -ne 0 ]; then
+            echo "Deployment failed"
+            exit 1
+          fi
+        
+      - name: Verify Deployment
+        if: success()
+        run: echo "Deployment to staging was successful"
+
+      - name: Deployment Failed
+        if: failure()
+        run: echo "Deployment to staging failed"
