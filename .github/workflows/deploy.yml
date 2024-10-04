@@ -14,23 +14,16 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-
-      - name: Add Server to Known Hosts
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/.ssh
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> $GITHUB_WORKSPACE/.ssh/known_hosts
-          echo "Host key added to $GITHUB_WORKSPACE/.ssh/known_hosts"
-          cat $GITHUB_WORKSPACE/.ssh/known_hosts
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Deploy to Staging
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_PORT: 23238  # Explicitly set the port here
         run: |
           echo "Attempting to connect to $SERVER_IP..."
-          ssh -v -o UserKnownHostsFile=$GITHUB_WORKSPACE/.ssh/known_hosts -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
+          ssh -v -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
           if [ $? -ne 0 ]; then
             echo "Deployment failed"
             exit 1
