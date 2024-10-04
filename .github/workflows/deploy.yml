@@ -1,4 +1,4 @@
-name: Deploy to Staging NiertoCube
+name: Deploy to Staging
 
 on:
   push:
@@ -23,11 +23,9 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           echo "Starting deployment to staging..."
-          OUTPUT=$(ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP 2>&1)
-          echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -q "Deployment successful"; then
-            echo "SSH command executed successfully."
-            echo "Git pull and Apache restart have been performed."
+          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP 'git -C /var/www/staging.nierto.com/wp-content/themes/niertocube fetch origin staging && git -C /var/www/staging.nierto.com/wp-content/themes/niertocube reset --hard origin/staging && git -C /var/www/staging.nierto.com/wp-content/themes/niertocube clean -fd && sudo /bin/systemctl restart apache-restart.service && echo "Deployment successful" || echo "Deployment failed"'
+          if [ $? -eq 0 ]; then
+            echo "Deployment completed successfully"
           else
             echo "Deployment failed"
             exit 1
