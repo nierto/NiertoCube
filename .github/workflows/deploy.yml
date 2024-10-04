@@ -18,9 +18,8 @@ jobs:
 
       - name: Add Server to Known Hosts
         run: |
-          if [ "${{ secrets.KNOWN_HOSTS }}" = "$(echo -e '\n')" ]; then
-            ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-          fi
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Staging
         env:
@@ -28,7 +27,7 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
+          ssh -o StrictHostKeyChecking=no -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
           if [ $? -ne 0 ]; then
             echo "Deployment failed"
             exit 1
