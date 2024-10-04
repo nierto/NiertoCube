@@ -20,19 +20,27 @@ jobs:
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
-          SSH_PORT: 23238  # Explicitly set the port here
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          echo "Attempting to connect to $SERVER_IP..."
-          ssh -v -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
-          if [ $? -ne 0 ]; then
-            echo "Deployment failed"
+          echo "Starting deployment to staging..."
+          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
+          DEPLOY_STATUS=$?
+          if [ $DEPLOY_STATUS -eq 0 ]; then
+            echo "SSH command executed successfully."
+            echo "Git pull and Apache restart should have been performed."
+          else
+            echo "SSH command failed with exit status $DEPLOY_STATUS"
             exit 1
           fi
-        
+
       - name: Verify Deployment
         if: success()
-        run: echo "Deployment to staging was successful"
+        run: |
+          echo "Deployment to staging was successful"
+          echo "You may want to manually verify the changes at https://staging.nierto.com"
 
       - name: Deployment Failed
         if: failure()
-        run: echo "Deployment to staging failed"
+        run: |
+          echo "Deployment to staging failed"
+          echo "Please check the server logs for more information"
