@@ -23,7 +23,14 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           echo "Starting deployment to staging..."
-          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP 'git -C /var/www/staging.nierto.com/wp-content/themes/niertocube fetch origin staging && git -C /var/www/staging.nierto.com/wp-content/themes/niertocube reset --hard origin/staging && git -C /var/www/staging.nierto.com/wp-content/themes/niertocube clean -fd && sudo /bin/systemctl restart apache-restart.service && echo "Deployment successful" || echo "Deployment failed"'
+          ssh -T -o BatchMode=yes -p $SSH_PORT $DEPLOY_USER@$SERVER_IP << 'ENDSSH'
+            git -C /var/www/staging.nierto.com/wp-content/themes/niertocube fetch origin staging && 
+            git -C /var/www/staging.nierto.com/wp-content/themes/niertocube reset --hard origin/staging && 
+            git -C /var/www/staging.nierto.com/wp-content/themes/niertocube clean -fd && 
+            /bin/systemctl restart apache-restart.service && 
+            echo "Deployment successful" || 
+            (echo "Deployment failed" && exit 1)
+          ENDSSH
           if [ $? -eq 0 ]; then
             echo "Deployment completed successfully"
           else
