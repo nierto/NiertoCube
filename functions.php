@@ -619,8 +619,6 @@ function get_theme_logo_details() {
     );
 }
 
-
-// new iframe-less way to render content unto one of the cube sides.
 function register_cube_face_post_type() {
     register_post_type('cube_face', [
         'labels' => [
@@ -630,10 +628,10 @@ function register_cube_face_post_type() {
         'public' => true,
         'has_archive' => false,
         'supports' => ['title', 'editor', 'custom-fields'],
+        'show_in_rest' => true,  // This enables REST API support
     ]);
 }
 add_action('init', 'register_cube_face_post_type');
-
 
 function nierto_cube_register_settings() {
     register_setting('nierto_cube_options', 'nierto_cube_settings');

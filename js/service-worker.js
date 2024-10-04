@@ -1,5 +1,5 @@
 // service-worker.js
-const CACHE_NAME = 'nierto-cube-cache-v1';
+const CACHE_NAME = 'nierto-cube-cache-v2';
 let themeUrl;
 
 self.addEventListener('message', function (event) {
@@ -47,7 +47,8 @@ self.addEventListener('install', function (event) {
                                 themeUrl + 'js/clear-cache.js',
                                 themeUrl + 'style.css',
                                 themeUrl + 'index.php',
-                                themeUrl + 'page-template-iframe.php',
+                                themeUrl + 'templates/page-template-iframe.php',
+                                themeUrl + 'single-cube_face.php', 
                             ];
 
                             // Cache all the URLs

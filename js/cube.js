@@ -241,7 +241,6 @@ function preloadCubeFaces() {
     });
 }
 
-
 function createContentDiv(pageID, destPage) {
     const particularDiv = document.getElementById(pageID);
     const div = document.createElement("div");
@@ -263,26 +262,25 @@ function createContentDiv(pageID, destPage) {
         const contentDiv = document.createElement("div");
         contentDiv.className = "custom-post-content";
 
-        // Use the stored data if available
-        const storedContent = particularDiv.getAttribute('data-content');
-        if (storedContent) {
-            const data = JSON.parse(storedContent);
-            renderContent(data, contentDiv);
-            div.appendChild(contentDiv);
-        } else {
-            // Fetch content if not preloaded
-            fetch(`/wp-json/nierto-cube/v1/face-content/${faceSettings.contentType}/${destPage}`)
-                .then(response => response.json())
-                .then(data => {
-                    renderContent(data, contentDiv);
-                    div.appendChild(contentDiv);
-                })
-                .catch(error => {
-                    console.error('Error loading face content:', error);
-                    contentDiv.textContent = 'Error loading content.';
-                    div.appendChild(contentDiv);
-                });
-        }
+        fetch(`/wp-json/wp/v2/${faceSettings.contentType}?slug=${destPage}`)
+            .then(response => response.json())
+            .then(posts => {
+                if (posts && posts.length > 0) {
+                    const post = posts[0];
+                    contentDiv.innerHTML = `
+                        <h1>${post.title.rendered}</h1>
+                        <div class="entry-content">${post.content.rendered}</div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = '<p>Content not found.</p>';
+                }
+                div.appendChild(contentDiv);
+            })
+            .catch(error => {
+                console.error('Error loading face content:', error);
+                contentDiv.textContent = 'Error loading content.';
+                div.appendChild(contentDiv);
+            });
     }
     particularDiv.appendChild(div);
 }
