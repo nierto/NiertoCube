@@ -16,10 +16,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
+      - name: Debug Information
+        run: |
+          echo "GitHub Workspace: $GITHUB_WORKSPACE"
+          echo "Current directory: $(pwd)"
+          ls -la
+
       - name: Add Server to Known Hosts
         run: |
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> $GITHUB_WORKSPACE/known_hosts
-          echo "KNOWN_HOSTS_FILE=$GITHUB_WORKSPACE/known_hosts" >> $GITHUB_ENV
+          echo "Attempting to scan ${{ secrets.SERVER_IP }}..."
+          ssh-keyscan -v -H ${{ secrets.SERVER_IP }} > $GITHUB_WORKSPACE/known_hosts 2>keyscan_error.log || true
+          echo "Scan complete. Output:"
+          cat $GITHUB_WORKSPACE/known_hosts
+          echo "Error log:"
+          cat keyscan_error.log
 
       - name: Deploy to Staging
         env:
@@ -27,7 +37,8 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          ssh -o UserKnownHostsFile=$KNOWN_HOSTS_FILE -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
+          echo "Attempting to connect to $SERVER_IP..."
+          ssh -v -o UserKnownHostsFile=$GITHUB_WORKSPACE/known_hosts -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
           if [ $? -ne 0 ]; then
             echo "Deployment failed"
             exit 1
