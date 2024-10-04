@@ -18,10 +18,10 @@ jobs:
 
       - name: Add Server to Known Hosts
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-          echo "Host key added to ~/.ssh/known_hosts"
-          cat ~/.ssh/known_hosts
+          mkdir -p $GITHUB_WORKSPACE/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> $GITHUB_WORKSPACE/.ssh/known_hosts
+          echo "Host key added to $GITHUB_WORKSPACE/.ssh/known_hosts"
+          cat $GITHUB_WORKSPACE/.ssh/known_hosts
 
       - name: Deploy to Staging
         env:
@@ -30,7 +30,7 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           echo "Attempting to connect to $SERVER_IP..."
-          ssh -v -o UserKnownHostsFile=~/.ssh/known_hosts -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
+          ssh -v -o UserKnownHostsFile=$GITHUB_WORKSPACE/.ssh/known_hosts -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
           if [ $? -ne 0 ]; then
             echo "Deployment failed"
             exit 1
