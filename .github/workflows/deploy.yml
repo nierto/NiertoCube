@@ -23,13 +23,13 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           echo "Starting deployment to staging..."
-          ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP
-          DEPLOY_STATUS=$?
-          if [ $DEPLOY_STATUS -eq 0 ]; then
+          OUTPUT=$(ssh -p $SSH_PORT $DEPLOY_USER@$SERVER_IP 2>&1)
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "Deployment successful"; then
             echo "SSH command executed successfully."
-            echo "Git pull and Apache restart should have been performed."
+            echo "Git pull and Apache restart have been performed."
           else
-            echo "SSH command failed with exit status $DEPLOY_STATUS"
+            echo "Deployment failed"
             exit 1
           fi
 
