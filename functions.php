@@ -14,10 +14,12 @@ $functionality_files = [
     'google-funcs.php',
     'hooks-funcs.php',
     'metatags-funcs.php',
+    'multipost-funcs.php',
     'sanitation-funcs.php',
     'structureddate-funcs.php',
     'valkey-funcs.php',
     'widgets-funcs.php',
+    'admin/nierto-cube-admin.php',
 ];
 
 foreach ($functionality_files as $file) {
@@ -67,13 +69,17 @@ function nierto_cube_customize_register($wp_customize) {
         'title' => __('Font Settings', 'nierto_cube'),
         'priority' => 183,
     ));// Define Customizer settings for page names
-
     // NAV BUTTON STYLING
     $wp_customize->add_section('nav_button_styling', array(
         'title' => __('Navigation Button Styling', 'nierto_cube'),
         'priority' => 203,
     ));
 
+    // ZOOM functionality of main content area (also called: Content Expansion Options)
+    $wp_customize->add_section('nierto_cube_content_options', array(
+        'title' => __('Content Expansion Options', 'nierto_cube'),
+        'priority' => 30,
+    ));
     //SECTION: COLORS
     // Gradient colors settings
     $gradient_colors = ['1', '2', '3', '4'];
@@ -380,6 +386,16 @@ function nierto_cube_customize_register($wp_customize) {
         'section' => 'logo',
         'settings' => 'logo_source',
     ]));
+    $wp_customize->add_setting('logo_alt_text', array(
+        'default' => get_bloginfo('name') . ' logo',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('logo_alt_text', array(
+        'label' => __('Logo Alt Text', 'nierto_cube'),
+        'section' => 'logo',
+        'type' => 'text',
+    ));
 // SECTION: FONT
 $font_settings = [
     'body_font' => [
@@ -473,6 +489,38 @@ foreach ($font_settings as $setting_id => $values) {
             'settings' => $setting_id,
         ));
     }
+    // SECTION: ZOOM (Content Expansion Options)
+    $wp_customize->add_setting('nierto_cube_max_zoom', array(
+        'default' => '90',
+        'sanitize_callback' => 'absint',
+    ));
+
+    $wp_customize->add_control('nierto_cube_max_zoom', array(
+        'label' => __('Maximum Content Zoom (%)', 'nierto_cube'),
+        'section' => 'nierto_cube_content_options',
+        'type' => 'range',
+        'input_attrs' => array(
+            'min' => 80,
+            'max' => 100,
+            'step' => 1,
+        ),
+    ));
+
+    $wp_customize->add_setting('nierto_cube_long_press_duration', array(
+        'default' => '1300',
+        'sanitize_callback' => 'absint',
+    ));
+
+    $wp_customize->add_control('nierto_cube_long_press_duration', array(
+        'label' => __('Long Press Duration (ms)', 'nierto_cube'),
+        'section' => 'nierto_cube_content_options',
+        'type' => 'range',
+        'input_attrs' => array(
+            'min' => 500,
+            'max' => 2000,
+            'step' => 50,
+        ),
+    ));
 }
 
 add_action('customize_register', 'nierto_cube_customize_register');
@@ -573,6 +621,7 @@ function nierto_cube_enqueue_assets() {
     wp_enqueue_script('config-script', $theme_uri . '/js/config.js', array('utils-script'), filemtime($theme_dir . '/js/config.js'), true);
     wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array('utils-script'), filemtime($theme_dir . '/js/cookies.js'), true);
     wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('utils-script', 'config-script'), filemtime($theme_dir . '/js/cube.js'), true);
+    wp_enqueue_script('nierto-cube-admin-script', get_template_directory_uri() . '/js/admin-scripts.js', array(), '1.0', true);
     
     // Conditional scripts
     if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
@@ -595,6 +644,11 @@ function nierto_cube_enqueue_assets() {
             'contentType' => get_theme_mod("cube_face_{$i}_type", "page"),
         );
     }
+
+     wp_localize_script('cube-script', 'niertoCubeSettings', array(
+        'maxZoom' => get_theme_mod('nierto_cube_max_zoom', 90),
+        'longPressDuration' => get_theme_mod('nierto_cube_long_press_duration', 1300),
+    ));
 
     wp_localize_script('cube-script', 'niertoCubeCustomizer', array(
         'cubeFaces' => $cube_faces
@@ -627,11 +681,81 @@ function register_cube_face_post_type() {
         ],
         'public' => true,
         'has_archive' => false,
-        'supports' => ['title', 'editor', 'custom-fields'],
-        'show_in_rest' => true,  // This enables REST API support
+        'supports' => ['title', 'editor', 'custom-fields', 'thumbnail', 'widgets'],
+        'show_in_rest' => true,
+        'rewrite' => ['slug' => 'face'],
     ]);
+
+    // Add custom meta box for cube face template selection
+    add_meta_box(
+        'cube_face_template',
+        'Cube Face Template',
+        'cube_face_template_callback',
+        'cube_face',
+        'side',
+        'default'
+    );
 }
 add_action('init', 'register_cube_face_post_type');
+
+function cube_face_position_callback($post) {
+    wp_nonce_field('cube_face_position_nonce', 'cube_face_position_nonce');
+    $value = get_post_meta($post->ID, '_cube_face_position', true);
+    ?>
+    <select name="cube_face_position" id="cube_face_position">
+        <option value="face0" <?php selected($value, 'face0'); ?>>Face 0 (Top)</option>
+        <option value="face1" <?php selected($value, 'face1'); ?>>Face 1 (Front)</option>
+        <option value="face2" <?php selected($value, 'face2'); ?>>Face 2 (Right)</option>
+        <option value="face3" <?php selected($value, 'face3'); ?>>Face 3 (Back)</option>
+        <option value="face4" <?php selected($value, 'face4'); ?>>Face 4 (Left)</option>
+        <option value="face5" <?php selected($value, 'face5'); ?>>Face 5 (Bottom)</option>
+    </select>
+    <?php
+}
+
+function save_cube_face_position($post_id) {
+    if (!isset($_POST['cube_face_position_nonce']) || !wp_verify_nonce($_POST['cube_face_position_nonce'], 'cube_face_position_nonce')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    if (isset($_POST['cube_face_position'])) {
+        update_post_meta($post_id, '_cube_face_position', sanitize_text_field($_POST['cube_face_position']));
+    }
+}
+add_action('save_post_cube_face', 'save_cube_face_position');
+
+function cube_face_template_callback($post) {
+    wp_nonce_field('cube_face_template_nonce', 'cube_face_template_nonce');
+    $template = get_post_meta($post->ID, '_cube_face_template', true);
+    ?>
+    <select name="cube_face_template" id="cube_face_template">
+        <option value="standard" <?php selected($template, 'standard'); ?>>Standard Template</option>
+        <option value="multi_post" <?php selected($template, 'multi_post'); ?>>Multi-Post Template</option>
+        <option value="settings" <?php selected($template, 'settings'); ?>>Settings Template</option>
+    </select>
+    <?php
+}
+
+function save_cube_face_template($post_id) {
+    if (!isset($_POST['cube_face_template_nonce']) || !wp_verify_nonce($_POST['cube_face_template_nonce'], 'cube_face_template_nonce')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    if (isset($_POST['cube_face_template'])) {
+        update_post_meta($post_id, '_cube_face_template', sanitize_text_field($_POST['cube_face_template']));
+    }
+}
+add_action('save_post_cube_face', 'save_cube_face_template');
 
 function nierto_cube_register_settings() {
     register_setting('nierto_cube_options', 'nierto_cube_settings');

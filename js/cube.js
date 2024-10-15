@@ -6,8 +6,63 @@ let lastScrollTime = 0;
 let lastWheelDelta = 0;
 const scrollThrottle = 16; // ms
 let accumulatedDelta = 0;
+let isExpanded = false;
+let longPressTimer;
+const cube = document.getElementById('cube');
+const wrapperLeft = document.getElementById('wrapper_left');
+const wrapperRight = document.getElementById('wrapper_right');
+// UTILITY MINI FUNCTIONS: (YES, THIS IS HOW MESSY THE COMMENTS WILL BE HENCEFORTH, BRACE YOURSELF BEFORE YOU RACE YOURSELF THRU IT)
+function initializeContentInteraction() {
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+}
+function finishTransition() {
+    setTimeout(() => {
+        isTransitioning = false;
+    }, 100); // buffer transition complete
+}
+function getCurrentContentDiv() {
+    return document.querySelector('.cube-face-content');
+}
+function updateScrollability() {
+    const contentDiv = getCurrentContentDiv();
+    if (!contentDiv) return;
 
+    if (isExpanded) {
+        contentDiv.style.overflowY = 'auto';
+    } else {
+        contentDiv.style.overflowY = 'hidden';
+    }
+}
+function check3DSupport() {
+    var el = document.createElement('p'),
+        has3d,
+        transforms = {
+            'webkitTransform': '-webkit-transform',
+            'OTransform': '-o-transform',
+            'msTransform': '-ms-transform',
+            'MozTransform': '-moz-transform',
+            'transform': 'transform'
+        };
+    document.body.insertBefore(el, null);
+    for (var t in transforms) {
+        if (el.style[t] !== undefined) {
+            el.style[t] = "translate3d(1px,1px,1px)";
+            has3d = window.getComputedStyle(el).getPropertyValue(transforms[t]);
+        }
+    }
+    document.body.removeChild(el);
+
+    if (!(has3d !== undefined && has3d.length > 0 && has3d !== "none")) {
+        document.body.innerHTML = '<div style="padding: 20px; background: #f0f0f0; text-align: center;">Please update your browser to view this website properly.</div>';
+    }
+}
+// DOM CONTENT LOADED EVENTLISTENER
 document.addEventListener('DOMContentLoaded', function () {
+    if (typeof niertoCubeInitialState !== 'undefined') {
+        cubeMoveButton(niertoCubeInitialState.facePosition, niertoCubeInitialState.slug);
+    }
     const cube = document.getElementById('cube');
 
     check3DSupport();
@@ -45,40 +100,10 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', function () {
         setTimeout(updateIframeHeight, 100);
     });
+    initializeContentInteraction();
+    updateScrollability();
 });
-
-
-function setupCubeButtons() {
-    const navButtons = document.querySelectorAll(".navButton .navName");
-    navButtons.forEach((button, index) => {
-        const customFace = niertoCubeCustomizer.cubeFaces[index];
-        if (customFace) {
-            button.textContent = customFace.buttonText;
-            button.setAttribute("data-face", customFace.facePosition);
-            button.setAttribute("data-slug", customFace.urlSlug);
-        }
-        button.addEventListener('click', handleNavButtonClick);
-        button.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                handleNavButtonClick.call(this, event);
-            }
-        });
-    });
-}
-
-function handleNavButtonClick(event) {
-    if (isTransitioning) return;
-    isTransitioning = true;
-    const faceId = event.currentTarget.getAttribute('data-face');
-    const slug = event.currentTarget.getAttribute('data-slug');
-    goHome(() => {
-        requestAnimationFrame(() => {
-            cubeMoveButton(faceId, slug);
-        });
-    });
-}
-
+// ALL CUBE RELATED FUNCS:
 function rotateCube(anglex, angley, anglez) {
     const cube = document.getElementById('cube');
     cube.style.transition = `transform ${window.cubeduration}ms`;
@@ -94,7 +119,6 @@ function rotateCube(anglex, angley, anglez) {
 
     sideCount = Math.abs(sideCount) === 4 ? 0 : sideCount;
 }
-
 function arrowKeyHandler(e) {
     const keyActions = {
         37: sim_left,  // Left arrow key
@@ -106,59 +130,30 @@ function arrowKeyHandler(e) {
         keyActions[e.keyCode]();
     }
 }
-
 function sim_up() {
     if (updCount < 1 && sideCount === 0) {  // Allow rotation up if not at maximum up rotation and only if sideCount is 0
         updCount += 1;
         rotateCube(-90, 0, 0);
     }
 }
-
 function sim_down() {
     if (updCount > -1 && sideCount === 0) {  // Allow rotation down if not at maximum down rotation and only if sideCount is 0
         updCount -= 1;
         rotateCube(90, 0, 0);
     }
 }
-
 function sim_left() {
     if (updCount == 0) {  // Allow left rotation if updCount is zero
         sideCount += 1;
         rotateCube(0, 90, 0);
     }
 }
-
 function sim_right() {
     if (updCount == 0) {  // Allow right rotation if updCount is zero
         sideCount -= 1;
         rotateCube(0, -90, 0);
     }
 }
-
-function goHome(callback) {
-    if (!isTransitioning) return;
-    const actions = [
-        { condition: () => updCount > 0, action: sim_down },
-        { condition: () => updCount < 0, action: sim_up },
-        { condition: () => sideCount < 0, action: sim_left },
-        { condition: () => sideCount > 0, action: sim_right },
-    ];
-    const intervalId = setInterval(() => {
-        const actionToTake = actions.find(a => a.condition());
-        if (actionToTake) {
-            actionToTake.action();
-        } else {
-            clearInterval(intervalId);
-            window.cubeRotationX = 0;
-            window.cubeRotationY = 0;
-            window.cubeRotationZ = 0;
-            const cube = document.getElementById('cube');
-            cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
-            if (callback) setTimeout(callback, 50);
-        }
-    }, 50);
-}
-
 function cubeMoveButton(pageID, destPage) {
     rotateToCubeFace(pageID);
     const xDiv = document.getElementById("contentIframe");
@@ -179,13 +174,6 @@ function cubeMoveButton(pageID, destPage) {
         }, 389);
     }
 }
-
-function finishTransition() {
-    setTimeout(() => {
-        isTransitioning = false;
-    }, 100); // buffer transition complete
-}
-
 function rotateToCubeFace(faceID) {
     switch (faceID) {
         case 'face0':
@@ -208,7 +196,104 @@ function rotateToCubeFace(faceID) {
             break;
     }
 }
+// NAVIGATION BUTTONS FUNCS AND DYNAMIC CONTENT CREATION:
+function setupCubeButtons() {
+    const navButtons = document.querySelectorAll(".navButton .navName");
+    navButtons.forEach((button, index) => {
+        const customFace = niertoCubeCustomizer.cubeFaces[index];
+        if (customFace) {
+            button.textContent = customFace.buttonText;
+            button.setAttribute("data-face", customFace.facePosition);
+            button.setAttribute("data-slug", customFace.urlSlug);
+        }
+        button.addEventListener('click', handleNavButtonClick);
+        button.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleNavButtonClick.call(this, event);
+            }
+        });
+    });
+}
+function handleNavButtonClick(event) {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    const faceId = event.currentTarget.getAttribute('data-face');
+    const slug = event.currentTarget.getAttribute('data-slug');
+    goHome(() => {
+        requestAnimationFrame(() => {
+            cubeMoveButton(faceId, slug);
+        });
+    });
+}
+function createContentDiv(pageID, destPage) {
+    const particularDiv = document.getElementById(pageID);
+    const div = document.createElement("div");
+    div.id = "contentIframe";
+    div.classList.add("fade-in", "focussed", "cube-face-content");
 
+    const faceSettings = niertoCubeCustomizer.cubeFaces.find(face => face.urlSlug === destPage);
+    if (!faceSettings) {
+        console.error(`Face settings not found for slug: ${destPage}`);
+        return;
+    }
+
+    if (faceSettings.contentType === 'page') {
+        const iframe = document.createElement("iframe");
+        iframe.className = "iframe-container";
+        iframe.src = `${window.location.origin}/${destPage}`;
+        div.appendChild(iframe);
+    } else {
+        fetch(`/wp-json/wp/v2/cube_face?slug=${destPage}`)
+            .then(response => response.json())
+            .then(posts => {
+                if (posts && posts.length > 0) {
+                    const post = posts[0];
+                    const template = post.meta._cube_face_template[0] || 'standard';
+
+                    switch (template) {
+                        case 'multi_post':
+                            // Fetch and display multiple posts
+                            fetch('/wp-json/wp/v2/posts?per_page=6')
+                                .then(response => response.json())
+                                .then(posts => {
+                                    const content = posts.map(post => `
+                                        <div class="multi-post-item">
+                                            <h2>${post.title.rendered}</h2>
+                                            <div>${post.excerpt.rendered}</div>
+                                        </div>
+                                    `).join('');
+                                    div.innerHTML = content;
+                                });
+                            break;
+                        case 'settings':
+                            // Display settings content
+                            div.innerHTML = `
+                                <h1>Settings</h1>
+                                <button onclick="clearLocalData()">Clear Local Data</button>
+                                <!-- Add more settings options here -->
+                            `;
+                            break;
+                        default:
+                            // Standard template
+                            div.innerHTML = `
+                                <h1>${post.title.rendered}</h1>
+                                <div class="entry-content">${post.content.rendered}</div>
+                            `;
+                    }
+                } else {
+                    div.innerHTML = '<p>Content not found.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading face content:', error);
+                div.textContent = 'Error loading content.';
+            });
+    }
+    particularDiv.appendChild(div);
+    initializeContentInteraction(); // Initialize touch events for the new content
+    updateScrollability(); // Ensure proper scrolling behavior
+}
 function preloadCubeFaces() {
     niertoCubeCustomizer.cubeFaces.forEach(face => {
         if (face.contentType !== 'page') {  // Changed from 'post' to check if it's not a page
@@ -240,63 +325,50 @@ function preloadCubeFaces() {
         }
     });
 }
+// ZOOM CONTENT FUNCS:
+function toggleContentExpansion() {
+    const contentDiv = getCurrentContentDiv();
+    if (!contentDiv) return;
 
-function createContentDiv(pageID, destPage) {
-    const particularDiv = document.getElementById(pageID);
-    const div = document.createElement("div");
-    div.id = "contentIframe";
-    div.classList.add("fade-in", "focussed");
+    isExpanded = !isExpanded;
+    contentDiv.classList.toggle('expanded');
+    cube.classList.toggle('minimized');
+    wrapperLeft.classList.toggle('hidden');
+    wrapperRight.classList.toggle('hidden');
 
-    const faceSettings = niertoCubeCustomizer.cubeFaces.find(face => face.urlSlug === destPage);
-    if (!faceSettings) {
-        console.error(`Face settings not found for slug: ${destPage}`);
-        return;
-    }
-
-    if (faceSettings.contentType === 'page') {
-        const iframe = document.createElement("iframe");
-        iframe.className = "iframe-container";
-        iframe.src = `${window.location.origin}/${destPage}`;
-        div.appendChild(iframe);
+    if (isExpanded) {
+        contentDiv.style.width = niertoCubeSettings.maxZoom + 'vw';
+        contentDiv.style.height = niertoCubeSettings.maxZoom + 'vh';
     } else {
-        const contentDiv = document.createElement("div");
-        contentDiv.className = "custom-post-content";
-
-        fetch(`/wp-json/wp/v2/${faceSettings.contentType}?slug=${destPage}`)
-            .then(response => response.json())
-            .then(posts => {
-                if (posts && posts.length > 0) {
-                    const post = posts[0];
-                    contentDiv.innerHTML = `
-                        <h1>${post.title.rendered}</h1>
-                        <div class="entry-content">${post.content.rendered}</div>
-                    `;
-                } else {
-                    contentDiv.innerHTML = '<p>Content not found.</p>';
-                }
-                div.appendChild(contentDiv);
-            })
-            .catch(error => {
-                console.error('Error loading face content:', error);
-                contentDiv.textContent = 'Error loading content.';
-                div.appendChild(contentDiv);
-            });
+        contentDiv.style.width = '';
+        contentDiv.style.height = '';
     }
-    particularDiv.appendChild(div);
+
+    updateScrollability();
 }
-
-function renderContent(data, contentDiv) {
-    if (data.type === 'post' || data.title) {
-        const titleElement = document.createElement("h1");
-        titleElement.textContent = data.title;
-        contentDiv.appendChild(titleElement);
-
-        const contentElement = document.createElement("div");
-        contentElement.innerHTML = data.content;
-        contentDiv.appendChild(contentElement);
-    } else {
-        contentDiv.textContent = 'Error loading content.';
-    }
+// LOGO LOGIC FUNCS:
+function goHome(callback) {
+    if (!isTransitioning) return;
+    const actions = [
+        { condition: () => updCount > 0, action: sim_down },
+        { condition: () => updCount < 0, action: sim_up },
+        { condition: () => sideCount < 0, action: sim_left },
+        { condition: () => sideCount > 0, action: sim_right },
+    ];
+    const intervalId = setInterval(() => {
+        const actionToTake = actions.find(a => a.condition());
+        if (actionToTake) {
+            actionToTake.action();
+        } else {
+            clearInterval(intervalId);
+            window.cubeRotationX = 0;
+            window.cubeRotationY = 0;
+            window.cubeRotationZ = 0;
+            const cube = document.getElementById('cube');
+            cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
+            if (callback) setTimeout(callback, 50);
+        }
+    }, 50);
 }
 function handleLogoClick() {
     if (!isTransitioning) {
@@ -315,14 +387,38 @@ function handleLogoClick() {
         });
     }
 }
-
+// IFRAME RELATED FUNCS:
 function getActiveIframe() {
     const focussedDiv = document.querySelector('.focussed');
     return focussedDiv ? focussedDiv.querySelector('iframe') : null;
 }
 
+function updateIframeHeight() {
+    const iframe = document.querySelector('#contentIframe iframe');
+    if (iframe && iframe.contentWindow) {
+        tunnel(() => {
+            const contentHeight = iframe.contentWindow.document.body.scrollHeight;
+            iframe.style.height = contentHeight + 'px';
+            iframe.contentWindow.postMessage({ type: 'setHeight', height: contentHeight }, '*');
+        });
+    }
+}
+//SCROLLING FUNCS:
+function updateScrollPosition(scrollPosition, maxScroll) {
+    // Use these values to update any necessary UI elements or perform any required actions
+    console.log('Scroll position:', scrollPosition, 'Max scroll:', maxScroll);
+}
+function setupScrolling(container) {
+    container.style.height = '100%';
+    container.style.overflowY = 'scroll';
+    container.style.scrollbarWidth = 'none';
+    container.style.msOverflowStyle = 'none';
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+}
 function handleWheel(event) {
-    if (isTransitioning) return;
+    if (isTransitioning || isExpanded) return;
 
     const now = performance.now();
     if (now - lastScrollTime < scrollThrottle) {
@@ -331,7 +427,7 @@ function handleWheel(event) {
         return;
     }
 
-    const deltaY = lastWheelDelta + event.deltaY;
+    const deltaY = (lastWheelDelta + event.deltaY) * 1.25;
     lastWheelDelta = 0;
     lastScrollTime = now;
 
@@ -345,17 +441,25 @@ function handleWheel(event) {
         event.preventDefault();
     }
 }
-
-function handleTouchStart(event) {
+function handleTouchStart(e) {
     if (isTransitioning) return;
-    lastTouchY = event.touches[0].clientY;
+    lastTouchY = e.touches[0].clientY;
+
+    const contentDiv = getCurrentContentDiv();
+    if (!contentDiv) return;
+
+    if (!e.target.closest('button, a, input, textarea, select')) {
+        longPressTimer = setTimeout(() => {
+            toggleContentExpansion();
+        }, niertoCubeSettings.longPressDuration);
+    }
 }
-
-function handleTouchMove(event) {
+function handleTouchMove(e) {
     if (isTransitioning) return;
+    clearTimeout(longPressTimer);
 
-    const currentTouchY = event.touches[0].clientY;
-    const deltaY = lastTouchY - currentTouchY;
+    const currentTouchY = e.touches[0].clientY;
+    const deltaY = (lastTouchY - currentTouchY) * 1.25;
     lastTouchY = currentTouchY;
 
     const now = performance.now();
@@ -374,58 +478,9 @@ function handleTouchMove(event) {
         accumulatedDelta += deltaY;
     }
 
-    event.preventDefault();
+    e.preventDefault();
+}
+function handleTouchEnd(e) {
+    clearTimeout(longPressTimer);
 }
 
-function updateIframeHeight() {
-    const iframe = document.querySelector('#contentIframe iframe');
-    if (iframe && iframe.contentWindow) {
-        tunnel(() => {
-            const contentHeight = iframe.contentWindow.document.body.scrollHeight;
-            iframe.style.height = contentHeight + 'px';
-            iframe.contentWindow.postMessage({ type: 'setHeight', height: contentHeight }, '*');
-        });
-    }
-}
-
-function updateScrollPosition(scrollPosition, maxScroll) {
-    // Use these values to update any necessary UI elements or perform any required actions
-    console.log('Scroll position:', scrollPosition, 'Max scroll:', maxScroll);
-}
-
-function setupScrolling(container) {
-    container.style.height = '100%';
-    container.style.overflowY = 'scroll';
-    container.style.scrollbarWidth = 'none';
-    container.style.msOverflowStyle = 'none';
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
-}
-
-function check3DSupport() {
-    var el = document.createElement('p'),
-        has3d,
-        transforms = {
-            'webkitTransform': '-webkit-transform',
-            'OTransform': '-o-transform',
-            'msTransform': '-ms-transform',
-            'MozTransform': '-moz-transform',
-            'transform': 'transform'
-        };
-
-    document.body.insertBefore(el, null);
-
-    for (var t in transforms) {
-        if (el.style[t] !== undefined) {
-            el.style[t] = "translate3d(1px,1px,1px)";
-            has3d = window.getComputedStyle(el).getPropertyValue(transforms[t]);
-        }
-    }
-
-    document.body.removeChild(el);
-
-    if (!(has3d !== undefined && has3d.length > 0 && has3d !== "none")) {
-        document.body.innerHTML = '<div style="padding: 20px; background: #f0f0f0; text-align: center;">Please update your browser to view this website properly.</div>';
-    }
-}

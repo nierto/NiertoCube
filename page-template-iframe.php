@@ -32,6 +32,7 @@ Template Name: Iframe-Optimized Page
         overflow: hidden;
         position: relative;
         -webkit-overflow-scrolling: touch;
+        max-height: none;
         }
         .content {
         padding: 20px;
@@ -41,6 +42,8 @@ Template Name: Iframe-Optimized Page
         right: 0;
         transition: transform 0.3s ease;
         min-height: 100%;
+        overflow-y: auto; /* Add this to allow scrolling within the content */
+        -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
         }
         h1, h2, h3, h4, h5, h6 {
             font-family: <?php echo get_font_family('heading_font'); ?>;
@@ -97,20 +100,16 @@ Template Name: Iframe-Optimized Page
     resizeObserver.observe(document.body);
 
     function updateScroll(deltaY) {
-        maxScroll = content.offsetHeight - container.offsetHeight; // Recalculate maxScroll
-        scrollPosition = Math.max(0, Math.min(scrollPosition + deltaY, maxScroll));
+        maxScroll = content.offsetHeight - container.offsetHeight;
+        scrollPosition = Math.max(0, Math.min(scrollPosition + (deltaY * 1.25), maxScroll)); // Increase speed by 25%
         requestAnimationFrame(() => {
             const roundedPosition = Math.round(scrollPosition);
             content.style.transform = `translateY(-${roundedPosition}px)`;
-        
+            
             window.parent.tunnel(() => {
                 window.parent.updateScrollPosition(roundedPosition, maxScroll);
             });
         });
-    }
-
-    function handleTouchStart(e) {
-        lastTouchY = e.touches[0].clientY;
     }
 
     function handleTouchMove(e) {

@@ -1,4 +1,21 @@
 <?php get_header(); ?>
+
+<div id="primary" class="content-area">
+    <main id="main" class="site-main">
+        <?php
+        if (is_singular('cube_face')) {
+            $face_position = get_post_meta(get_the_ID(), '_cube_face_position', true);
+            ?>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                rotateToCubeFace('<?php echo esc_js($face_position); ?>');
+                cubeMoveButton('<?php echo esc_js($face_position); ?>', '<?php echo esc_js(get_post_field('post_name', get_the_ID())); ?>');
+            });
+            </script>
+            <?php
+        }
+        ?>
+
         <div id="wrapper_left">
             <?php for ($i = 0; $i < 3; $i++): ?>
                 <div id="button_<?php echo $i+1; ?>" class="navButton accelerated">

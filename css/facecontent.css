@@ -1,0 +1,34 @@
+.cube-face-content {
+    transition: all 0.3s ease;
+    overflow-y: auto;
+    /* Ensure content is always scrollable */
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
+}
+
+.cube-face-content.expanded {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: var(--color-bg);
+}
+
+#cube.minimized {
+    z-index: -1;
+    /* Push the cube back when content is expanded */
+    transition: all 0.3s ease;
+}
+
+#wrapper_left,
+#wrapper_right {
+    transition: opacity 0.3s ease;
+}
+
+#wrapper_left.hidden,
+#wrapper_right.hidden {
+    opacity: 0;
+    pointer-events: none;
+}

@@ -37,7 +37,18 @@
             width: 20%;
             margin-right: 0;
         }
-
+        .scroll-container {
+            height: 100vh;
+            max-height: none;
+            overflow: hidden;
+            /* Changed from auto to hidden */
+        }
+        .content {
+            min-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Ensure smooth scrolling on iOS */
+        }
         #wrapper_left .navButton {
             margin-right: 0;
         }
@@ -76,11 +87,16 @@
             z-index: 890;
         }
         .scroll-container {
-            height: 100vh; /* Ensure the scroll container takes full height */
-            max-height: none; /* Remove any max-height limitation */
+            height: 100vh;
+            max-height: none;
+            overflow: hidden;
+        /* Changed from auto to hidden */
         }
         .content {
-            min-height: 100%; /* Ensure content takes at least full height */
+            min-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Ensure smooth scrolling on iOS */
         }
         #cube {
             margin-left: 0vmin;
@@ -126,7 +142,18 @@
             width: 20%;
             margin-right: 0;
         }
-
+        .scroll-container {
+            height: 100vh;
+            max-height: none;
+            overflow: hidden;
+            /* Changed from auto to hidden */
+        }
+        .content {
+            min-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Ensure smooth scrolling on iOS */
+        }
         #wrapper_left .navButton {
             margin-right: 0;
         }
@@ -149,7 +176,18 @@
             height: 100%;
             flex-direction: column;
         }
-
+        .scroll-container {
+            height: 100vh;
+            max-height: none;
+            overflow: hidden;
+            /* Changed from auto to hidden */
+        }
+        .content {
+            min-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Ensure smooth scrolling on iOS */
+        }
         #wrapper_left {
             left: 0;
             top: 0;
@@ -207,8 +245,16 @@
         min-height: var(--nav-button-max-height);
     }
     .scroll-container {
-        height: 100%;
-        overflow: auto;
+        height: 100vh;
+        max-height: none;
+        overflow: hidden;
+        /* Changed from auto to hidden */
+    }
+    .content {
+        min-height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Ensure smooth scrolling on iOS */
     }
     .navButton:first-child {
         margin-top: 28vmin;
