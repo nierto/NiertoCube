@@ -3,8 +3,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
-
 function enforce_single_settings_template($post_id) {
     if (get_post_type($post_id) === 'cube_face' && get_post_meta($post_id, '_cube_face_template', true) === 'settings') {
         $existing_settings = get_posts([

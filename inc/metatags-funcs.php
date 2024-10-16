@@ -3,18 +3,21 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-function nierto_cube_add_meta_boxes() {
+
+function nierto_cube_add_seo_meta_box() {
     add_meta_box(
-        'nierto_cube_meta_box',
+        'nierto_cube_seo_meta_box',
         'SEO Settings',
-        'nierto_cube_meta_box_callback',
-        'cube_face'
+        'nierto_cube_seo_meta_box_callback',
+        'cube_face',
+        'normal',
+        'high'
     );
 }
-add_action('add_meta_boxes', 'nierto_cube_add_meta_boxes');
+add_action('add_meta_boxes', 'nierto_cube_add_seo_meta_box');
 
-function nierto_cube_meta_box_callback($post) {
-    wp_nonce_field('nierto_cube_save_meta_box_data', 'nierto_cube_meta_box_nonce');
+function nierto_cube_seo_meta_box_callback($post) {
+    wp_nonce_field('nierto_cube_save_seo_meta_box_data', 'nierto_cube_seo_meta_box_nonce');
 
     $meta_title = get_post_meta($post->ID, '_nierto_cube_meta_title', true);
     $meta_description = get_post_meta($post->ID, '_nierto_cube_meta_description', true);
@@ -26,11 +29,11 @@ function nierto_cube_meta_box_callback($post) {
     echo '<textarea id="nierto_cube_meta_description" name="nierto_cube_meta_description" rows="4" cols="50">' . esc_textarea($meta_description) . '</textarea></p>';
 }
 
-function nierto_cube_save_meta_box_data($post_id) {
-    if (!isset($_POST['nierto_cube_meta_box_nonce'])) {
+function nierto_cube_save_seo_meta_box_data($post_id) {
+    if (!isset($_POST['nierto_cube_seo_meta_box_nonce'])) {
         return;
     }
-    if (!wp_verify_nonce($_POST['nierto_cube_meta_box_nonce'], 'nierto_cube_save_meta_box_data')) {
+    if (!wp_verify_nonce($_POST['nierto_cube_seo_meta_box_nonce'], 'nierto_cube_save_seo_meta_box_data')) {
         return;
     }
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
@@ -47,7 +50,7 @@ function nierto_cube_save_meta_box_data($post_id) {
         update_post_meta($post_id, '_nierto_cube_meta_description', sanitize_textarea_field($_POST['nierto_cube_meta_description']));
     }
 }
-add_action('save_post', 'nierto_cube_save_meta_box_data');
+add_action('save_post', 'nierto_cube_save_seo_meta_box_data');
 
 function nierto_cube_add_meta_tags() {
     if (is_singular('cube_face')) {
