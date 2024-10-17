@@ -36,8 +36,11 @@ jobs:
 
       - name: Check for sensitive information
         run: |
-          if grep -r -i "API_KEY\|SECRET\|PASSWORD" --exclude-dir=.git .; then
-            echo "Potential sensitive information found. Please remove before merging."
+          sensitive_info=$(grep -r -n -i -E "(^|[^A-Za-z])(API_KEY|SECRET|PASSWORD)([^A-Za-z]|$)" --exclude-dir=.git --exclude="*.yml" --exclude="*.md" .)
+          if [ -n "$sensitive_info" ]; then
+            echo "Potential sensitive information found in the following locations:"
+            echo "$sensitive_info"
+            echo "Please review and remove any sensitive data before merging."
             exit 1
           fi
 
@@ -52,4 +55,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           branch_name="${{ github.head_ref }}"
-          if [[ ! $branch_name =~ ^(feature|bugfix|hotfix|doc
+          if [[ ! $branch_name =~ ^(feature|bugfix|hotfix|docs)/[a-z0-9-]+$ ]]; then
+            echo "Invalid branch name format. Please use feature/, bugfix/, hotfix/, or docs/ prefix followed by a descriptive name."
+            exit 1
+          fi
