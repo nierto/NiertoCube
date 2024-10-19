@@ -648,7 +648,10 @@ function register_cube_face_post_type() {
         'show_in_rest' => true,
         'rewrite' => ['slug' => 'face'],
     ]);
-    // Add custom meta box for cube face template selection
+}
+add_action('init', 'register_cube_face_post_type');
+
+function add_cube_face_metaboxes() {
     add_meta_box(
         'cube_face_template',
         'Cube Face Template',
@@ -657,9 +660,17 @@ function register_cube_face_post_type() {
         'side',
         'default'
     );
+    
+    add_meta_box(
+        'cube_face_sidebar',
+        __('Cube Face Sidebar', 'nierto_cube'),
+        'cube_face_sidebar_callback',
+        'cube_face',
+        'side',
+        'default'
+    );
 }
-add_action('init', 'register_cube_face_post_type');
-
+add_action('add_meta_boxes', 'add_cube_face_metaboxes');
 function cube_face_position_callback($post) {
     wp_nonce_field('cube_face_position_nonce', 'cube_face_position_nonce');
     $value = get_post_meta($post->ID, '_cube_face_position', true);
@@ -701,6 +712,11 @@ function cube_face_template_callback($post) {
         <option value="settings" <?php selected($template, 'settings'); ?>>Settings Template</option>
     </select>
     <?php
+}
+
+function cube_face_sidebar_callback($post) {
+    // Output the sidebar
+    dynamic_sidebar('cube-face-sidebar');
 }
 
 function save_cube_face_template($post_id) {
