@@ -1,16 +1,30 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-        navigator.serviceWorker.register(swData.themeUrl + 'js/service-worker.js')
-            .then(function (registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                if (registration.active) {
-                    registration.active.postMessage({
-                        type: 'SET_THEME_URL',
-                        themeUrl: swData.themeUrl
-                    });
+        fetch('/wp-admin/admin-ajax.php?action=get_manifest')
+            .then(response => response.json())
+            .then(manifest => {
+                if (manifest.success === false) {
+                    console.log('PWA not enabled');
+                    return;
                 }
-            }, function (err) {
-                console.log('ServiceWorker registration failed: ', err);
+                // Register service worker with manifest data
+                navigator.serviceWorker.register(swData.themeUrl + 'js/service-worker.js')
+                    .then(function (registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        if (registration.active) {
+                            registration.active.postMessage({
+                                type: 'SET_THEME_URL',
+                                themeUrl: swData.themeUrl,
+                                manifest: manifest
+                            });
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            })
+            .catch(error => {
+                console.error('Error loading manifest:', error);
             });
     });
 }

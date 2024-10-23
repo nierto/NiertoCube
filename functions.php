@@ -4,10 +4,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// 'admin/nierto-cube-admin.php', should have its own inc logic!!!! if not /inc/admin/... problem
+
 // Include custom functionality
 $functionality_files = [
     'register-options-wp.php',
     'ajax-handler.php',
+    'api-funcs.php',
     'cache-version.php',
     'caching-funcs.php',
     'cookies-funcs.php',
@@ -15,13 +18,14 @@ $functionality_files = [
     'errors-funcs.php',
     'google-funcs.php',
     'hooks-funcs.php',
+    'install-funcs.php',
+    'manifest-settings.php',
     'metatags-funcs.php',
     'multipost-funcs.php',
     'sanitation-funcs.php',
     'structureddate-funcs.php',
     'valkey-funcs.php',
     'widgets-funcs.php',
-    'admin/nierto-cube-admin.php',
 ];
 
 foreach ($functionality_files as $file) {
@@ -32,7 +36,9 @@ foreach ($functionality_files as $file) {
 }
 
 add_action('wp_head', function() {
-    echo '<link rel="manifest" href="' . get_template_directory_uri() . '/manifest.php">';
+    if (get_theme_mod('enable_pwa', 0)) {
+        echo '<link rel="manifest" href="' . home_url('/manifest.json') . '">';
+    }
 });
 
 function nierto_cube_customizer_css() {

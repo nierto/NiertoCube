@@ -3,6 +3,39 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// In api-funcs.php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+function nierto_cube_manifest_endpoint() {
+    add_rewrite_rule(
+        'manifest.json$',
+        'index.php?manifest=1',
+        'top'
+    );
+    add_rewrite_tag('%manifest%', '([^&]+)');
+}
+add_action('init', 'nierto_cube_manifest_endpoint');
+
+function nierto_cube_handle_manifest_request($query) {
+    if (!$query->get('manifest')) {
+        return;
+    }
+
+    header('Content-Type: application/json');
+    $manifest = nierto_cube_get_manifest_settings();
+    
+    if (!$manifest['enabled']) {
+        header("HTTP/1.0 404 Not Found");
+        exit;
+    }
+
+    echo json_encode($manifest);
+    exit;
+}
+add_action('parse_request', 'nierto_cube_handle_manifest_request');
+
 function nierto_cube_get_cache_prefix() {
     $prefix = get_theme_mod('nierto_cube_cache_prefix', 'nierto_cube_');
     if (is_multisite()) {
@@ -162,3 +195,4 @@ function nierto_cube_handle_clear_cache() {
     exit;
 }
 add_action('admin_post_nierto_cube_clear_cache', 'nierto_cube_handle_clear_cache');
+
