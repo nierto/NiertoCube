@@ -253,8 +253,7 @@ function createContentDiv(pageID, destPage) {
 
                     switch (template) {
                         case 'multi_post':
-                            // Fetch and display multiple posts
-                            fetch('/wp-json/wp/v2/posts?per_page=6')
+                            return fetch('/wp-json/wp/v2/posts?per_page=6')
                                 .then(response => response.json())
                                 .then(posts => {
                                     const content = posts.map(post => `
@@ -265,9 +264,7 @@ function createContentDiv(pageID, destPage) {
                                     `).join('');
                                     div.innerHTML = content;
                                 });
-                            break;
                         case 'settings':
-                            // Display settings content
                             div.innerHTML = `
                                 <h1>Settings</h1>
                                 <button onclick="clearLocalData()">Clear Local Data</button>
@@ -275,7 +272,6 @@ function createContentDiv(pageID, destPage) {
                             `;
                             break;
                         default:
-                            // Standard template
                             div.innerHTML = `
                                 <h1>${post.title.rendered}</h1>
                                 <div class="entry-content">${post.content.rendered}</div>
@@ -288,11 +284,13 @@ function createContentDiv(pageID, destPage) {
             .catch(error => {
                 console.error('Error loading face content:', error);
                 div.textContent = 'Error loading content.';
+            })
+            .finally(() => {
+                particularDiv.appendChild(div);
+                initializeContentInteraction(); // Initialize touch events for the new content
+                updateScrollability(); // Ensure proper scrolling behavior
             });
     }
-    particularDiv.appendChild(div);
-    initializeContentInteraction(); // Initialize touch events for the new content
-    updateScrollability(); // Ensure proper scrolling behavior
 }
 function preloadCubeFaces() {
     niertoCubeCustomizer.cubeFaces.forEach(face => {

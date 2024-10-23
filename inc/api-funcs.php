@@ -1,6 +1,4 @@
 <?php
-// Add this to a new file, e.g., nierto-cube-cache-api.php, and include it in your functions.php
-
 if (!defined('ABSPATH')) {
     exit;
 }

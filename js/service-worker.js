@@ -45,10 +45,20 @@ self.addEventListener('install', function (event) {
                                 themeUrl + 'js/cube.js',
                                 themeUrl + 'js/pwa.js',
                                 themeUrl + 'js/clear-cache.js',
+                                themeUrl + 'js/config.js',
+                                themeUrl + 'js/cookies.js',
+                                themeUrl + 'js/utils.js',
                                 themeUrl + 'style.css',
                                 themeUrl + 'index.php',
-                                themeUrl + 'templates/page-template-iframe.php',
-                                themeUrl + 'single-cube_face.php', 
+                                themeUrl + 'header.php',
+                                themeUrl + 'footer.php',
+                                themeUrl + 'functions.php',
+                                themeUrl + 'page-template-iframe.php',
+                                themeUrl + 'single-cube_face.php',
+                                themeUrl + 'single-cube_face-standard.php',
+                                themeUrl + 'single-cube_face-multi_post.php',
+                                themeUrl + 'single-cube_face-settings.php',
+                                themeUrl + 'manifest.php'
                             ];
 
                             // Cache all the URLs
