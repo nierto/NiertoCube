@@ -6,24 +6,23 @@ if (!defined('ABSPATH')) {
 
 require_once get_template_directory() . '/inc/cache-version.php';
 
-// Add this new function for secure settings retrieval
 function get_valkey_settings() {
     $settings = get_option('nierto_cube_settings');
-    if (!$settings || !isset($settings['valkey_ip']) || !isset($settings['valkey_port'])) {
+    if (!$settings || !isset($settings['valkey_ip']) || !isset($settings['valkey_port']) || !isset($settings['valkey_auth'])) {
         $settings = array(
             'use_valkey' => false,
             'valkey_ip' => '',
-            'valkey_port' => '6379'
+            'valkey_port' => '6379',
+            'valkey_auth' => ''  // Authentication key only
         );
         update_option('nierto_cube_settings', $settings);
     }
     return $settings;
 }
 
-// Update this function to use the new get_valkey_settings()
 function is_valkey_enabled() {
     $settings = get_valkey_settings();
-    return $settings['use_valkey'] && !empty($settings['valkey_ip']);
+    return $settings['use_valkey'] && !empty($settings['valkey_ip']) && !empty($settings['valkey_auth']);
 }
 
 function valkey_get($key) {
@@ -32,15 +31,14 @@ function valkey_get($key) {
     }
     
     $settings = get_valkey_settings();
-    $valkey_ip = $settings['valkey_ip'];
-    $valkey_port = $settings['valkey_port'];
-    
-    $version = nierto_cube_get_cache_version();
-    $versioned_key = "v{$version}_{$key}";
-    
     $redis = new Redis();
     try {
-        $redis->connect($valkey_ip, $valkey_port);
+        $redis->connect($settings['valkey_ip'], $settings['valkey_port']);
+        if (!empty($settings['valkey_auth'])) {
+            $redis->auth($settings['valkey_auth']);
+        }
+        $version = nierto_cube_get_cache_version();
+        $versioned_key = "v{$version}_{$key}";
         return $redis->get($versioned_key);
     } catch (Exception $e) {
         error_log('ValKey connection failed: ' . $e->getMessage());
@@ -54,15 +52,14 @@ function valkey_set($key, $value, $ttl = 3600) {
     }
     
     $settings = get_valkey_settings();
-    $valkey_ip = $settings['valkey_ip'];
-    $valkey_port = $settings['valkey_port'];
-    
-    $version = nierto_cube_get_cache_version();
-    $versioned_key = "v{$version}_{$key}";
-    
     $redis = new Redis();
     try {
-        $redis->connect($valkey_ip, $valkey_port);
+        $redis->connect($settings['valkey_ip'], $settings['valkey_port']);
+        if (!empty($settings['valkey_auth'])) {
+            $redis->auth($settings['valkey_auth']);
+        }
+        $version = nierto_cube_get_cache_version();
+        $versioned_key = "v{$version}_{$key}";
         return $redis->setex($versioned_key, $ttl, $value);
     } catch (Exception $e) {
         error_log('ValKey connection failed: ' . $e->getMessage());
@@ -76,22 +73,20 @@ function valkey_delete($key) {
     }
     
     $settings = get_valkey_settings();
-    $valkey_ip = $settings['valkey_ip'];
-    $valkey_port = $settings['valkey_port'];
-    
-    $version = nierto_cube_get_cache_version();
-    $versioned_key = "v{$version}_{$key}";
-    
     $redis = new Redis();
     try {
-        $redis->connect($valkey_ip, $valkey_port);
+        $redis->connect($settings['valkey_ip'], $settings['valkey_port']);
+        if (!empty($settings['valkey_auth'])) {
+            $redis->auth($settings['valkey_auth']);
+        }
+        $version = nierto_cube_get_cache_version();
+        $versioned_key = "v{$version}_{$key}";
         return $redis->del($versioned_key);
     } catch (Exception $e) {
         error_log('ValKey connection failed: ' . $e->getMessage());
         return false;
     }
 }
-
 
 // Enqueue script for AJAX call
 function enqueue_valkey_test_script() {
