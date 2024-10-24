@@ -38,6 +38,7 @@ function nierto_cube_include_once($array, $path) {
         if (file_exists($file_path)) {
             require_once $file_path;
         }
+    }
 }
 
 nierto_cube_include_once($admin_files, '/admin/');
