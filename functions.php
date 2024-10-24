@@ -4,14 +4,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// 'admin/nierto-cube-admin.php', should have its own inc logic!!!! if not /inc/admin/... problem
-$admin_files = [
-    'nierto-cube-admin.php',
-    'premium-plugins.php',
+// admin const files
+const ADMIN_FILES = [
+    'class-nierto-cube-premium.php',
 ];
-
-// Include custom functionality
-$functionality_files = [
+// functionality const files
+const FUNCTIONALITY_FILES = [
     'register-options-wp.php',
     'ajax-handler.php',
     'api-funcs.php',
@@ -31,7 +29,7 @@ $functionality_files = [
     'valkey-funcs.php',
     'widgets-funcs.php',
 ];
-
+// Include once func for use with the file consts 
 function nierto_cube_include_once($array, $path) {
     foreach ($array as $file) {
         $file_path = get_template_directory() . $path . $file;
@@ -40,9 +38,8 @@ function nierto_cube_include_once($array, $path) {
         }
     }
 }
-
-nierto_cube_include_once($admin_files, '/admin/');
-nierto_cube_include_once($functionality_files, '/inc/');
+nierto_cube_include_once(ADMIN_FILES, '/inc/admin/');
+nierto_cube_include_once(FUNCTIONALITY_FILES, '/inc/');
 
 add_action('wp_head', function() {
     if (get_theme_mod('enable_pwa', 0)) {
