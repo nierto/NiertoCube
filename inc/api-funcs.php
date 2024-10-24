@@ -4,10 +4,6 @@ if (!defined('ABSPATH')) {
 }
 
 // In api-funcs.php
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 function nierto_cube_manifest_endpoint() {
     add_rewrite_rule(
         'manifest.json$',
@@ -19,7 +15,8 @@ function nierto_cube_manifest_endpoint() {
 add_action('init', 'nierto_cube_manifest_endpoint');
 
 function nierto_cube_handle_manifest_request($query) {
-    if (!$query->get('manifest')) {
+    // Changed from $query->get() to get_query_var()
+    if (!get_query_var('manifest')) {
         return;
     }
 
@@ -47,6 +44,7 @@ function nierto_cube_get_cache_prefix() {
     }
     return $prefix;
 }
+
 /**
  * Set a value in the cache
  *
@@ -65,6 +63,7 @@ function nierto_cube_cache_set($key, $value, $expiration = 3600) {
         return set_transient($prefixed_key, $value, $expiration);
     }
 }
+
 /**
  * Get a value from the cache
  *
@@ -170,6 +169,7 @@ function nierto_cube_can_clear_cache() {
 
     return true;
 }
+
 // Add clear cache button to admin bar
 function nierto_cube_add_clear_cache_button($wp_admin_bar) {
     if (nierto_cube_can_clear_cache()) {
@@ -195,4 +195,3 @@ function nierto_cube_handle_clear_cache() {
     exit;
 }
 add_action('admin_post_nierto_cube_clear_cache', 'nierto_cube_handle_clear_cache');
-

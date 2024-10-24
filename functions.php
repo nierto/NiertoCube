@@ -4,10 +4,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// admin const files
-const ADMIN_FILES = [
-    'class-nierto-cube-premium.php',
-];
 // functionality const files
 const FUNCTIONALITY_FILES = [
     'register-options-wp.php',
@@ -28,6 +24,7 @@ const FUNCTIONALITY_FILES = [
     'structureddate-funcs.php',
     'valkey-funcs.php',
     'widgets-funcs.php',
+    'admin/class-nierto-cube-premium.php',
 ];
 // Include once func for use with the file consts 
 function nierto_cube_include_once($array, $path) {
@@ -38,7 +35,6 @@ function nierto_cube_include_once($array, $path) {
         }
     }
 }
-nierto_cube_include_once(ADMIN_FILES, '/inc/admin/');
 nierto_cube_include_once(FUNCTIONALITY_FILES, '/inc/');
 
 add_action('wp_head', function() {
