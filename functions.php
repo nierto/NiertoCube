@@ -20,6 +20,7 @@ const FUNCTIONALITY_FILES = [
     'manifest-settings.php',
     'metatags-funcs.php',
     'multipost-funcs.php',
+    'performance-optimization.php',
     'sanitation-funcs.php',
     'structureddate-funcs.php',
     'valkey-funcs.php',
@@ -57,7 +58,13 @@ function nierto_cube_enqueue_assets() {
     wp_enqueue_script('cookie-script', $theme_uri . '/js/cookies.js', array('utils-script'), filemtime($theme_dir . '/js/cookies.js'), true);
     wp_enqueue_script('cube-script', $theme_uri . '/js/cube.js', array('utils-script', 'config-script'), filemtime($theme_dir . '/js/cube.js'), true);
     wp_enqueue_script('nierto-cube-admin-script', get_template_directory_uri() . '/js/admin-scripts.js', array(), '1.0', true);
-    
+    wp_enqueue_script(
+    'nierto-cube-performance',
+    get_template_directory_uri() . '/js/performance-optimizer.js',
+    array(),
+    '1.0',
+    true
+    );
     // Conditional scripts
     if ((is_front_page()) && (get_theme_mod('enable_pwa', 1))) {
         wp_enqueue_script('pwa-script', $theme_uri . '/js/pwa.js', array('utils-script'), filemtime($theme_dir . '/js/pwa.js'), true);
@@ -79,8 +86,14 @@ function nierto_cube_enqueue_assets() {
             'contentType' => get_theme_mod("cube_face_{$i}_type", "page"),
         );
     }
-
-     wp_localize_script('cube-script', 'niertoCubeSettings', array(
+    wp_localize_script('nierto-cube-performance', 'niertoCubeData', array(
+        'resourceVersion' => get_option('nierto_cube_resource_version', '1.0'),
+        'enablePWA' => get_theme_mod('enable_pwa', 0),
+        'debugMode' => WP_DEBUG,
+        'logEndpoint' => admin_url('admin-ajax.php?action=log_performance'),
+        'themeUrl' => get_template_directory_uri()
+    ));
+    wp_localize_script('cube-script', 'niertoCubeSettings', array(
         'maxZoom' => get_theme_mod('nierto_cube_max_zoom', 90),
         'longPressDuration' => get_theme_mod('nierto_cube_long_press_duration', 1300),
     ));
